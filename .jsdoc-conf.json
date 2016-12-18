@@ -1,0 +1,23 @@
+{
+    "opts": {
+        "template": "./node_modules/ink-docstrap/template",
+        "readme": "README.md",
+        "encoding": "utf8",
+        "destination": "./docs",
+        "recurse": true
+    },
+    "source": {
+        "include": ".",
+        "includePattern": "\\.js$",
+        "excludePattern": "node_modules"
+    },
+    "templates": {
+        "systemName": "Project Name Goes Here (edit .jsdoc-conf.json)",
+        "copyright": "Copyright 2016, Adam Powers",
+        "linenums": true,
+        "theme": "cerulean"
+    },
+    "plugins": [
+        "plugins/markdown"
+    ]
+}
