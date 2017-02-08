@@ -12,8 +12,8 @@
         "excludePattern": "node_modules"
     },
     "templates": {
-        "systemName": "Project Name Goes Here (edit .jsdoc-conf.json)",
-        "copyright": "Copyright 2016, Adam Powers",
+        "systemName": "FIDO2 Lib",
+        "copyright": "Copyright 2017, Adam Powers",
         "linenums": true,
         "theme": "cerulean"
     },

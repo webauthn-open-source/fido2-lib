@@ -1,25 +1,25 @@
 {
-  "name": "new-project",
+  "name": "fido2-lib",
   "version": "0.0.1",
-  "description": "YOUR DESCRIPTION HERE",
+  "description": "A library for performing FIDO 2.0 / WebAuthn / CTAP functionality",
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha",
     "docs": "jsdoc -c ./.jsdoc-conf.json",
-    "publish": "istanbul-coveralls && gh-pages --silent --repo https://$GH_TOKEN@github.com/apowers313/new-project.git --dist docs"
+    "publish": "istanbul-coveralls && gh-pages --silent --repo https://$GH_TOKEN@github.com/apowers313/fido2-lib.git --dist docs"
   },
   "keywords": [
     "keyword1",
     "keyword2"
   ],
   "author": "Adam Powers",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apowers313/new-project"
+    "url": "https://github.com/apowers313/fido2-lib"
   },
   "bugs": {
-    "url": "https://github.com/apowers313/new-project/issues",
+    "url": "https://github.com/apowers313/fido2-lib/issues",
     "email": "apowers@ato.ms"
   },
   "devDependencies": {
