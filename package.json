@@ -31,7 +31,10 @@
     "jsdoc": "^3.4.3",
     "mocha": "^2.5.3",
     "mockery": "^2.0.0",
-    "sinon": "^1.17.6"
+    "sinon": "^1.17.6",
+    "fido2-helpers": ">=0.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
 }

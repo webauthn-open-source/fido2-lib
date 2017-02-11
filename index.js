@@ -1,1 +1,1 @@
-return require ("./lib/main.js");
+module.exports = require ("./lib/main.js");
