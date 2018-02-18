@@ -32,9 +32,11 @@
     "mocha": "^2.5.3",
     "mockery": "^2.0.0",
     "sinon": "^1.17.6",
-    "fido2-helpers": ">=0.0.1"
+    "fido2-helpers": "/Users/apowers/Projects/fido2-stack/fido2-helpers"
   },
   "dependencies": {
-    "lodash": "^4.17.4"
+    "cbor": "^3.0.0",
+    "lodash": "^4.17.4",
+    "pem-jwk": "^1.5.1"
   }
 }
