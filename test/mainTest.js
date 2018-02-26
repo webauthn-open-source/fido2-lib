@@ -7,7 +7,7 @@ var h = require("fido2-helpers");
 describe("Fido2Lib", function() {
     it("can create FIDO server object", function() {
         var fs = new Fido2Lib({
-            rpid: "example.com"
+            serverDomain: "example.com"
         });
         assert(fs);
         assert.isFunction(fs.getAttestationChallenge);
@@ -26,21 +26,23 @@ describe("Fido2Lib", function() {
     it("sets default challenge size");
 });
 
-describe.skip("getAttestationChallenge", function() {
+describe.only("getAttestationChallenge", function() {
     var serv;
     beforeEach(function() {
         serv = new Fido2Lib({
-            rpid: "example.com"
+            serverDomain: "example.com"
         });
     });
 
     it("returns a challenge", function() {
         return serv.getAttestationChallenge().then((chal) => {
-            assert.isArray(chal.blacklist);
-            assert.isArray(chal.cryptoParameters);
-            assert.isString(chal.attestationChallenge);
+            assert.isString(chal.rp.id);
+            assert.strictEqual(chal.rp.id, "example.com");
+            assert.isString(chal.rp.name);
+            assert.strictEqual(chal.rp.name, "example.com");
             assert.isNumber(chal.timeout);
-            assert.strictEqual(chal.attestationChallenge.length, 64);
+            assert.strictEqual(chal.timeout, 60000);
+            assert.strictEqual(chal.challenge.length, 64);
         });
     });
     it("returns the right challenge based on options set in the constructor");
@@ -50,7 +52,7 @@ describe("makeCredentialResponse", function() {
     var serv;
     beforeEach(function() {
         serv = new Fido2Lib({
-            rpid: "example.com"
+            serverDomain: "example.com"
         });
     });
 
@@ -140,7 +142,7 @@ describe("makeCredentialResponse", function() {
         var pem = jwk2pem(jwk);
 
         var fs = new Fido2Lib({
-            rpid: "example.com"
+            serverDomain: "example.com"
         });
 
         var ret = fs.validateSignature(sig, "RS256", pem, authnrData.buffer, Buffer.from(h.clientDataJsonBuf));
@@ -152,7 +154,7 @@ describe("getAssertionChallenge", function() {
     it("generates a challenge");
     it.skip("validates an assertion response", function() {
         var fs = new Fido2Lib({
-            rpid: "example.com"
+            serverDomain: "example.com"
         });
         var res = {
             credential: {
@@ -283,7 +285,7 @@ describe("test", function() {
 
     var clientDataBuf = h.clientDataJsonBuf;
     var fs = new Fido2Lib({
-        rpid: "example.com"
+        serverDomain: "example.com"
     });
     var jwk2pem = require('pem-jwk').jwk2pem;
     var pem = jwk2pem({
