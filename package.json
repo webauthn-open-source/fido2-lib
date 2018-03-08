@@ -36,8 +36,10 @@
     "sinon": "^1.17.6"
   },
   "dependencies": {
-    "cbor": "^3.0.0",
-    "jwk-to-pem": "^1.2.6",
-    "lodash": "^4.17.4"
+    "cbor": "^4.0.0",
+    "cose-to-jwk": "^1.0.0",
+    "jwk-to-pem": "^2.0.0",
+    "lodash": "^4.17.4",
+    "psl": "^1.1.24"
   }
 }
