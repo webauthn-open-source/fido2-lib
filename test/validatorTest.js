@@ -25,6 +25,10 @@ describe("validator", function() {
             clientData: parser.parseClientData(h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON),
             authnrData: parser.parseAttestationObject(h.lib.makeCredentialAttestationNoneResponse.response.attestationObject)
         };
+        var testReq = cloneObject(h.lib.makeCredentialAttestationNoneResponse);
+        testReq.response.clientDataJSON = h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON.slice(0);
+        testReq.response.attestationObject = h.lib.makeCredentialAttestationNoneResponse.response.attestationObject.slice(0);
+        testObj.request = testReq;
 
         validator.attach(testObj);
     });
@@ -36,7 +40,7 @@ describe("validator", function() {
     it("is attached", function() {
         assert.isFunction(validator.attach);
         assert.isFunction(testObj.validateOrigin);
-        assert.isFunction(testObj.validateSignature);
+        assert.isFunction(testObj.validateAttestationSignature);
     });
 
     describe("validateExpectations", function() {
@@ -144,114 +148,115 @@ describe("validator", function() {
                 testObj.validateExpectations();
             }, Error, "expected flag unknown: undefined");
         });
+
+        it("throws if requiredExpectations is undefined");
+        it("throws if requiredExpectations is not Array or Set");
+        it("passes if requiredExpectations is Array");
+        it("passes if requiredExpectations is Set");
+        it("throws if requiredExpectations field is missing");
+        it("throws if more expectations were passed than requiredExpectations");
     });
 
     describe("validateCreateRequest", function() {
-        var testReq;
-        beforeEach(() => {
-            testReq = cloneObject(h.lib.makeCredentialAttestationNoneResponse);
-            testReq.response.clientDataJSON = h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON.slice(0);
-            testReq.response.attestationObject = h.lib.makeCredentialAttestationNoneResponse.response.attestationObject.slice(0);
-        });
-
         it("returns true if request is valid", function() {
-            var ret = testObj.validateCreateRequest(h.lib.makeCredentialAttestationNoneResponse);
+            var ret = testObj.validateCreateRequest();
             assert.isTrue(ret);
             assert.isTrue(testObj.audit.validRequest);
         });
 
         it("returns true for U2F request", function() {
-            var ret = testObj.validateCreateRequest(h.lib.makeCredentialAttestationU2fResponse);
+            var ret = testObj.validateCreateRequest();
             assert.isTrue(ret);
             assert.isTrue(testObj.audit.validRequest);
         });
 
         it("throws if request is undefined", function() {
+            testObj.request = undefined;
             assert.throws(() => {
-                testObj.validateCreateRequest(undefined);
+                testObj.validateCreateRequest();
             }, TypeError, "expected request to be Object, got undefined");
         });
 
         it("throws if response field is undefined", function() {
-            delete testReq.response;
+            delete testObj.request.response;
             assert.throws(() => {
-                testObj.validateCreateRequest(testReq);
+                testObj.validateCreateRequest();
             }, TypeError, "expected 'response' field of request to be Object, got undefined");
         });
 
         it("throws if response field is non-object", function() {
-            testReq.response = 3;
+            testObj.request.response = 3;
             assert.throws(() => {
-                testObj.validateCreateRequest(testReq);
+                testObj.validateCreateRequest();
             }, TypeError, "expected 'response' field of request to be Object, got number");
         });
 
         it("throws if id field is undefined", function() {
-            delete testReq.id;
+            delete testObj.request.id;
             assert.throws(() => {
-                testObj.validateCreateRequest(testReq);
+                testObj.validateCreateRequest();
             }, TypeError, "expected 'id' field of request to be String, got undefined");
         });
 
         it("throws if id field is non-string", function() {
-            testReq.id = [];
+            testObj.request.id = [];
             assert.throws(() => {
-                testObj.validateCreateRequest(testReq);
+                testObj.validateCreateRequest();
             }, TypeError, "expected 'id' field of request to be String, got object");
         });
 
         it("throws if response.attestationObject is undefined", function() {
-            delete testReq.response.attestationObject;
+            delete testObj.request.response.attestationObject;
             assert.throws(() => {
-                testObj.validateCreateRequest(testReq);
+                testObj.validateCreateRequest();
             }, TypeError, "expected 'response.attestationObject' to be base64 String or ArrayBuffer");
         });
 
         it("throws if response.attestationObject is non-ArrayBuffer & non-String", function() {
-            testReq.response.attestationObject = {};
+            testObj.request.response.attestationObject = {};
             assert.throws(() => {
-                testObj.validateCreateRequest(testReq);
+                testObj.validateCreateRequest();
             }, TypeError, "expected 'response.attestationObject' to be base64 String or ArrayBuffer");
         });
 
         it("passes with response.attestationObject as ArrayBuffer", function() {
-            testReq.response.attestationObject = new ArrayBuffer();
-            var ret = testObj.validateCreateRequest(testReq);
+            testObj.request.response.attestationObject = new ArrayBuffer();
+            var ret = testObj.validateCreateRequest();
             assert.isTrue(ret);
             assert.isTrue(testObj.audit.validRequest);
         });
 
         it("passes with response.attestationObject as String", function() {
-            testReq.response.attestationObject = "";
-            var ret = testObj.validateCreateRequest(testReq);
+            testObj.request.response.attestationObject = "";
+            var ret = testObj.validateCreateRequest();
             assert.isTrue(ret);
             assert.isTrue(testObj.audit.validRequest);
         });
 
         it("throws if response.clientDataJSON is undefined", function() {
-            delete testReq.response.clientDataJSON;
+            delete testObj.request.response.clientDataJSON;
             assert.throws(() => {
-                testObj.validateCreateRequest(testReq);
+                testObj.validateCreateRequest();
             }, TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
         });
 
         it("throws if response.clientDataJSON is non-ArrayBuffer & non-String", function() {
-            testReq.response.clientDataJSON = {};
+            testObj.request.response.clientDataJSON = {};
             assert.throws(() => {
-                testObj.validateCreateRequest(testReq);
+                testObj.validateCreateRequest();
             }, TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
         });
 
         it("passes with response.clientDataJSON as ArrayBuffer", function() {
-            testReq.response.clientDataJSON = new ArrayBuffer();
-            var ret = testObj.validateCreateRequest(testReq);
+            testObj.request.response.clientDataJSON = new ArrayBuffer();
+            var ret = testObj.validateCreateRequest();
             assert.isTrue(ret);
             assert.isTrue(testObj.audit.validRequest);
         });
 
         it("passes with response.clientDataJSON as String", function() {
-            testReq.response.clientDataJSON = "";
-            var ret = testObj.validateCreateRequest(testReq);
+            testObj.request.response.clientDataJSON = "";
+            var ret = testObj.validateCreateRequest();
             assert.isTrue(ret);
             assert.isTrue(testObj.audit.validRequest);
         });
@@ -486,9 +491,9 @@ describe("validator", function() {
         });
     });
 
-    describe("validateSignature", function() {
+    describe("validateAttestationSignature", function() {
         it("accepts none", function() {
-            var ret = testObj.validateSignature();
+            var ret = testObj.validateAttestationSignature();
             assert.isTrue(ret);
             assert.isTrue(testObj.audit.journal.has("fmt"));
         });
@@ -496,14 +501,14 @@ describe("validator", function() {
         it("throws on unknown fmt", function() {
             assert.throws(() => {
                 testObj.authnrData.set("fmt", "asdf");
-                testObj.validateSignature();
+                testObj.validateAttestationSignature();
             }, Error, "unknown clientData fmt: asdf");
         });
 
         it("throws on undefined fmt", function() {
             assert.throws(() => {
                 testObj.authnrData.delete("fmt");
-                testObj.validateSignature();
+                testObj.validateAttestationSignature();
             }, Error, "unknown clientData fmt: undefined");
         });
     });
@@ -654,9 +659,9 @@ describe("validator", function() {
         });
     });
 
-    describe("validateCounter", function() {
+    describe("validateInitialCounter", function() {
         it("returns true if valid", function() {
-            var ret = testObj.validateCounter();
+            var ret = testObj.validateInitialCounter();
             assert.isTrue(ret);
             assert.isTrue(testObj.audit.journal.has("counter"));
         });
@@ -664,7 +669,7 @@ describe("validator", function() {
         it("throws if not a number", function() {
             testObj.authnrData.set("counter", "foo");
             assert.throws(() => {
-                testObj.validateCounter();
+                testObj.validateInitialCounter();
             }, Error, "authnrData counter wasn't a number");
         });
     });
@@ -672,22 +677,22 @@ describe("validator", function() {
     describe("validateAudit", function() {
         it("returns on all internal checks passed", function() {
             testObj.validateExpectations();
-            testObj.validateCreateRequest(h.lib.makeCredentialAttestationNoneResponse);
+            testObj.validateCreateRequest();
             // clientData validators
             testObj.validateRawClientDataJson();
             testObj.validateOrigin();
             testObj.validateCreateType();
             testObj.validateChallenge();
+            testObj.validateTokenBinding();
             // authnrData validators
             testObj.validateRawAuthData();
-            testObj.validateSignature();
+            testObj.validateAttestationSignature();
             testObj.validateRpIdHash();
             testObj.validateAaguid();
             testObj.validateCredId();
             testObj.validatePublicKey();
-            testObj.validateTokenBinding();
             testObj.validateFlags();
-            testObj.validateCounter();
+            testObj.validateInitialCounter();
 
             // audit
             var ret = testObj.validateAudit();
