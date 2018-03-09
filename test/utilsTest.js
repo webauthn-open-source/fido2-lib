@@ -48,6 +48,7 @@ describe("utils", function() {
             assert.isTrue(ret);
         });
 
+        it("throws error if origin contains URL path");
         it("returns true when origin contains port 443");
         it("throws when origin is just a domain");
         it("rejects invalid eTLD+1 international domain");
