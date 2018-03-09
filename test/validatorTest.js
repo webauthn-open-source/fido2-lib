@@ -657,6 +657,8 @@ describe("validator", function() {
                 testObj.validateFlags();
             }, Error, "expected User Presence (UP) or User Verification (UV) flag to be set and neither was");
         });
+
+        it("throws if any of the RFU flags are set");
     });
 
     describe("validateInitialCounter", function() {
