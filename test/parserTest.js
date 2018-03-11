@@ -141,7 +141,7 @@ describe("parser", function() {
     });
 
     describe("parseClientData", function() {
-        it("correctly converts JSON", function() {
+        it("correctly converts attestation JSON", function() {
             var ret = parser.parseClientData(h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON);
             assert.instanceOf(ret, Map);
             assert.strictEqual(ret.size, 5);
@@ -154,6 +154,22 @@ describe("parser", function() {
             assert.instanceOf(ret.get("rawClientDataJson"), ArrayBuffer);
             // TODO: validate rawClientDataJson
         });
+
+        it("correctly parses assertion JSON", function() {
+            var ret = parser.parseClientData(h.lib.assertionResponse.response.clientDataJSON);
+            console.log("clientData", ret);
+            assert.instanceOf(ret, Map);
+            assert.strictEqual(ret.size, 5);
+            assert.strictEqual(ret.get("challenge"), "IwetcHKXUmttvH_5PK2cc2O5wDSUZ58GqAWFIVLIUKeoq8hokKoEe4pUgTr_4cpSVcbGkTqGxnEapDLTiGwUbg");
+            // assert.deepEqual(ret.get("clientExtensions"), {});
+            // assert.strictEqual(ret.get("hashAlgorithm"), "SHA-256");
+            assert.strictEqual(ret.get("origin"), "https://localhost:8443");
+            assert.strictEqual(ret.get("type"), "webauthn.get");
+            assert.strictEqual(ret.get("tokenBinding", undefined));
+            assert.instanceOf(ret.get("rawClientDataJson"), ArrayBuffer);
+            // TODO: validate rawClientDataJson
+        });
+
         it("throws error when args are wrong format");
         it("throws when buffer doesn't contain JSON");
         it("throws on malformatted JSON");
@@ -447,4 +463,12 @@ describe("parser", function() {
     });
 
     describe("parseAttestationStatement", function() {});
+
+    describe("parseAssertionData", function() {
+        it("parses assertion correctly", function() {
+            var ret = parser.parseAssertionData(h.lib.assertionResponse.response.authenticatorData);
+            console.log("authenticatorData", ret);
+            assert.instanceOf(ret, Map);
+        });
+    });
 });
