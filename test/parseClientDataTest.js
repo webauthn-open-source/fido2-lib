@@ -8,9 +8,9 @@ describe("parseClientData", function() {
     });
 
     it("correctly converts attestation JSON", function() {
-        var ret = parser.parseClientData(h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON);
+        var ret = parser.parseClientResponse(h.lib.makeCredentialAttestationNoneResponse);
         assert.instanceOf(ret, Map);
-        assert.strictEqual(ret.size, 5);
+        assert.strictEqual(ret.size, 6);
         assert.strictEqual(ret.get("challenge"), "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
         // assert.deepEqual(ret.get("clientExtensions"), {});
         // assert.strictEqual(ret.get("hashAlgorithm"), "SHA-256");
@@ -22,10 +22,10 @@ describe("parseClientData", function() {
     });
 
     it("correctly parses assertion JSON", function() {
-        var ret = parser.parseClientData(h.lib.assertionResponse.response.clientDataJSON);
+        var ret = parser.parseClientResponse(h.lib.assertionResponse);
         assert.instanceOf(ret, Map);
-        assert.strictEqual(ret.size, 5);
-        assert.strictEqual(ret.get("challenge"), "IwetcHKXUmttvH_5PK2cc2O5wDSUZ58GqAWFIVLIUKeoq8hokKoEe4pUgTr_4cpSVcbGkTqGxnEapDLTiGwUbg");
+        assert.strictEqual(ret.size, 6);
+        assert.strictEqual(ret.get("challenge"), "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ");
         // assert.deepEqual(ret.get("clientExtensions"), {});
         // assert.strictEqual(ret.get("hashAlgorithm"), "SHA-256");
         assert.strictEqual(ret.get("origin"), "https://localhost:8443");

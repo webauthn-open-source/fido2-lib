@@ -74,9 +74,9 @@ describe("parseAttestationObject (fido-u2f)", function() {
         ]).buffer;
         assert(h.functions.arrayBufferEquals(attCert, expectedAttCert), "attCert contains right bytes");
         // got the right authData CBOR
-        var rawAuthData = ret.get("rawAuthData");
-        assert.instanceOf(rawAuthData, ArrayBuffer);
-        var expectedRawAuthData = new Uint8Array([
+        var rawAuthnrData = ret.get("rawAuthnrData");
+        assert.instanceOf(rawAuthnrData, ArrayBuffer);
+        var expectedRawAuthnrData = new Uint8Array([
             0x49, 0x96, 0x0D, 0xE5, 0x88, 0x0E, 0x8C, 0x68, 0x74, 0x34, 0x17, 0x0F, 0x64, 0x76, 0x60, 0x5B,
             0x8F, 0xE4, 0xAE, 0xB9, 0xA2, 0x86, 0x32, 0xC7, 0x99, 0x5C, 0xF3, 0xBA, 0x83, 0x1D, 0x97, 0x63,
             0x41, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -91,7 +91,7 @@ describe("parseAttestationObject (fido-u2f)", function() {
             0x1E, 0x6B, 0x3C, 0x9A, 0xF6, 0xDE, 0xC0, 0x49, 0x4F, 0xDA, 0x9E, 0xC5, 0x8F, 0x4F, 0x09, 0xCF,
             0x68, 0xF2, 0x19, 0x93
         ]).buffer;
-        assert(h.functions.arrayBufferEquals(rawAuthData, expectedRawAuthData), "authData contains right bytes");
+        assert(h.functions.arrayBufferEquals(rawAuthnrData, expectedRawAuthnrData), "authData contains right bytes");
         // parsed the authData CBOR correctly
         // var authData = ret.get("authData");
         // assert.isObject(authData);

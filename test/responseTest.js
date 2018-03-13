@@ -43,13 +43,12 @@ describe("Fido2CreateResponse", function() {
     });
 
     it("passes with 'none' attestation", function() {
-        Fido2CreateResponse.create(
-            h.lib.makeCredentialAttestationNoneResponse, {
-                origin: "https://localhost:8443",
-                challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
-                flags: ["UP", "AT"]
-            }
-        );
+        var ret = Fido2CreateResponse.create(h.lib.makeCredentialAttestationNoneResponse, {
+            origin: "https://localhost:8443",
+            challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+            flags: ["UP", "AT"]
+        });
+        assert.instanceOf(ret, Fido2CreateResponse);
     });
 
     it("passes with 'u2f' attestation");
@@ -73,5 +72,16 @@ describe("Fido2GetResponse", function() {
         assert.throws(() => {
             new Fido2GetResponse();
         }, Error, "Do not create with 'new' operator. Call 'Fido2CreateResponse.create()' or 'Fido2GetResponse.create()' instead.");
+    });
+
+    it("returns Fido2GetResponse object on success", function() {
+        var ret = Fido2GetResponse.create(h.lib.assertionResponse, {
+            origin: "https://localhost:8443",
+            challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+            flags: ["UP"],
+            prevCounter: 362,
+            publicKey: h.lib.assnPublicKey
+        });
+        assert.instanceOf(ret, Fido2GetResponse);
     });
 });

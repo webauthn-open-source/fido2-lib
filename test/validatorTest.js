@@ -22,7 +22,7 @@ describe("attestation validation", function() {
                 ["challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w"],
                 ["flags", ["UP", "AT"]]
             ]),
-            clientData: parser.parseClientData(h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON),
+            clientData: parser.parseClientResponse(h.lib.makeCredentialAttestationNoneResponse),
             authnrData: parser.parseAttestationObject(h.lib.makeCredentialAttestationNoneResponse.response.attestationObject)
         };
         var testReq = cloneObject(h.lib.makeCredentialAttestationNoneResponse);
@@ -149,6 +149,11 @@ describe("attestation validation", function() {
             }, Error, "expected flag unknown: undefined");
         });
 
+        it("throws if counter is not a number");
+        it("throws if counter is negative");
+        it("throws if publicKey is not a string");
+        it("throws if publicKey doesn't match PEM regexp");
+
         it("throws if requiredExpectations is undefined");
         it("throws if requiredExpectations is not Array or Set");
         it("passes if requiredExpectations is Array");
@@ -260,13 +265,6 @@ describe("attestation validation", function() {
             assert.isTrue(ret);
             assert.isTrue(attResp.audit.validRequest);
         });
-
-
-        // req { username: 'adam',
-        //   id: 'Bo+VjHOkJZy8DjnCJnIc0Oxt9QAz5upMdSJxNbd+GyAo6MNIvPBb9YsUlE0ZJaaWXtWH5FQyPS6bT/e698IirQ==',
-        //   response:
-        //    { attestationObject: ArrayBuffer { byteLength: 900 },
-        //      clientDataJSON: ArrayBuffer { byteLength: 209 } } }
     });
 
     describe("validateRawClientDataJson", function() {
@@ -280,14 +278,36 @@ describe("attestation validation", function() {
             attResp.clientData.delete("rawClientDataJson");
             assert.throws(() => {
                 attResp.validateRawClientDataJson();
-            }, Error, "clientData clientDataJson should have be ArrayBuffer");
+            }, Error, "clientData clientDataJson should be ArrayBuffer");
         });
 
         it("throws if not ArrayBuffer", function() {
             attResp.clientData.set("rawClientDataJson", "foo");
             assert.throws(() => {
                 attResp.validateRawClientDataJson();
-            }, Error, "clientData clientDataJson should have be ArrayBuffer");
+            }, Error, "clientData clientDataJson should be ArrayBuffer");
+        });
+    });
+
+    describe("validateId", function() {
+        it("returns true on ArrayBuffer", function() {
+            var ret = attResp.validateId();
+            assert.isTrue(ret);
+            assert.isTrue(attResp.audit.journal.has("id"));
+        });
+
+        it("throws on non-ArrayBuffer", function() {
+            attResp.clientData.set("id", {});
+            assert.throws(() => {
+                attResp.validateId();
+            }, Error, "expected id to be of type ArrayBuffer");
+        });
+
+        it("throws on undefined", function() {
+            attResp.clientData.set("id", undefined);
+            assert.throws(() => {
+                attResp.validateId();
+            }, Error, "expected id to be of type ArrayBuffer");
         });
     });
 
@@ -469,25 +489,25 @@ describe("attestation validation", function() {
         });
     });
 
-    describe("validateRawAuthData", function() {
+    describe("validateRawAuthnrData", function() {
         it("returns true if ArrayBuffer", function() {
-            var ret = attResp.validateRawAuthData();
+            var ret = attResp.validateRawAuthnrData();
             assert.isTrue(ret);
-            assert.isTrue(attResp.audit.journal.has("rawAuthData"));
+            assert.isTrue(attResp.audit.journal.has("rawAuthnrData"));
         });
 
         it("throws if missing", function() {
-            attResp.authnrData.delete("rawAuthData");
+            attResp.authnrData.delete("rawAuthnrData");
             assert.throws(() => {
-                attResp.validateRawAuthData();
-            }, Error, "authnrData rawAuthData should have be ArrayBuffer");
+                attResp.validateRawAuthnrData();
+            }, Error, "authnrData rawAuthnrData should be ArrayBuffer");
         });
 
         it("throws if not ArrayBuffer", function() {
-            attResp.authnrData.set("rawAuthData", "foo");
+            attResp.authnrData.set("rawAuthnrData", "foo");
             assert.throws(() => {
-                attResp.validateRawAuthData();
-            }, Error, "authnrData rawAuthData should have be ArrayBuffer");
+                attResp.validateRawAuthnrData();
+            }, Error, "authnrData rawAuthnrData should be ArrayBuffer");
         });
     });
 
@@ -676,7 +696,7 @@ describe("attestation validation", function() {
         });
     });
 
-    describe("validateAudit", function() {
+    describe("validateAudit for attestation", function() {
         it("returns on all internal checks passed", function() {
             attResp.validateExpectations();
             attResp.validateCreateRequest();
@@ -686,8 +706,9 @@ describe("attestation validation", function() {
             attResp.validateCreateType();
             attResp.validateChallenge();
             attResp.validateTokenBinding();
+            attResp.validateId();
             // authnrData validators
-            attResp.validateRawAuthData();
+            attResp.validateRawAuthnrData();
             attResp.validateAttestationSignature();
             attResp.validateRpIdHash();
             attResp.validateAaguid();
@@ -713,6 +734,10 @@ describe("attestation validation", function() {
         it("throws on untested expectations");
         it("throws on untested request");
     });
+
+    describe("validateAudit for assertion", function() {
+        it("returns on all internal checks passed");
+    });
 });
 
 describe("assertion validation", function() {
@@ -729,7 +754,7 @@ describe("assertion validation", function() {
                 ["challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w"],
                 ["flags", ["UP", "AT"]]
             ]),
-            clientData: parser.parseClientData(h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON),
+            clientData: parser.parseClientResponse(h.lib.makeCredentialAttestationNoneResponse),
             authnrData: parser.parseAttestationObject(h.lib.makeCredentialAttestationNoneResponse.response.attestationObject)
         };
         var testReq = cloneObject(h.lib.makeCredentialAttestationNoneResponse);
@@ -758,19 +783,60 @@ describe("assertion validation", function() {
                 ["counter", 300],
                 ["publicKey", h.lib.assnPublicKey]
             ]),
-            clientData: parser.parseClientData(h.lib.assertionResponse.response.clientDataJSON),
-            authenrData: new Map([
-                ...parser.parseAuthenticatorData(h.lib.assertionResponse.response.authenticatorData),
-                ...parser.parseSignature(h.lib.assertionResponse.response.signature),
-                ...parser.parseUserHandle(h.lib.assertionResponse.response.userHandle)
+            clientData: parser.parseClientResponse(h.lib.assertionResponse),
+            authnrData: new Map([
+                ...parser.parseAuthnrAssertionResponse(h.lib.assertionResponse)
             ])
         };
-        var testReq = cloneObject(h.lib.assertionResponseMsg);
-        testReq.response.clientDataJSON = h.lib.assertionResponseMsg.response.clientDataJSON.slice(0);
-        testReq.response.authenticatorData = h.lib.assertionResponseMsg.response.authenticatorData.slice(0);
-        testReq.response.signature = h.lib.assertionResponseMsg.response.signature.slice(0);
-        testReq.response.userHandle = h.lib.assertionResponseMsg.response.userHandle.slice(0);
+        var testReq = cloneObject(h.lib.assertionResponse);
+        testReq.response.clientDataJSON = h.lib.assertionResponse.response.clientDataJSON.slice(0);
+        testReq.response.authenticatorData = h.lib.assertionResponse.response.authenticatorData.slice(0);
+        testReq.response.signature = h.lib.assertionResponse.response.signature.slice(0);
+        testReq.response.userHandle = h.lib.assertionResponse.response.userHandle.slice(0);
         assnResp.request = testReq;
+
+        validator.attach(assnResp);
+    });
+
+    describe("validateUserHandle", function() {
+        it("returns true when undefined", function() {
+            var ret = assnResp.validateUserHandle();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.journal.has("userHandle"));
+        });
+
+        it("throws if not undefined", function() {
+            assnResp.authnrData.set("userHandle", "foo");
+            assert.throws(() => {
+                assnResp.validateUserHandle();
+            }, Error, "unable to validate userHandle");
+        });
+    });
+
+    describe("validateCounter", function() {
+        it("returns true if counter has advanced", function() {
+            assert.strictEqual(assnResp.authnrData.get("counter"), 363);
+            assnResp.expectations.set("prevCounter", 362);
+            var ret = assnResp.validateCounter();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.journal.has("counter"));
+        });
+
+        it("throws if counter is the same", function() {
+            assert.strictEqual(assnResp.authnrData.get("counter"), 363);
+            assnResp.expectations.set("prevCounter", 363);
+            assert.throws(() => {
+                assnResp.validateCounter();
+            }, Error, "counter rollback detected");
+        });
+
+        it("throws if counter has rolled back", function() {
+            assert.strictEqual(assnResp.authnrData.get("counter"), 363);
+            assnResp.expectations.set("prevCounter", 364);
+            assert.throws(() => {
+                assnResp.validateCounter();
+            }, Error, "counter rollback detected");
+        });
     });
 
     describe("validateExpectations", function() {
@@ -779,5 +845,166 @@ describe("assertion validation", function() {
 
     describe("validateAssertionSignature", function() {
         it("returns true on valid signature");
+    });
+
+    describe("validateAssertionResponse", function() {
+        it("returns true if request is valid", function() {
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("returns true for U2F request", function() {
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("throws if request is undefined", function() {
+            assnResp.request = undefined;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected request to be Object, got undefined");
+        });
+
+        it("throws if response field is undefined", function() {
+            delete assnResp.request.response;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response' field of request to be Object, got undefined");
+        });
+
+        it("throws if response field is non-object", function() {
+            assnResp.request.response = 3;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response' field of request to be Object, got number");
+        });
+
+        it("throws if id field is undefined", function() {
+            delete assnResp.request.id;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'id' field of request to be String, got undefined");
+        });
+
+        it("throws if id field is non-string", function() {
+            assnResp.request.id = [];
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'id' field of request to be String, got object");
+        });
+
+        it("throws if response.signature is undefined", function() {
+            delete assnResp.request.response.signature;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.signature' to be base64 String or ArrayBuffer");
+        });
+
+        it("throws if response.signature is non-ArrayBuffer & non-String", function() {
+            assnResp.request.response.signature = {};
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.signature' to be base64 String or ArrayBuffer");
+        });
+
+        it("passes with response.signature as ArrayBuffer", function() {
+            assnResp.request.response.signature = new ArrayBuffer();
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("passes with response.signature as String", function() {
+            assnResp.request.response.signature = "";
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("throws if response.authenticatorData is undefined", function() {
+            delete assnResp.request.response.authenticatorData;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.authenticatorData' to be base64 String or ArrayBuffer");
+        });
+
+        it("throws if response.authenticatorData is non-ArrayBuffer & non-String", function() {
+            assnResp.request.response.authenticatorData = {};
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.authenticatorData' to be base64 String or ArrayBuffer");
+        });
+
+        it("passes with response.authenticatorData as ArrayBuffer", function() {
+            assnResp.request.response.authenticatorData = new ArrayBuffer();
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("passes with response.authenticatorData as String", function() {
+            assnResp.request.response.authenticatorData = "";
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("returns true if response.userHandle is undefined", function() {
+            delete assnResp.request.response.userHandle;
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("throws if response.userHandle is non-ArrayBuffer & non-String", function() {
+            assnResp.request.response.userHandle = {};
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.userHandle' to be base64 String, ArrayBuffer, or undefined");
+        });
+
+        it("passes with response.userHandle as ArrayBuffer", function() {
+            assnResp.request.response.userHandle = new ArrayBuffer();
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("passes with response.userHandle as String", function() {
+            assnResp.request.response.userHandle = "";
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("throws if response.clientDataJSON is undefined", function() {
+            delete assnResp.request.response.clientDataJSON;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
+        });
+
+        it("throws if response.clientDataJSON is non-ArrayBuffer & non-String", function() {
+            assnResp.request.response.clientDataJSON = {};
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
+        });
+
+        it("passes with response.clientDataJSON as ArrayBuffer", function() {
+            assnResp.request.response.clientDataJSON = new ArrayBuffer();
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
+
+        it("passes with response.clientDataJSON as String", function() {
+            assnResp.request.response.clientDataJSON = "";
+            var ret = assnResp.validateAssertionResponse();
+            assert.isTrue(ret);
+            assert.isTrue(assnResp.audit.validRequest);
+        });
     });
 });
