@@ -40,7 +40,7 @@ describe("attestation validation", function() {
     it("is attached", function() {
         assert.isFunction(validator.attach);
         assert.isFunction(attResp.validateOrigin);
-        assert.isFunction(attResp.validateAttestationSignature);
+        assert.isFunction(attResp.validateAttestation);
     });
 
     describe("validateExpectations", function() {
@@ -66,6 +66,13 @@ describe("attestation validation", function() {
 
         it("throws if too many expectations", function() {
             attResp.expectations.set("foo", "bar");
+            assert.throws(() => {
+                attResp.validateExpectations();
+            }, Error, "wrong number of expectations: should have 3 but got 4");
+        });
+
+        it("throws if too many expectations, but expectations are valid", function() {
+            attResp.expectations.set("prevCounter", 42);
             assert.throws(() => {
                 attResp.validateExpectations();
             }, Error, "wrong number of expectations: should have 3 but got 4");
@@ -511,9 +518,9 @@ describe("attestation validation", function() {
         });
     });
 
-    describe("validateAttestationSignature", function() {
+    describe("validateAttestation", function() {
         it("accepts none", function() {
-            var ret = attResp.validateAttestationSignature();
+            var ret = attResp.validateAttestation();
             assert.isTrue(ret);
             assert.isTrue(attResp.audit.journal.has("fmt"));
         });
@@ -521,15 +528,15 @@ describe("attestation validation", function() {
         it("throws on unknown fmt", function() {
             assert.throws(() => {
                 attResp.authnrData.set("fmt", "asdf");
-                attResp.validateAttestationSignature();
-            }, Error, "unknown clientData fmt: asdf");
+                attResp.validateAttestation();
+            }, Error, "no support for attestation format: asdf");
         });
 
         it("throws on undefined fmt", function() {
             assert.throws(() => {
                 attResp.authnrData.delete("fmt");
-                attResp.validateAttestationSignature();
-            }, Error, "unknown clientData fmt: undefined");
+                attResp.validateAttestation();
+            }, Error, "expected 'fmt' to be string, got: undefined");
         });
     });
 
@@ -696,7 +703,7 @@ describe("attestation validation", function() {
         });
     });
 
-    describe("validateAudit for attestation", function() {
+    describe("validateAudit for 'none' attestation", function() {
         it("returns on all internal checks passed", function() {
             attResp.validateExpectations();
             attResp.validateCreateRequest();
@@ -709,7 +716,7 @@ describe("attestation validation", function() {
             attResp.validateId();
             // authnrData validators
             attResp.validateRawAuthnrData();
-            attResp.validateAttestationSignature();
+            attResp.validateAttestation();
             attResp.validateRpIdHash();
             attResp.validateAaguid();
             attResp.validateCredId();
@@ -741,30 +748,6 @@ describe("attestation validation", function() {
 });
 
 describe("assertion validation", function() {
-    beforeEach(function() {
-        attResp = {
-            request: {},
-            requiredExpectations: new Set([
-                "origin",
-                "challenge",
-                "flags"
-            ]),
-            expectations: new Map([
-                ["origin", "https://localhost:8443"],
-                ["challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w"],
-                ["flags", ["UP", "AT"]]
-            ]),
-            clientData: parser.parseClientResponse(h.lib.makeCredentialAttestationNoneResponse),
-            authnrData: parser.parseAttestationObject(h.lib.makeCredentialAttestationNoneResponse.response.attestationObject)
-        };
-        var testReq = cloneObject(h.lib.makeCredentialAttestationNoneResponse);
-        testReq.response.clientDataJSON = h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON.slice(0);
-        testReq.response.attestationObject = h.lib.makeCredentialAttestationNoneResponse.response.attestationObject.slice(0);
-        attResp.request = testReq;
-
-        validator.attach(attResp);
-    });
-
     var assnResp;
     beforeEach(function() {
         assnResp = {
