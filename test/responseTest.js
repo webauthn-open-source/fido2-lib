@@ -53,7 +53,7 @@ describe("Fido2CreateResponse", function() {
         assert.instanceOf(ret, Fido2CreateResponse);
     });
 
-    it.only("passes with 'u2f' attestation", function() {
+    it.skip("passes with 'u2f' attestation", function() {
         var ret = Fido2CreateResponse.create(
             h.lib.makeCredentialAttestationU2fResponse, {
                 origin: "https://localhost:8443",
