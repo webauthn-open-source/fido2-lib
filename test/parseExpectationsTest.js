@@ -44,6 +44,16 @@ describe("parseExpectations", function() {
         }, TypeError, "Invalid URL: asdf");
     });
 
+    it("throws if expected origin is https:443", function() {
+        var exp = {
+            origin: "https://webauthn.bin.coffee:443",
+            challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg"
+        };
+        assert.throws(() => {
+            parser.parseExpectations(exp);
+        }, Error, "origin was malformatted");
+    });
+
     it("coerces Array challenge to base64url", function() {
         var exp = {
             origin: "https://webauthn.bin.coffee",
