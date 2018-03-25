@@ -1,3 +1,5 @@
+"use strict";
+
 const parser = require("../lib/parser");
 var assert = require("chai").assert;
 const h = require("fido2-helpers");
@@ -161,4 +163,4 @@ describe("parseAttestationObject (fido-u2f)", function() {
             "-----END PUBLIC KEY-----\n";
         assert.strictEqual(credentialPublicKeyPem, expectedPem);
     });
-})
+});

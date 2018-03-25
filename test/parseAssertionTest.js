@@ -1,3 +1,5 @@
+"use strict";
+
 const parser = require("../lib/parser");
 var assert = require("chai").assert;
 const h = require("fido2-helpers");

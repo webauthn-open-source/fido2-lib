@@ -1,3 +1,5 @@
+"use strict";
+
 const { Fido2Lib } = require("../index");
 const {
     Fido2CreateResponse,

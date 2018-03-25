@@ -1,3 +1,5 @@
+"use strict";
+
 const validator = require("../lib/validator");
 const parser = require("../lib/parser");
 var assert = require("chai").assert;
