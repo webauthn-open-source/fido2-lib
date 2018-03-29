@@ -9,14 +9,18 @@ describe("parseAttestationObject (fido-u2f)", function() {
         assert.isObject(parser);
     });
 
-    it.skip("correctly parses 'u2f' format", function() {
-        var ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationU2fResponse.response.attestationObject);
+    var ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationU2fResponse.response.attestationObject);
+    it("parser returns Map with correct size", function() {
         assert.instanceOf(ret, Map);
         assert.strictEqual(ret.size, 14);
-        // fmt
+    });
+
+    it("parses fmt", function() {
         var fmt = ret.get("fmt");
         assert.strictEqual(fmt, "fido-u2f");
-        // sig
+    });
+
+    it("parses sig", function() {
         var sig = ret.get("sig");
         assert.instanceOf(sig, ArrayBuffer);
         assert.strictEqual(sig.byteLength, 72);
@@ -28,11 +32,15 @@ describe("parseAttestationObject (fido-u2f)", function() {
             0x5D, 0x84, 0xBC, 0x15, 0xB2, 0x27, 0xF0, 0xCA
         ]).buffer;
         assert(h.functions.arrayBufferEquals(sig, expectedSig), "sig contains right bytes");
-        // certChain
-        var certChain = ret.get("certChain");
-        assert.isArray(certChain);
-        assert.strictEqual(certChain.length, 0);
-        // attCert
+    });
+
+    it("parses x5c", function() {
+        var x5c = ret.get("x5c");
+        assert.isArray(x5c);
+        assert.strictEqual(x5c.length, 0);
+    });
+
+    it("parses attestation cert", function() {
         var attCert = ret.get("attCert");
         assert.instanceOf(attCert, ArrayBuffer);
         var expectedAttCert = new Uint8Array([
@@ -75,7 +83,9 @@ describe("parseAttestationObject (fido-u2f)", function() {
             0x9C, 0xAA, 0xF8, 0x54, 0xD9, 0x82, 0x98, 0xD7
         ]).buffer;
         assert(h.functions.arrayBufferEquals(attCert, expectedAttCert), "attCert contains right bytes");
-        // got the right authData CBOR
+    });
+
+    it("parses raw authCBOR", function() {
         var rawAuthnrData = ret.get("rawAuthnrData");
         assert.instanceOf(rawAuthnrData, ArrayBuffer);
         var expectedRawAuthnrData = new Uint8Array([
@@ -94,26 +104,31 @@ describe("parseAttestationObject (fido-u2f)", function() {
             0x68, 0xF2, 0x19, 0x93
         ]).buffer;
         assert(h.functions.arrayBufferEquals(rawAuthnrData, expectedRawAuthnrData), "authData contains right bytes");
-        // parsed the authData CBOR correctly
-        // var authData = ret.get("authData");
-        // assert.isObject(authData);
-        // assert.strictEqual(Object.keys(authData).length, 8);
+    });
+
+    it("parses rpIdHash", function() {
         var rpIdHash = ret.get("rpIdHash");
         var expectedRpIdHash = new Uint8Array([
             0x49, 0x96, 0x0D, 0xE5, 0x88, 0x0E, 0x8C, 0x68, 0x74, 0x34, 0x17, 0x0F, 0x64, 0x76, 0x60, 0x5B,
             0x8F, 0xE4, 0xAE, 0xB9, 0xA2, 0x86, 0x32, 0xC7, 0x99, 0x5C, 0xF3, 0xBA, 0x83, 0x1D, 0x97, 0x63
         ]).buffer;
         assert(h.functions.arrayBufferEquals(rpIdHash, expectedRpIdHash), "correct rpIdHash");
-        // flags
+    });
+
+    it("parses flags", function() {
         var flags = ret.get("flags");
         assert.instanceOf(flags, Set);
         assert.strictEqual(flags.size, 2);
         assert.isTrue(flags.has("UP"));
         assert.isTrue(flags.has("AT"));
-        // counter
+    });
+
+    it("parses counter", function() {
         assert.strictEqual(ret.get("counter"), 0);
         assert.isNumber(ret.get("counter"));
-        // aaguid
+    });
+
+    it("parses AAGUID", function() {
         var aaguid = ret.get("aaguid");
         assert.instanceOf(aaguid, ArrayBuffer);
         var expectedAaguid = new Uint8Array([
@@ -121,9 +136,13 @@ describe("parseAttestationObject (fido-u2f)", function() {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
         ]).buffer;
         assert(h.functions.arrayBufferEquals(aaguid, expectedAaguid), "correct aaguid");
-        // credIdLen
+    });
+
+    it("parses credential ID length", function() {
         assert.strictEqual(ret.get("credIdLen"), 64);
-        // credId
+    });
+
+    it("parses credential ID", function() {
         var credId = ret.get("credId");
         assert.instanceOf(credId, ArrayBuffer);
         var expectedCredId = new Uint8Array([
@@ -133,7 +152,9 @@ describe("parseAttestationObject (fido-u2f)", function() {
             0x5E, 0xD5, 0x87, 0xE4, 0x54, 0x32, 0x3D, 0x2E, 0x9B, 0x4F, 0xF7, 0xBA, 0xF7, 0xC2, 0x22, 0xAD
         ]).buffer;
         assert(h.functions.arrayBufferEquals(credId, expectedCredId), "correct credId");
-        // credentialPublicKeyCose
+    });
+
+    it("parses credential public key (COSE)", function() {
         var credentialPublicKeyCose = ret.get("credentialPublicKeyCose");
         assert.instanceOf(credentialPublicKeyCose, ArrayBuffer);
         var expectedCredentialPublicKeyCose = new Uint8Array([
@@ -144,7 +165,9 @@ describe("parseAttestationObject (fido-u2f)", function() {
             0x49, 0x4F, 0xDA, 0x9E, 0xC5, 0x8F, 0x4F, 0x09, 0xCF, 0x68, 0xF2, 0x19, 0x93
         ]).buffer;
         assert(h.functions.arrayBufferEquals(credentialPublicKeyCose, expectedCredentialPublicKeyCose), "correct credentialPublicKeyCose");
-        // credentialPublicKeyJwk
+    });
+
+    it("creates public key JWK", function() {
         var credentialPublicKeyJwk = ret.get("credentialPublicKeyJwk");
         assert.isObject(credentialPublicKeyJwk);
         assert.strictEqual(Object.keys(credentialPublicKeyJwk).length, 5);
@@ -153,7 +176,9 @@ describe("parseAttestationObject (fido-u2f)", function() {
         assert.strictEqual(credentialPublicKeyJwk.alg, "ECDSA_w_SHA256");
         assert.strictEqual(credentialPublicKeyJwk.x, "NXPQCHh+bDesdUPtqke79uebZHhm1rNBAgg8N+ZCRgQ=");
         assert.strictEqual(credentialPublicKeyJwk.y, "GNNTGu5p2MUUydaVHms8mvbewElP2p7Fj08Jz2jyGZM=");
-        // credentialPublicKeyPem
+    });
+
+    it("creates public key PEM", function() {
         var credentialPublicKeyPem = ret.get("credentialPublicKeyPem");
         assert.isString(credentialPublicKeyPem);
         var expectedPem =
