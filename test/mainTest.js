@@ -255,32 +255,26 @@ describe("Fido2Lib", function() {
             );
         });
 
-        it("returns Map on success", function() {
+        it("returns Map on success", async function() {
             validateStub.onCall(0).returns(true);
             var arg = new Map();
-            var ret = Fido2Lib.validateAttestation.call(fakeRequest);
+            var ret = await Fido2Lib.validateAttestation.call(fakeRequest);
             assert.isTrue(ret);
             assert.strictEqual(validateStub.callCount, 1);
         });
 
-        it("throws if validateFn doesn't return true", function() {
-            assert.throws(() => {
-                Fido2Lib.validateAttestation.call(fakeRequest);
-            }, Error, "foo validateFn did not return 'true'");
+        it("throws if validateFn doesn't return true", async function() {
+            assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), Error, "foo validateFn did not return 'true'");
         });
 
         it("throws on non-string format", function() {
             fakeRequest.authnrData.set("fmt", {});
-            assert.throws(() => {
-                Fido2Lib.validateAttestation.call(fakeRequest);
-            }, TypeError, "expected 'fmt' to be string, got: object");
+            assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: object");
         });
 
         it("throws on missing format", function() {
             fakeRequest.authnrData.clear();
-            assert.throws(() => {
-                Fido2Lib.validateAttestation.call(fakeRequest);
-            }, TypeError, "expected 'fmt' to be string, got: undefined");
+            assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: undefined");
         });
     });
 });

@@ -62,7 +62,7 @@ describe("parseAuthnrAssertionResponse", function() {
 
 const crypto = require("crypto");
 
-describe.skip("validate signature", function() {
+describe("validate signature", function() {
     function abToBuf(ab) {
         return Buffer.from(new Uint8Array(ab));
     }
