@@ -73,23 +73,15 @@ describe("validate signature", function() {
         var authnrData = h.lib.assertionResponse.response.authenticatorData;
         var clientData = h.lib.assertionResponse.response.clientDataJSON;
 
-        printHex("sig", sig);
-        printHex("pk", pk);
-        printHex("authnrData", authnrData);
-        printHex("clientData", clientData);
-
         const hash = crypto.createHash("sha256");
         hash.update(abToBuf(clientData));
         var clientDataHashBuf = hash.digest();
         var clientDataHash = new Uint8Array(clientDataHashBuf).buffer;
-
-        printHex("clientDataHash", clientDataHash);
 
         const verify = crypto.createVerify("SHA256");
         verify.write(abToBuf(authnrData));
         verify.write(abToBuf(clientDataHash));
         verify.end();
         var res = verify.verify(pk, abToBuf(sig));
-        console.log("res", res);
     });
 });
