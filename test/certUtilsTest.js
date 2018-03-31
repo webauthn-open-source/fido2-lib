@@ -274,17 +274,18 @@ describe("cert utils", function() {
         });
 
         describe("getCerts", function() {
-            it("returns empty Array if no certs added", function() {
+            it("returns empty Map if no certs added", function() {
                 var ret = CertManager.getCerts();
-                assert.isArray(ret);
-                assert.strictEqual(ret.length, 0);
+                assert.instanceOf(ret, Map);
+                assert.strictEqual(ret.size, 0);
             });
 
-            it("returns Array with added cert", function() {
+            it("returns Map with added cert", function() {
                 CertManager.addCert(h.certs.yubicoRoot);
                 var ret = CertManager.getCerts();
-                assert.isArray(ret);
-                assert.strictEqual(ret.length, 1);
+                assert.instanceOf(ret, Map);
+                assert.strictEqual(ret.size, 1);
+                assert.isTrue(ret.has("Yubico U2F Root CA Serial 457200631"));
             });
         });
 
