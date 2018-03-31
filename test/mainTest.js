@@ -9,6 +9,7 @@ var assert = require("chai").assert;
 var sinon = require("sinon");
 var h = require("fido2-helpers");
 const noneAttestation = require("../lib/attestations/none");
+const u2fAttestation = require("../lib/attestations/fidoU2F");
 
 describe("Fido2Lib", function() {
     it("can create FIDO server object", function() {
@@ -252,6 +253,12 @@ describe("Fido2Lib", function() {
                 noneAttestation.name,
                 noneAttestation.parseFn,
                 noneAttestation.validateFn
+            );
+            // add 'fido-u2f' attestation format
+            Fido2Lib.addAttestationFormat(
+                u2fAttestation.name,
+                u2fAttestation.parseFn,
+                u2fAttestation.validateFn
             );
         });
 
