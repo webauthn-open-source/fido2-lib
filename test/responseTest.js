@@ -53,13 +53,26 @@ describe("Fido2CreateResponse", function() {
         assert.instanceOf(ret, Fido2CreateResponse);
     });
 
-    it.skip("passes with 'u2f' attestation", async function() {
+    it("passes with 'u2f' attestation", async function() {
         var ret = await Fido2CreateResponse.create(h.lib.makeCredentialAttestationU2fResponse, {
             origin: "https://localhost:8443",
             challenge: "Vu8uDqnkwOjd83KLj6Scn2BgFNLFbGR7Kq_XJJwQnnatztUR7XIBL7K8uMPCIaQmKw1MCVQ5aazNJFk7NakgqA",
             flags: ["UP", "AT"]
         });
         assert.instanceOf(ret, Fido2CreateResponse);
+        assert.isObject(ret.audit);
+        assert.instanceOf(ret.audit.info, Map);
+        assert.instanceOf(ret.audit.warning, Map);
+        assert.instanceOf(ret.audit.journal, Set);
+        assert.isTrue(ret.audit.info.has("yubico-device-id"));
+        assert.strictEqual(ret.audit.info.get("yubico-device-id"), "YubiKey 4/YubiKey 4 Nano");
+        assert.isTrue(ret.audit.info.has("attestation-type"));
+        assert.strictEqual(ret.audit.info.get("attestation-type"), "basic");
+        assert.isTrue(ret.audit.info.has("fido-u2f-transports"));
+        var u2fTransports = ret.audit.info.get("fido-u2f-transports");
+        assert.instanceOf(u2fTransports, Set);
+        assert.strictEqual(u2fTransports.size, 1);
+        assert.isTrue(u2fTransports.has("usb"));
     });
     it("passes with 'tpm' attestation");
     it("passes with 'packed' attestation");
