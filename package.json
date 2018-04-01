@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha",
-    "docs": "jsdoc -c ./.jsdoc-conf.json",
-    "publish": "istanbul-coveralls"
+    "docs": "jsdoc -c ./.jsdoc-conf.json"
   },
   "keywords": [
     "webauthn",
