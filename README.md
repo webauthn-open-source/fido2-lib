@@ -2,4 +2,4 @@
 
 A library for performing FIDO 2.0 / WebAuthn functionality
 
-** Under development. Do not use. **
+Documentation coming soon. For now, [component-fido2](https://github.com/apowers313/component-fido2) for examples of how to use.
