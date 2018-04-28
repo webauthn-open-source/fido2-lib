@@ -281,12 +281,14 @@ describe("attestation validation", function() {
 
         it("throws on non-ArrayBuffer", function() {
             attResp.clientData.set("id", {});
-            assert.isRejected(attResp.validateId(), Error, "expected id to be of type ArrayBuffer");
+            attResp.clientData.set("rawId", {});
+            return assert.isRejected(attResp.validateId(), Error, "expected id to be of type ArrayBuffer");
         });
 
         it("throws on undefined", function() {
             attResp.clientData.set("id", undefined);
-            assert.isRejected(attResp.validateId(), Error, "expected id to be of type ArrayBuffer");
+            attResp.clientData.set("rawId", undefined);
+            return assert.isRejected(attResp.validateId(), Error, "expected id to be of type ArrayBuffer");
         });
     });
 
