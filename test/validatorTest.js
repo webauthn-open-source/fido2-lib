@@ -31,6 +31,7 @@ describe("attestation validation", function() {
             authnrData: parser.parseAttestationObject(h.lib.makeCredentialAttestationNoneResponse.response.attestationObject)
         };
         var testReq = cloneObject(h.lib.makeCredentialAttestationNoneResponse);
+        testReq.rawId = h.lib.makeCredentialAttestationNoneResponse.rawId;
         testReq.response.clientDataJSON = h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON.slice(0);
         testReq.response.attestationObject = h.lib.makeCredentialAttestationNoneResponse.response.attestationObject.slice(0);
         attResp.request = testReq;
@@ -147,51 +148,67 @@ describe("attestation validation", function() {
     });
 
     describe("validateCreateRequest", function() {
-        it("returns true if request is valid", async function() {
-            var ret = await attResp.validateCreateRequest();
+        it("returns true if request is valid", function() {
+            var ret = attResp.validateCreateRequest();
             assert.isTrue(ret);
             assert.isTrue(attResp.audit.validRequest);
         });
 
-        it("returns true for U2F request", async function() {
-            var ret = await attResp.validateCreateRequest();
+        it("returns true for U2F request", function() {
+            var ret = attResp.validateCreateRequest();
             assert.isTrue(ret);
             assert.isTrue(attResp.audit.validRequest);
         });
 
         it("throws if request is undefined", function() {
             attResp.request = undefined;
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected request to be Object, got undefined");
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected request to be Object, got undefined");
         });
 
         it("throws if response field is undefined", function() {
             delete attResp.request.response;
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected 'response' field of request to be Object, got undefined");
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected 'response' field of request to be Object, got undefined");
         });
 
         it("throws if response field is non-object", function() {
             attResp.request.response = 3;
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected 'response' field of request to be Object, got number");
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected 'response' field of request to be Object, got number");
         });
 
         it("throws if id field is undefined", function() {
             delete attResp.request.id;
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected 'id' field of request to be String, got undefined");
+            delete attResp.request.rawId;
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected 'id' or 'rawId' field of request to be ArrayBuffer, got rawId undefined and id undefined");
         });
 
         it("throws if id field is non-string", function() {
-            attResp.request.id = [];
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected 'id' field of request to be String, got object");
+            attResp.request.rawId = [];
+            delete attResp.request.id;
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected 'id' or 'rawId' field of request to be ArrayBuffer, got rawId object and id undefined");
         });
 
         it("throws if response.attestationObject is undefined", function() {
             delete attResp.request.response.attestationObject;
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected 'response.attestationObject' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected 'response.attestationObject' to be base64 String or ArrayBuffer");
         });
 
         it("throws if response.attestationObject is non-ArrayBuffer & non-String", function() {
             attResp.request.response.attestationObject = {};
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected 'response.attestationObject' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected 'response.attestationObject' to be base64 String or ArrayBuffer");
         });
 
         it("passes with response.attestationObject as ArrayBuffer", async function() {
@@ -210,12 +227,16 @@ describe("attestation validation", function() {
 
         it("throws if response.clientDataJSON is undefined", function() {
             delete attResp.request.response.clientDataJSON;
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
         });
 
         it("throws if response.clientDataJSON is non-ArrayBuffer & non-String", function() {
             attResp.request.response.clientDataJSON = {};
-            assert.isRejected(attResp.validateCreateRequest(), TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                attResp.validateCreateRequest();
+            }, TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
         });
 
         it("passes with response.clientDataJSON as ArrayBuffer", async function() {
@@ -255,7 +276,7 @@ describe("attestation validation", function() {
         it("returns true on ArrayBuffer", async function() {
             var ret = await attResp.validateId();
             assert.isTrue(ret);
-            assert.isTrue(attResp.audit.journal.has("id"));
+            assert.isTrue(attResp.audit.journal.has("rawId"));
         });
 
         it("throws on non-ArrayBuffer", function() {
@@ -535,7 +556,7 @@ describe("attestation validation", function() {
 
         it("throws if tokenBinding is defined", function() {
             attResp.clientData.set("tokenBinding", "foo");
-            assert.isRejected(attResp.validateTokenBinding(), Error, "Token binding not currently supported. Please submit a GitHub issue.");
+            return assert.isRejected(attResp.validateTokenBinding(), Error, "Token binding field malformed: foo");
         });
     });
 
@@ -656,6 +677,7 @@ describe("assertion validation", function() {
             ])
         };
         var testReq = cloneObject(h.lib.assertionResponse);
+        testReq.rawId = h.lib.assertionResponse.rawId;
         testReq.response.clientDataJSON = h.lib.assertionResponse.response.clientDataJSON.slice(0);
         testReq.response.authenticatorData = h.lib.assertionResponse.response.authenticatorData.slice(0);
         testReq.response.signature = h.lib.assertionResponse.response.signature.slice(0);
@@ -723,37 +745,53 @@ describe("assertion validation", function() {
 
         it("throws if request is undefined", function() {
             assnResp.request = undefined;
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected request to be Object, got undefined");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected request to be Object, got undefined");
         });
 
         it("throws if response field is undefined", function() {
             delete assnResp.request.response;
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response' field of request to be Object, got undefined");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response' field of request to be Object, got undefined");
         });
 
         it("throws if response field is non-object", function() {
             assnResp.request.response = 3;
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response' field of request to be Object, got number");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response' field of request to be Object, got number");
         });
 
         it("throws if id field is undefined", function() {
             delete assnResp.request.id;
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'id' field of request to be String, got undefined");
+            delete assnResp.request.rawId;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'id' or 'rawId' field of request to be ArrayBuffer, got rawId undefined and id undefined");
         });
 
-        it("throws if id field is non-string", function() {
-            assnResp.request.id = [];
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'id' field of request to be String, got object");
+        it("throws if rawId field is non-string", function() {
+            assnResp.request.rawId = {};
+            delete assnResp.request.id;
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'id' or 'rawId' field of request to be ArrayBuffer, got rawId object and id undefined");
         });
 
         it("throws if response.signature is undefined", function() {
             delete assnResp.request.response.signature;
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response.signature' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.signature' to be base64 String or ArrayBuffer");
         });
 
         it("throws if response.signature is non-ArrayBuffer & non-String", function() {
             assnResp.request.response.signature = {};
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response.signature' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.signature' to be base64 String or ArrayBuffer");
         });
 
         it("passes with response.signature as ArrayBuffer", async function() {
@@ -772,12 +810,16 @@ describe("assertion validation", function() {
 
         it("throws if response.authenticatorData is undefined", function() {
             delete assnResp.request.response.authenticatorData;
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response.authenticatorData' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.authenticatorData' to be base64 String or ArrayBuffer");
         });
 
         it("throws if response.authenticatorData is non-ArrayBuffer & non-String", function() {
             assnResp.request.response.authenticatorData = {};
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response.authenticatorData' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.authenticatorData' to be base64 String or ArrayBuffer");
         });
 
         it("passes with response.authenticatorData as ArrayBuffer", async function() {
@@ -803,7 +845,9 @@ describe("assertion validation", function() {
 
         it("throws if response.userHandle is non-ArrayBuffer & non-String", function() {
             assnResp.request.response.userHandle = {};
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response.userHandle' to be base64 String, ArrayBuffer, or undefined");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.userHandle' to be base64 String, ArrayBuffer, or undefined");
         });
 
         it("passes with response.userHandle as ArrayBuffer", async function() {
@@ -822,12 +866,16 @@ describe("assertion validation", function() {
 
         it("throws if response.clientDataJSON is undefined", function() {
             delete assnResp.request.response.clientDataJSON;
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
         });
 
         it("throws if response.clientDataJSON is non-ArrayBuffer & non-String", function() {
             assnResp.request.response.clientDataJSON = {};
-            assert.isRejected(assnResp.validateAssertionResponse(), TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
+            assert.throws(() => {
+                assnResp.validateAssertionResponse();
+            }, TypeError, "expected 'response.clientDataJSON' to be base64 String or ArrayBuffer");
         });
 
         it("passes with response.clientDataJSON as ArrayBuffer", async function() {
