@@ -74,6 +74,26 @@ describe("Fido2CreateResponse", function() {
         assert.strictEqual(u2fTransports.size, 1);
         assert.isTrue(u2fTransports.has("usb"));
     });
+
+    it("passes with Hypersecu u2f attestation", async function() {
+        var ret = await Fido2CreateResponse.create(h.lib.makeCredentialAttestationHypersecuU2fResponse, {
+            origin: "https://webauthn.org",
+            challenge: "pSG9z6Gd5m48WWw9e03AJixbKia0ynEqm7o_9KEkPY0zcaXhjmxoChC5QRnK4E6XIT2QFc_uGycO5lUMygeZgw",
+            flags: ["UP", "AT"]
+        });
+
+        assert.isObject(ret);
+        assert.instanceOf(ret.clientData, Map);
+        assert.instanceOf(ret.authnrData, Map);
+        assert.isObject(ret.audit);
+        assert.instanceOf(ret.audit.info, Map);
+        assert.instanceOf(ret.audit.warning, Map);
+        assert.strictEqual(ret.audit.warning.size, 1);
+        assert.strictEqual(ret.audit.warning.get("attesation-not-validated"), "could not validate attestation because the root attestation certification could not be found");
+        assert.strictEqual(ret.audit.info.size, 1);
+        assert.strictEqual(ret.audit.info.get("attestation-type"), "basic");
+
+    });
     it("passes with 'tpm' attestation");
     it("passes with 'packed' attestation");
 });
