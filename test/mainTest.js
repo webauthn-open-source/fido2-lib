@@ -41,7 +41,8 @@ describe("Fido2Lib", function() {
             return serv.createCredentialChallenge().then((chal) => {
                 assert.isNumber(chal.timeout);
                 assert.strictEqual(chal.timeout, 60000);
-                assert.strictEqual(chal.challenge.length, 64);
+                assert.instanceOf(chal.challenge, ArrayBuffer);
+                assert.strictEqual(chal.challenge.byteLength, 64);
             });
         });
 
@@ -80,7 +81,8 @@ describe("Fido2Lib", function() {
             return serv.getAssertionChallenge().then((chal) => {
                 assert.isNumber(chal.timeout);
                 assert.strictEqual(chal.timeout, 60000);
-                assert.strictEqual(chal.challenge.length, 64);
+                assert.instanceOf(chal.challenge, ArrayBuffer);
+                assert.strictEqual(chal.challenge.byteLength, 64);
             });
         });
     });
