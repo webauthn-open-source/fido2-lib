@@ -10,6 +10,7 @@ var sinon = require("sinon");
 var h = require("fido2-helpers");
 const noneAttestation = require("../lib/attestations/none");
 const u2fAttestation = require("../lib/attestations/fidoU2F");
+const packedAttestation = require("../lib/attestations/packed");
 
 describe("Fido2Lib", function() {
     it("can create FIDO server object", function() {
@@ -120,6 +121,18 @@ describe("Fido2Lib", function() {
                 noneAttestation.parseFn,
                 noneAttestation.validateFn
             );
+            // add 'u2f' attestation format
+            Fido2Lib.addAttestationFormat(
+                u2fAttestation.name,
+                u2fAttestation.parseFn,
+                u2fAttestation.validateFn
+            );
+            // add 'packed' attestation format
+            Fido2Lib.addAttestationFormat(
+                packedAttestation.name,
+                packedAttestation.parseFn,
+                packedAttestation.validateFn
+            );
         });
 
         it("adds to map on success", function() {
@@ -182,6 +195,18 @@ describe("Fido2Lib", function() {
                 noneAttestation.name,
                 noneAttestation.parseFn,
                 noneAttestation.validateFn
+            );
+            // add 'u2f' attestation format
+            Fido2Lib.addAttestationFormat(
+                u2fAttestation.name,
+                u2fAttestation.parseFn,
+                u2fAttestation.validateFn
+            );
+            // add 'packed' attestation format
+            Fido2Lib.addAttestationFormat(
+                packedAttestation.name,
+                packedAttestation.parseFn,
+                packedAttestation.validateFn
             );
         });
 
@@ -256,11 +281,17 @@ describe("Fido2Lib", function() {
                 noneAttestation.parseFn,
                 noneAttestation.validateFn
             );
-            // add 'fido-u2f' attestation format
+            // add 'u2f' attestation format
             Fido2Lib.addAttestationFormat(
                 u2fAttestation.name,
                 u2fAttestation.parseFn,
                 u2fAttestation.validateFn
+            );
+            // add 'packed' attestation format
+            Fido2Lib.addAttestationFormat(
+                packedAttestation.name,
+                packedAttestation.parseFn,
+                packedAttestation.validateFn
             );
         });
 
@@ -287,5 +318,3 @@ describe("Fido2Lib", function() {
         });
     });
 });
-
-/* JSHINT */
