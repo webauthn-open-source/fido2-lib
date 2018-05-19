@@ -12,6 +12,7 @@ var sinon = require("sinon");
 var h = require("fido2-helpers");
 const noneAttestation = require("../lib/attestations/none");
 const { printHex } = require("../lib/utils");
+let abEqual = h.functions.abEqual;
 
 describe("cert utils", function() {
     afterEach(function() {
@@ -167,15 +168,87 @@ describe("cert utils", function() {
             it("returns correct extensions for root", function() {
                 var cert = new Certificate(h.certs.yubicoRoot);
                 var extensions = cert.getExtensions();
-                console.log("extensions", extensions);
                 assert.instanceOf(extensions, Map);
                 assert.strictEqual(extensions.size, 3);
                 assert.isTrue(extensions.has("subject-key-identifier"));
                 assert.isTrue(extensions.has("basic-constraints"));
                 assert.isTrue(extensions.has("key-usage"));
                 assert.instanceOf(extensions.get("subject-key-identifier"), ArrayBuffer);
-                assert.instanceOf(extensions.get("basic-constraints"), ArrayBuffer);
-                assert.instanceOf(extensions.get("key-usage"), ArrayBuffer);
+                assert.isObject(extensions.get("basic-constraints"));
+                assert.instanceOf(extensions.get("key-usage"), Set);
+                assert.isTrue(extensions.get("key-usage").has("cRLSign"));
+                assert.isTrue(extensions.get("key-usage").has("keyCertSign"));
+            });
+
+            it("returns FIDO2 extensions", function() {
+                var cert = new Certificate(h.certs.feitianFido2);
+                var extensions = cert.getExtensions();
+                assert.instanceOf(cert.warning, Map);
+                assert.strictEqual(cert.warning.size, 0);
+
+                assert.instanceOf(extensions, Map);
+                assert.strictEqual(extensions.size, 5);
+
+                // subject-key-identifier
+                var subjectKeyId = extensions.get("subject-key-identifier");
+                assert.instanceOf(subjectKeyId, ArrayBuffer);
+                assert.strictEqual(subjectKeyId.byteLength, 20);
+
+                // authority-key-identifier
+                var authorityKeyId = extensions.get("authority-key-identifier");
+                assert.instanceOf(authorityKeyId, Map);
+                assert.strictEqual(authorityKeyId.size, 1);
+                assert.instanceOf(authorityKeyId.get("key-identifier"), ArrayBuffer);
+
+                // basic-constraints
+                var basicConstraints = extensions.get("basic-constraints");
+                assert.isObject(basicConstraints);
+                assert.strictEqual(Object.keys(basicConstraints).length, 1);
+                assert.strictEqual(basicConstraints.cA, false);
+
+                // fido-u2f-transports
+                var transports = extensions.get("fido-u2f-transports");
+                assert.instanceOf(transports, Set);
+                assert.strictEqual(transports.size, 1);
+                assert.isTrue(transports.has("usb"), "transports has USB");
+
+                // 'fido-u2f-transports' => Set { 'usb' },
+
+                // fido-aaguid
+                var aaguid = extensions.get("fido-aaguid");
+                assert.instanceOf(aaguid, ArrayBuffer);
+                var expectedAaguid = new Uint8Array([0x42, 0x38, 0x32, 0x45, 0x44, 0x37, 0x33, 0x43, 0x38, 0x46, 0x42, 0x34, 0x45, 0x35, 0x41, 0x32]).buffer;
+                assert.isTrue(abEqual(aaguid, expectedAaguid), "correct aaguid value");
+            });
+        });
+
+        describe("getSubject", function() {
+            it("returns correct extensions for attestation", function() {
+                var cert = new Certificate(h.certs.yubiKeyAttestation);
+                var subject = cert.getSubject();
+                assert.instanceOf(subject, Map);
+                assert.strictEqual(subject.size, 1);
+                assert.strictEqual(subject.get("common-name"), "Yubico U2F EE Serial 1432534688");
+
+            });
+
+            it("returns correct extensions for root", function() {
+                var cert = new Certificate(h.certs.yubicoRoot);
+                var subject = cert.getSubject();
+                assert.instanceOf(subject, Map);
+                assert.strictEqual(subject.size, 1);
+                assert.strictEqual(subject.get("common-name"), "Yubico U2F Root CA Serial 457200631");
+            });
+
+            it("returns correct values for Feitian FIDO2", function() {
+                var cert = new Certificate(h.certs.feitianFido2);
+                var subject = cert.getSubject();
+                assert.instanceOf(subject, Map);
+                assert.strictEqual(subject.size, 4);
+                assert.strictEqual(subject.get("country-name"), "CN");
+                assert.strictEqual(subject.get("organization-name"), "Feitian Technologies");
+                assert.strictEqual(subject.get("organizational-unit-name"), "Authenticator Attestation");
+                assert.strictEqual(subject.get("common-name"), "FT BioPass FIDO2 USB");
             });
         });
     });

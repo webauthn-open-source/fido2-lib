@@ -189,3 +189,11 @@ describe("parseAttestationObject (fido-u2f)", function() {
         assert.strictEqual(credentialPublicKeyPem, expectedPem);
     });
 });
+
+describe("parseAttestationObject (fido-u2f Hypersecu)", function() {
+    it("can parse", function() {
+        var ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationHypersecuU2fResponse.response.attestationObject);
+        assert.instanceOf(ret, Map);
+        assert.strictEqual(ret.size, 14);
+    });
+});

@@ -10,6 +10,35 @@ var sinon = require("sinon");
 var h = require("fido2-helpers");
 const noneAttestation = require("../lib/attestations/none");
 const u2fAttestation = require("../lib/attestations/fidoU2F");
+const packedAttestation = require("../lib/attestations/packed");
+const tpmAttestation = require("../lib/attestations/tpm");
+
+function restoreAttestationFormats() {
+    // add 'none' attestation format
+    Fido2Lib.addAttestationFormat(
+        noneAttestation.name,
+        noneAttestation.parseFn,
+        noneAttestation.validateFn
+    );
+    // add 'u2f' attestation format
+    Fido2Lib.addAttestationFormat(
+        u2fAttestation.name,
+        u2fAttestation.parseFn,
+        u2fAttestation.validateFn
+    );
+    // add 'packed' attestation format
+    Fido2Lib.addAttestationFormat(
+        packedAttestation.name,
+        packedAttestation.parseFn,
+        packedAttestation.validateFn
+    );
+    // add 'tpm' attestation format
+    Fido2Lib.addAttestationFormat(
+        tpmAttestation.name,
+        tpmAttestation.parseFn,
+        tpmAttestation.validateFn
+    );
+}
 
 describe("Fido2Lib", function() {
     it("can create FIDO server object", function() {
@@ -41,7 +70,8 @@ describe("Fido2Lib", function() {
             return serv.createCredentialChallenge().then((chal) => {
                 assert.isNumber(chal.timeout);
                 assert.strictEqual(chal.timeout, 60000);
-                assert.strictEqual(chal.challenge.length, 64);
+                assert.instanceOf(chal.challenge, ArrayBuffer);
+                assert.strictEqual(chal.challenge.byteLength, 64);
             });
         });
 
@@ -80,7 +110,8 @@ describe("Fido2Lib", function() {
             return serv.getAssertionChallenge().then((chal) => {
                 assert.isNumber(chal.timeout);
                 assert.strictEqual(chal.timeout, 60000);
-                assert.strictEqual(chal.challenge.length, 64);
+                assert.instanceOf(chal.challenge, ArrayBuffer);
+                assert.strictEqual(chal.challenge.byteLength, 64);
             });
         });
     });
@@ -112,12 +143,7 @@ describe("Fido2Lib", function() {
         });
 
         after(function() {
-            // add 'none' attestation format
-            Fido2Lib.addAttestationFormat(
-                noneAttestation.name,
-                noneAttestation.parseFn,
-                noneAttestation.validateFn
-            );
+            restoreAttestationFormats();
         });
 
         it("adds to map on success", function() {
@@ -175,12 +201,7 @@ describe("Fido2Lib", function() {
         });
 
         after(function() {
-            // add 'none' attestation format
-            Fido2Lib.addAttestationFormat(
-                noneAttestation.name,
-                noneAttestation.parseFn,
-                noneAttestation.validateFn
-            );
+            restoreAttestationFormats();
         });
 
         it("returns Map on success", function() {
@@ -248,18 +269,7 @@ describe("Fido2Lib", function() {
         });
 
         after(function() {
-            // add 'none' attestation format
-            Fido2Lib.addAttestationFormat(
-                noneAttestation.name,
-                noneAttestation.parseFn,
-                noneAttestation.validateFn
-            );
-            // add 'fido-u2f' attestation format
-            Fido2Lib.addAttestationFormat(
-                u2fAttestation.name,
-                u2fAttestation.parseFn,
-                u2fAttestation.validateFn
-            );
+            restoreAttestationFormats();
         });
 
         it("returns Map on success", async function() {
@@ -285,5 +295,3 @@ describe("Fido2Lib", function() {
         });
     });
 });
-
-/* JSHINT */
