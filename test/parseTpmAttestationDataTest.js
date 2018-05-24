@@ -13,8 +13,11 @@ describe("parseAttestationObject (tpm)", function() {
         assert.isObject(parser);
     });
 
-    var ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationTpmResponse.response.attestationObject);
-    // console.log("ret", ret);
+    var ret;
+    it("can parse", function() {
+        ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationTpmResponse.response.attestationObject);
+        // console.log("ret", ret);
+    });
 
     it("parser returns Map with correct size", function() {
         assert.instanceOf(ret, Map);
@@ -56,7 +59,10 @@ describe("parseAttestationObject (tpm)", function() {
     });
 
     describe("certInfo", function() {
-        var certInfo = ret.get("certInfo");
+        var certInfo;
+        it("exists", function() {
+            certInfo = ret.get("certInfo");
+        });
 
         it("is Map", function() {
             assert.instanceOf(certInfo, Map);
@@ -153,7 +159,10 @@ describe("parseAttestationObject (tpm)", function() {
     });
 
     describe("pubArea", function() {
-        var pubArea = ret.get("pubArea");
+        var pubArea;
+        it("exists", function() {
+            pubArea = ret.get("pubArea");
+        });
 
         it("is Map", function() {
             assert.instanceOf(pubArea, Map);
