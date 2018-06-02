@@ -33,9 +33,9 @@ describe("parseAttestationObject (tpm)", function() {
         var attCert = ret.get("attCert");
 
         assert.instanceOf(attCert, ArrayBuffer);
-        assert.strictEqual(attCert.byteLength, 1186);
+        assert.strictEqual(attCert.byteLength, 1206);
         attCert = coerceToBase64(attCert, "attCert");
-        assert.strictEqual(attCert, "MIIEnjCCA4agAwIBAgIQL7RbTvD3QMOAUdc2F8018jANBgkqhkiG9w0BAQsFADBBMT8wPQYDVQQDEzZOQ1UtSUZYLUtleUlkLTQwQjg2ODJCOEQxODQ1MEEyQjA2ODQ5RDlCNUNEOTZGNENEREY0QkUwHhcNMTgwMzE5MjIxNjUwWhcNMjgwMzE5MjIxNjUwWjAAMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAklyX9jgSez7tYsp5Kq2E1p++9wS1EbQwn7KH0qJwwIfsJ3tmx+I2OWUj/++pIQ9ag+1v/46P4Bhi/eHgANsi0nktmH+NEFaF7EDKDtZ/Qe52rSCsA7LdF2riRoS305YrfbXn3HeRnGEcRPZkCOhtZVAIz2SoJBzqFdTCcMGACneXS2olcOm3SpAqY1zgednhveahtPaUVYnpv1yei5E82kAmAwB9Wxqx/yK0i4DRQqW0nVdW4INfch913ph+BFWijZIieShCaLv25JkkyPYJXugXt9H71eV91CfE/vshf0tP/7o/ZA7fir/1rIdNFFdpurvI708K1ce2mIgj/V3dtwIDAQABo4IB0TCCAc0wDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwbQYDVR0gAQH/BGMwYTBfBgkrBgEEAYI3FR8wUjBQBggrBgEFBQcCAjBEHkIAVABDAFAAQQAgACAAVAByAHUAcwB0AGUAZAAgACAAUABsAGEAdABmAG8AcgBtACAAIABJAGQAZQBuAHQAaQB0AHkwEAYDVR0lBAkwBwYFZ4EFCAMwUQYDVR0RAQH/BEcwRaRDMEExFjAUBgVngQUCAQwLaWQ6NDk0NjU4MDAxEzARBgVngQUCAgwIU0xCIDk2NjUxEjAQBgVngQUCAwwHaWQ6MDUyODAfBgNVHSMEGDAWgBRNDeeaLngPuj0cMQN+/a6ODsOwpzAdBgNVHQ4EFgQUwdMSw0PYqzB1qkNjLACqzVUeR1QwgZgGCCsGAQUFBwEBBIGLMIGIMIGFBggrBgEFBQcwAoZ5aHR0cDovL2F6Y3Nwcm9kbmN1YWlrcHVibGlzaC5ibG9iLmNvcmUud2luZG93cy5uZXQvbmN1LWlmeC1rZXlpZC00MGI4NjgyYjhkMTg0NTBhMmIwNjg0OWQ5YjVjZDk2ZjRjZGRmNGJlL2NlcnRpZmljYXRlLmNlcjANBgkqhkiG9w0BAQsFAAOCAQEAskH81SG3Qx2fAwZ3rMaAm0b1Js6ZY0qsWNmiU7vWAkpJQvHY+B2lA/45sm04LWbFFXN/C6j7frRqXqqQ1vcIbMrBCK12PcbVKaUaWRB8swTHmyPw6psnRxj91nfwk9txZGOVVLFZKQjaYLmjvfiQbFeEEyUyqUQQyAFdfP5Ll4MsaWv3TW9TMKqDuo1eMJdr2S9iCD59PO+msmeVsKEoIatiMdTH0OHMp42VKggf8Wi3NMqlumVQMeI5eF3hlmDLxaWvSGWBuRBbOGrKrBLBPnwzob4ST4fBZiu7dkG/NgBrzpPu+DYEMx1LzZRNeI3T7lg+O1FWweGIYDT6rL+g1A==");
+        assert.strictEqual(attCert, "MIIEsjCCA5qgAwIBAgIQEyidpWZzRxOSMNfrAvV1fzANBgkqhkiG9w0BAQsFADBBMT8wPQYDVQQDEzZOQ1UtTlRDLUtFWUlELTE1OTFENEI2RUFGOThEMDEwNDg2NEI2OTAzQTQ4REQwMDI2MDc3RDMwHhcNMTgwNTIwMTYyMDQ0WhcNMjgwNTIwMTYyMDQ0WjAAMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvQ6XK2ujM11E7x4SL34p252ncyQTd3+4r5ALQhBbFKS95gUsuENTG+48GBQwu48i06cckm3eH20TUeJvn4+pj6i8LFOrIK14T3P3GFzbxgQLq1KVm63JWDdEXk789JgzQjHNO7DZFKWTEiktwmBUPUA88TjQcXOtrR5EXTrt1FzGzabOepFann3Ny/XtxI8lDZ3QLwPLJfmk7puGtkGNaXOsRC7GLAnoEB7UWvjiyKG6HAtvVTgxcW5OQnHFb9AHycU5QdukXrP0njdCpLCRR0Nq6VMKmVU3MaGh+DCwYEB32sPNPdDkPDWyk16ItwcmXqfSBV5ZOr8ifvcXbCWUWwIDAQABo4IB5TCCAeEwDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwbQYDVR0gAQH/BGMwYTBfBgkrBgEEAYI3FR8wUjBQBggrBgEFBQcCAjBEHkIAVABDAFAAQQAgACAAVAByAHUAcwB0AGUAZAAgACAAUABsAGEAdABmAG8AcgBtACAAIABJAGQAZQBuAHQAaQB0AHkwEAYDVR0lBAkwBwYFZ4EFCAMwSgYDVR0RAQH/BEAwPqQ8MDoxODAOBgVngQUCAwwFaWQ6MTMwEAYFZ4EFAgIMB05QQ1Q2eHgwFAYFZ4EFAgEMC2lkOjRFNTQ0MzAwMB8GA1UdIwQYMBaAFMISqVvO+lb4wMFvsVvdAzRHs3qjMB0GA1UdDgQWBBSv4kXTSA8i3NUM0q57lrWpM8p/4TCBswYIKwYBBQUHAQEEgaYwgaMwgaAGCCsGAQUFBzAChoGTaHR0cHM6Ly9hemNzcHJvZG5jdWFpa3B1Ymxpc2guYmxvYi5jb3JlLndpbmRvd3MubmV0L25jdS1udGMta2V5aWQtMTU5MWQ0YjZlYWY5OGQwMTA0ODY0YjY5MDNhNDhkZDAwMjYwNzdkMy8zYjkxOGFlNC0wN2UxLTQwNTktOTQ5MS0wYWQyNDgxOTA4MTguY2VyMA0GCSqGSIb3DQEBCwUAA4IBAQAs+vqdkDX09fNNYqzbv3Lh0vl6RgGpPGl+MYgO8Lg1I9UKvEUaaUHm845ABS8m7r9p22RCWO6TSEPS0YUYzAsNuiKiGVna4nB9JWZaV9GDS6aMD0nJ8kNciorDsV60j0Yb592kv1VkOKlbTF7+Z10jaapx0CqhxEIUzEBb8y9Pa8oOaQf8ORhDHZp+mbn/W8rUzXSDS0rFbWKaW4tGpVoKGRH+f9vIeXxGlxVS0wqqRm/r+h1aZInta0OOiL/S4367gZyeLL3eUnzdd+eYySYn2XINPbVacK8ZifdsLMwiNtz5uM1jbqpEn2UoB3Hcdn0hc12jTLPWFfg7GiKQ0hk9");
     });
 
     it("parses x5c", function() {
@@ -48,14 +48,14 @@ describe("parseAttestationObject (tpm)", function() {
         assert.instanceOf(cert, ArrayBuffer);
         assert.strictEqual(cert.byteLength, 1516);
         cert = coerceToBase64(cert, "cert");
-        assert.strictEqual(cert, "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");
+        assert.strictEqual(cert, "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");
     });
 
     it("parses alg", function() {
         var alg = ret.get("alg");
 
         assert.isNumber(alg);
-        assert.strictEqual(alg, -262);
+        assert.strictEqual(alg, -65535);
     });
 
     describe("certInfo", function() {
@@ -93,7 +93,7 @@ describe("parseAttestationObject (tpm)", function() {
             assert.instanceOf(qualifiedSigner, ArrayBuffer);
             assert.strictEqual(qualifiedSigner.byteLength, 32);
             qualifiedSigner = coerceToBase64(qualifiedSigner, "qualifiedSigner");
-            assert.strictEqual(qualifiedSigner, "+KrSaVwQePbiXC3u6h2AtZamAyG4klO/eoUCf9ZTsLw=");
+            assert.strictEqual(qualifiedSigner, "vFn039mmpC3DuGav8t8NGYJrvwFLZ6sK1uuxdjBrgAc=");
         });
 
         it("parses extraData", function() {
@@ -113,19 +113,19 @@ describe("parseAttestationObject (tpm)", function() {
         it("parses resetCount", function() {
             var resetCount = certInfo.get("resetCount");
 
-            assert.strictEqual(resetCount, 1163738240);
+            assert.strictEqual(resetCount, 1749088739);
         });
 
         it("parses restartCount", function() {
             var restartCount = certInfo.get("restartCount");
 
-            assert.strictEqual(restartCount, 4148181485);
+            assert.strictEqual(restartCount, 3639844613);
         });
 
         it("parses safe", function() {
             var safe = certInfo.get("safe");
 
-            assert.strictEqual(safe, false);
+            assert.strictEqual(safe, true);
         });
 
         it("parses firmwareVersion", function() {
@@ -299,7 +299,7 @@ describe("parseAttestationObject (tpm)", function() {
         assert.strictEqual(Object.keys(credentialPublicKeyJwk).length, 4);
         assert.strictEqual(credentialPublicKeyJwk.kty, "RSA");
         assert.strictEqual(credentialPublicKeyJwk.alg, "-257");
-        assert.strictEqual(credentialPublicKeyJwk.n, "m2Zx+N1turdeUrpmYW//m4DOLEu3k0j3YS0JFqLQspj18y1mNP3YAHZio8l9bgQ50BguGaRf+GPEQR0zCV3ZXeHQOKyw3GV29ImxEQGRVCRZvS01HhuCrTS+AnkFXdgHbixR50EzB0BVEOoN7+1o9E01DYYorp5UQb3ltlqtGRxrSJt0VJf1DykGk5MxWln1WbULsA2pNFqEcAxqbW0pWzf69xGoXYpCOOeAQ2elpf1jrfIAuEyDFgxuVjlsoktcP0BZL2vu7QBqB6tVohf++JLmgVEq/jX26BYi2gEyZiDQ4VlT/KqkY/jKxD4GHn3RHaNDUTC6vVy3meTZwX1+Fw==");
+        assert.strictEqual(credentialPublicKeyJwk.n, "xdpvTZNXveIC9cVYzQoxVtJU8uCtmrV5MfmCa3R94axPKdYHCHTc5XkQ4ZhESZ2OQkcDObFw0CK1AauI6cL07TAuRxnHDevohCQD7ZvfwicwphobcPYWxfG3AMrPeEYTfcSy1Gmo4VqrT62GVwhAItKPRNkHUyMSa3AHyYGTn99yTK9PvkdQQEMaTqBkQwvLLPrX0Fvbn2S1sOCVLs+GeSc9bG36gWAfFFAzFqE9B4LDGj5r3e09e8Rrwfqb7w3/g7ferxRrWCxGRIIaPGLtuqa+QivwTkPtr1/TeDCGFT1zYaIDBhpimKsm4TN8ocntBnQaWQVHeYjnIDBOrhidfw==");
         assert.strictEqual(credentialPublicKeyJwk.e, "AQAB");
     });
 

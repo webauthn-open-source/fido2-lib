@@ -153,7 +153,14 @@ describe("Fido2CreateResponse", function() {
         assert.isTrue(ret.audit.warning.has("attesation-not-validated"), "audit warning has attesation-not-validated");
     });
 
-    it("passes with 'tpm' attestation");
+    it("passes with 'tpm' attestation", async function() {
+        var ret = await Fido2CreateResponse.create(h.lib.makeCredentialAttestationTpmResponse, {
+            origin: "https://webauthn.org",
+            challenge: "wk6LqEXAMAZpqcTYlY2yor5DjiyI_b1gy9nDOtCB1yGYnm_4WG4Uk24FAr7AxTOFfQMeigkRxOTLZNrLxCvV_Q",
+            flags: ["UP", "AT"]
+        });
+        assert.fail();
+    });
 });
 
 describe("Fido2GetResponse", function() {
