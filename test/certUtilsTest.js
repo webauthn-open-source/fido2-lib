@@ -220,6 +220,70 @@ describe("cert utils", function() {
                 var expectedAaguid = new Uint8Array([0x42, 0x38, 0x32, 0x45, 0x44, 0x37, 0x33, 0x43, 0x38, 0x46, 0x42, 0x34, 0x45, 0x35, 0x41, 0x32]).buffer;
                 assert.isTrue(abEqual(aaguid, expectedAaguid), "correct aaguid value");
             });
+
+            it("returns correct extensions for TPM attestation", function() {
+                var cert = new Certificate(h.certs.tpmAttestation);
+                var extensions = cert.getExtensions();
+                console.log("extensions", extensions);
+                // 'key-usage' => Set { 'digitalSignature' },
+                // 'basic-constraints' => BasicConstraints { cA: false },
+                // '2.5.29.32' => CertificatePolicies { certificatePolicies: [ [Object] ] },
+                // '2.5.29.37' => ExtKeyUsage { keyPurposes: [ '2.23.133.8.3' ] },
+                // '2.5.29.17' => AltName { altNames: [ [Object] ] },
+                // 'authority-key-identifier' => Map { 'key-identifier' => ArrayBuffer { byteLength: 20 } },
+                // 'subject-key-identifier' => ArrayBuffer { byteLength: 20 },
+                // '1.3.6.1.5.5.7.1.1' => InfoAccess { accessDescriptions: [ [Object] ] } }
+                assert.instanceOf(extensions, Map);
+                assert.strictEqual(extensions.size, 8);
+                // key usage
+                var keyUsage = extensions.get("key-usage");
+                assert.instanceOf(keyUsage, Set);
+                assert.strictEqual(keyUsage.size, 1);
+                assert.isTrue(keyUsage.has("digitalSignature"), "key-usage has digital signature");
+                // basic constraints
+                var basicConstraints = extensions.get("basic-constraints");
+                assert.isObject(basicConstraints);
+                assert.strictEqual(Object.keys(basicConstraints).length, 1);
+                assert.strictEqual(basicConstraints.cA, false);
+                // certificate policies
+                var certPolicies = extensions.get("certificate-policies");
+                assert.isArray(certPolicies);
+                assert.strictEqual(certPolicies.length, 1);
+                var policyQualifiers = certPolicies[0];
+                assert.isObject(policyQualifiers);
+                assert.strictEqual(policyQualifiers.id, "policy-qualifiers");
+                assert.isArray(policyQualifiers.value);
+                assert.strictEqual(policyQualifiers.value.length, 1);
+                var policyQualifier = policyQualifiers.value[0];
+                assert.isObject(policyQualifier);
+                console.log("policyQualifier", policyQualifier);
+                assert.fail();
+                // extended key usage
+                assert.fail();
+                // alternate name
+                assert.fail();
+                // authority key identifier
+                var authKeyId = extensions.get("authority-key-identifier");
+                assert.instanceOf(authKeyId, Map);
+                assert.strictEqual(authKeyId.size, 1);
+                authKeyId = authKeyId.get("key-identifier");
+                assert.instanceOf(authKeyId, ArrayBuffer);
+                var expectedAuthKeyId = new Uint8Array([
+                    0xC2, 0x12, 0xA9, 0x5B, 0xCE, 0xFA, 0x56, 0xF8, 0xC0, 0xC1, 0x6F, 0xB1, 0x5B, 0xDD, 0x03, 0x34,
+                    0x47, 0xB3, 0x7A, 0xA3
+                ]).buffer;
+                assert.isTrue(abEqual(authKeyId, expectedAuthKeyId), "got expected authority key identifier");
+                // subject key identifier
+                var subjectKeyId = extensions.get("subject-key-identifier");
+                assert.instanceOf(subjectKeyId, ArrayBuffer);
+                var expectedSubjectKeyId = new Uint8Array([
+                    0xAF, 0xE2, 0x45, 0xD3, 0x48, 0x0F, 0x22, 0xDC, 0xD5, 0x0C, 0xD2, 0xAE, 0x7B, 0x96, 0xB5, 0xA9,
+                    0x33, 0xCA, 0x7F, 0xE1,
+                ]).buffer;
+                assert.isTrue(abEqual(subjectKeyId, expectedSubjectKeyId), "got expected authority key identifier");
+                // info access
+                assert.fail();
+            });
         });
 
         describe("getSubject", function() {
