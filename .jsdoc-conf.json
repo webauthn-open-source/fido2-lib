@@ -1,23 +1,29 @@
 {
-    "opts": {
-        "template": "./node_modules/ink-docstrap/template",
-        "readme": "README.md",
-        "encoding": "utf8",
-        "destination": "./docs",
-        "recurse": true
+    "tags": {
+        "allowUnknownTags": false
     },
     "source": {
-        "include": ".",
-        "includePattern": "\\.js$",
-        "excludePattern": "node_modules"
-    },
-    "templates": {
-        "systemName": "FIDO2 Lib",
-        "copyright": "Copyright 2017, Adam Powers",
-        "linenums": true,
-        "theme": "cerulean"
+        "include": "lib/main.js"
     },
     "plugins": [
         "plugins/markdown"
-    ]
+    ],
+    "opts": {
+        "systemName": "FIDO2 Library",
+        "copyright": "Copyright 2018, Adam Powers",
+        "template": "node_modules/docdash",
+        "readme": "README.md",
+        "encoding": "utf8",
+        "destination": "docs/",
+        "recurse": true,
+        "verbose": true
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    },
+    "docdash": {
+        "static": true,
+        "sort": true
+    }
 }
