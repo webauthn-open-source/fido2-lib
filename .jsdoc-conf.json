@@ -3,7 +3,9 @@
         "allowUnknownTags": false
     },
     "source": {
-        "include": "lib/main.js"
+        "include": "lib",
+        "includePattern": "\\.js$",
+        "excludePattern": "node_modules"
     },
     "plugins": [
         "plugins/markdown"
