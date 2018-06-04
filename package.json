@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "istanbul cover _mocha",
-    "docs": "jsdoc -c ./.jsdoc-conf.json"
+    "docs": "jsdoc -c ./.jsdoc-conf.json",
+    "publish-docs": "gh-pages --silent --repo https://$GH_TOKEN@github.com/apowers313/webauthn-simple-app.git --dist docs"
   },
   "keywords": [
     "webauthn",
