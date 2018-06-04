@@ -6,7 +6,7 @@
   "scripts": {
     "test": "istanbul cover _mocha",
     "docs": "jsdoc -c ./.jsdoc-conf.json",
-    "publish-docs": "gh-pages --silent --repo https://$GH_TOKEN@github.com/apowers313/webauthn-simple-app.git --dist docs"
+    "publish-docs": "gh-pages --silent --repo https://$GH_TOKEN@github.com/apowers313/fido2-lib.git --dist docs"
   },
   "keywords": [
     "webauthn",
