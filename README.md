@@ -32,10 +32,10 @@ var f2l = new Fido2Lib();
 ```
 
 **Instantiate Library (Complex):**
-```
+``` js
 // could also use one or more of the options below,
 // which just makes the options calls easier later on:
-new Fido2Lib({
+var f2l = new Fido2Lib({
     timeout: 42,
     rpId: "example.com",
     rpName: "ACME",
