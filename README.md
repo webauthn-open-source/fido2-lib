@@ -12,11 +12,11 @@ A library for performing FIDO 2.0 / WebAuthn server functionality
 This library contains all the functionality necessary for implementing a full FIDO2 / WebAuthn server. It intentionally does not implement any kind of networking protocol (e.g. - REST endpoints) so that it can remain independent of any messaging protocols.
 
 There are four primary functions:
-1. createCredentialChallenge - creates the challenge that will be sent to the client (e.g. - browser) for the credential create call. Note that the library does not keep track of sessions or context, so the caller is expected to associate the resulting challenge with a session so that it can be appropriately matched with a response.
-2. createCredentialResponse - parses and validates the response from the client
-3. createAssertionChallenge - creates the challenge that will be sent to the client for credential assertion. Essentially the same as `createCredentialChallenge`
-4. createAsserationResponse - parses and validates the response from the client
+1. attestationOptions - creates the challenge that will be sent to the client (e.g. - browser) for the credential create call. Note that the library does not keep track of sessions or context, so the caller is expected to associate the resulting challenge with a session so that it can be appropriately matched with a response.
+2. attestationResult - parses and validates the response from the client
+3. assertionOptions - creates the challenge that will be sent to the client for credential assertion. Essentially the same as `createCredentialChallenge`
+4. assertionResult - parses and validates the response from the client
 
 There is also an extension point for adding new attestation formats.
 
-Full documentation can be found here (coming soon).
+Full documentation can be found [here](https://apowers313.github.io/fido2-lib/).
