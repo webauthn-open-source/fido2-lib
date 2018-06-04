@@ -43,7 +43,7 @@
         Fido2Result
         </h2>
         
-            <div class="class-description"><p>The base class of <a href="Fido2AttestationResult.html">Fido2AttestationResult</a> and</p></div>
+            <div class="class-description"><p>The base class of <a href="Fido2AttestationResult.html">Fido2AttestationResult</a> and <a href="Fido2AssertionResult.html">Fido2AssertionResult</a></p></div>
         
     
 </header>
@@ -69,7 +69,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="response.js.html">response.js</a>, <a href="response.js.html#line10">line 10</a>
+        <a href="response.js.html">response.js</a>, <a href="response.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -103,6 +103,313 @@
 
     
 </dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>authnrData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Authenticator data that was parsed and validated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clientData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Client data that was parsed and validated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>expectations</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The expectations that were used to validate the result</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>request</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The request that was validated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>audit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A collection of audit information, such as useful warnings and information. May be useful for risk engines or for debugging.</p>
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>validExpectations</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Whether the expectations that were provided were complete and valid</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>validRequest</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Whether the request message was complete and valid</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>complete</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Whether all fields in the result have been validated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>journal</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Set</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A list of the fields that were validated</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>warning</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A set of warnigns that were generated while validating the result</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>info</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A set of informational fields that were generated while validating the result. Includes any x509 extensions of the attestation certificate during registration.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
 
 
 
@@ -164,7 +471,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 03:56:58 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 05:40:39 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

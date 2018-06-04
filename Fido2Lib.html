@@ -670,7 +670,7 @@ ordered by the preference in which the authenticator should use them.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line258">line 258</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line295">line 295</a>
     </li></ul></dd>
     
 
@@ -857,7 +857,7 @@ calling context (<code>this</code>).</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line288">line 288</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line325">line 325</a>
     </li></ul></dd>
     
 
@@ -941,7 +941,7 @@ calling context (<code>this</code>).</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line303">line 303</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line340">line 340</a>
     </li></ul></dd>
     
 
@@ -1178,7 +1178,7 @@ At this point the fields have not yet been verified.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line339">line 339</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line376">line 376</a>
     </li></ul></dd>
     
 
@@ -1250,7 +1250,7 @@ At this point the fields have not yet been verified.</p>
 
     
 
-    <h4 class="name" id="assertionOptions"><span class="type-signature">(async) </span>assertionOptions<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#PublicKeyCredentialRequestOptions">PublicKeyCredentialRequestOptions</a>}</span></h4>
+    <h4 class="name" id="assertionOptions"><span class="type-signature">(async) </span>assertionOptions<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="global.html#PublicKeyCredentialRequestOptions">PublicKeyCredentialRequestOptions</a>>}</span></h4>
 
     
 
@@ -1262,7 +1262,7 @@ At this point the fields have not yet been verified.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line196">line 196</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line220">line 220</a>
     </li></ul></dd>
     
 
@@ -1302,7 +1302,8 @@ At this point the fields have not yet been verified.</p>
 
 
 <div class="description">
-    <p>Creates an assertion challenge and any other parameters for the <code>navigator.credentials.get()</code> call</p>
+    <p>Creates an assertion challenge and any other parameters for the <code>navigator.credentials.get()</code> call.
+The <code>challenge</code> property is an <code>ArrayBuffer</code> and will need to be encoded to be transmitted to the client.</p>
 </div>
 
 
@@ -1342,7 +1343,7 @@ At this point the fields have not yet been verified.</p>
     </dt>
     <dd>
         
-<span class="param-type"><a href="global.html#PublicKeyCredentialRequestOptions">PublicKeyCredentialRequestOptions</a></span>
+<span class="param-type">Promise.&lt;<a href="global.html#PublicKeyCredentialRequestOptions">PublicKeyCredentialRequestOptions</a>></span>
 
 
     </dd>
@@ -1368,7 +1369,7 @@ At this point the fields have not yet been verified.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line238">line 238</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line275">line 275</a>
     </li></ul></dd>
     
 
@@ -1933,7 +1934,7 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
 
     
 
-    <h4 class="name" id="attestationOptions"><span class="type-signature">(async) </span>attestationOptions<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="global.html#PublicKeyCredentialCreationOptions">PublicKeyCredentialCreationOptions</a>}</span></h4>
+    <h4 class="name" id="attestationOptions"><span class="type-signature">(async) </span>attestationOptions<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="global.html#PublicKeyCredentialCreationOptions">PublicKeyCredentialCreationOptions</a>>}</span></h4>
 
     
 
@@ -1945,7 +1946,7 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line119">line 119</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line120">line 120</a>
     </li></ul></dd>
     
 
@@ -1985,7 +1986,8 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
 
 
 <div class="description">
-    <p>Gets a challenge and any other parameters for the <code>credentials.create()`</code> call</p>
+    <p>Gets a challenge and any other parameters for the <code>navigator.credentials.create()`</code> call
+The <code>challenge</code> property is an <code>ArrayBuffer</code> and will need to be encoded to be transmitted to the client.</p>
 </div>
 
 
@@ -2014,7 +2016,7 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
 
         
 <div class="param-desc">
-    <p>The options for creating calling <code>credentials.create()</code></p>
+    <p>The options for creating calling <code>navigator.credentials.create()</code></p>
 </div>
 
 
@@ -2025,7 +2027,7 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
     </dt>
     <dd>
         
-<span class="param-type"><a href="global.html#PublicKeyCredentialCreationOptions">PublicKeyCredentialCreationOptions</a></span>
+<span class="param-type">Promise.&lt;<a href="global.html#PublicKeyCredentialCreationOptions">PublicKeyCredentialCreationOptions</a>></span>
 
 
     </dd>
@@ -2051,7 +2053,7 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line179">line 179</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line202">line 202</a>
     </li></ul></dd>
     
 
@@ -2515,7 +2517,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 03:56:58 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 05:40:39 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -448,7 +448,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line136">line 136</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line137">line 137</a>
     </li></ul></dd>
     
 
@@ -499,6 +499,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -524,6 +526,12 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+                </td>
+            
 
             
 
@@ -539,6 +547,8 @@
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -565,10 +575,18 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>Relying party name (e.g. - &quot;ACME&quot;)</p></td>
+            <td class="description last"><p>Relying party name (e.g. - &quot;ACME&quot;). This is only set if <code>rpName</code> was specified during the <code>new</code> call.</p></td>
         </tr>
 
     
@@ -588,10 +606,18 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>Relying party ID, a domain name (e.g. - &quot;example.com&quot;)</p></td>
+            <td class="description last"><p>Relying party ID, a domain name (e.g. - &quot;example.com&quot;). This is only set if <code>rpId</code> was specified during the <code>new</code> call.</p></td>
         </tr>
 
     
@@ -618,10 +644,296 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+                </td>
+            
 
             
 
             <td class="description last"><p>User information. This will be an empty object</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>challenge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">ArrayBuffer</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An ArrayBuffer filled with random bytes. This will be verified in attestationResult</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pubKeyCredParams</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A list of PublicKeyCredentialParameters objects, based on the <code>cryptoParams</code> that was passed to the constructor.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The amount of time that the call should take before returning an error</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>attestation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether the client should request attestation from the authenticator or not</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>authenticatorSelectionCriteria</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>A object describing which authenticators are preferred for registration</p>
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>attachment</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>What type of attachement is acceptable for new authenticators.
+Allowed values are &quot;platform&quot;, meaning that the authenticator is embedded in the operating system, or
+&quot;cross-platform&quot;, meaning that the authenticator is removeable (e.g. USB, NFC, or BLE).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>requireResidentKey</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Indicates whether authenticators must store the keys internally, or if they can
+store them externally (using a KDF or key wrapping)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userVerification</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Indicates whether user verification is required for authenticators. User verification
+means that an authenticator will validate a use through their biometrics (e.g. fingerprint) or knowledge (e.g. PIN). Allowed
+values for <code>userVerification</code> are &quot;required&quot;, meaning that registration will fail if no authenticator provides user verification;
+&quot;preferred&quot;, meaning that if multiple authenticators are available, the one(s) that provide user verification should be used; or
+&quot;discouraged&quot;, which means that authenticators that don't provide user verification are preferred.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -632,6 +944,14 @@
 
 
 
+
+<div class="description">
+    <p>This object is returned by attestationOptions and is basially the same as
+the <a href="https://w3.org/TR/webauthn/#dictdef-publickeycredentialcreationoptions">PublicKeyCredentialCreationOptions</a>
+object that is required to be passed to <code>navigator.credentials.create()</code>. With the exception of the <code>challenge</code> property,
+all other properties are optional and only set if they were specified in the configuration paramater
+that was passed to the constructor.</p>
+</div>
 
 
 
@@ -663,7 +983,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line202">line 202</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line226">line 226</a>
     </li></ul></dd>
     
 
@@ -708,9 +1028,13 @@
     <thead>
     <tr>
         
+        <th>Name</th>
+        
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -724,16 +1048,157 @@
 
         <tr>
             
+                <td class="name"><code>challenge</code></td>
+            
 
             <td class="type">
+            
+                
+<span class="param-type">ArrayBuffer</span>
+
+
             
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"></td>
+            <td class="description last"><p>An ArrayBuffer filled with random bytes. This will be verified in attestationResult</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The amount of time that the call should take before returning an error</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rpId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Relying party ID, a domain name (e.g. - &quot;example.com&quot;). This is only set if <code>rpId</code> was specified during the <code>new</code> call.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>attestation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether the client should request attestation from the authenticator or not</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userVerification</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Indicates whether user verification is required for authenticators. User verification
+means that an authenticator will validate a use through their biometrics (e.g. fingerprint) or knowledge (e.g. PIN). Allowed
+values for <code>userVerification</code> are &quot;required&quot;, meaning that authentication will fail if no authenticator provides user verification;
+&quot;preferred&quot;, meaning that if multiple authenticators are available, the one(s) that provide user verification should be used; or
+&quot;discouraged&quot;, which means that authenticators that don't provide user verification are preferred.</p></td>
         </tr>
 
     
@@ -744,6 +1209,14 @@
 
 
 
+
+<div class="description">
+    <p>This object is returned by assertionOptions and is basially the same as
+the <a href="https://w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions">PublicKeyCredentialRequestOptions</a>
+object that is required to be passed to <code>navigator.credentials.get()</code>. With the exception of the <code>challenge</code> property,
+all other properties are optional and only set if they were specified in the configuration paramater
+that was passed to the constructor.</p>
+</div>
 
 
 
@@ -778,7 +1251,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 03:56:58 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 05:40:39 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -152,8 +152,9 @@ class Fido2Lib {
     }
 
     /**
-     * Gets a challenge and any other parameters for the `credentials.create()`` call
-     * @returns {PublicKeyCredentialCreationOptions} The options for creating calling `credentials.create()`
+     * Gets a challenge and any other parameters for the `navigator.credentials.create()`` call
+     * The `challenge` property is an `ArrayBuffer` and will need to be encoded to be transmitted to the client.
+     * @returns {Promise&lt;PublicKeyCredentialCreationOptions>} The options for creating calling `navigator.credentials.create()`
      */
     async attestationOptions() {
         // The object being returned is described here:
@@ -174,10 +175,30 @@ class Fido2Lib {
 
         /**
          * @typedef {Object} PublicKeyCredentialCreationOptions
+         * @description This object is returned by {@link attestationOptions} and is basially the same as
+         * the [PublicKeyCredentialCreationOptions]{@link https://w3.org/TR/webauthn/#dictdef-publickeycredentialcreationoptions}
+         * object that is required to be passed to `navigator.credentials.create()`. With the exception of the `challenge` property,
+         * all other properties are optional and only set if they were specified in the configuration paramater
+         * that was passed to the constructor.
          * @property {Object} rp Relying party information (a.k.a. - server / service information)
-         * @property {String} rp.name Relying party name (e.g. - "ACME")
-         * @property {String} rp.id Relying party ID, a domain name (e.g. - "example.com")
+         * @property {String} [rp.name] Relying party name (e.g. - "ACME"). This is only set if `rpName` was specified during the `new` call.
+         * @property {String} [rp.id] Relying party ID, a domain name (e.g. - "example.com"). This is only set if `rpId` was specified during the `new` call.
          * @property {Object} user User information. This will be an empty object
+         * @property {ArrayBuffer} challenge An ArrayBuffer filled with random bytes. This will be verified in {@link attestationResult}
+         * @property {Array} [pubKeyCredParams] A list of PublicKeyCredentialParameters objects, based on the `cryptoParams` that was passed to the constructor.
+         * @property {Number} [timeout] The amount of time that the call should take before returning an error
+         * @property {String} [attestation] Whether the client should request attestation from the authenticator or not
+         * @property {Object} [authenticatorSelectionCriteria] A object describing which authenticators are preferred for registration
+         * @property {String} [authenticatorSelectionCriteria.attachment] What type of attachement is acceptable for new authenticators.
+         * Allowed values are "platform", meaning that the authenticator is embedded in the operating system, or
+         * "cross-platform", meaning that the authenticator is removeable (e.g. USB, NFC, or BLE).
+         * @property {Boolean} [authenticatorSelectionCriteria.requireResidentKey] Indicates whether authenticators must store the keys internally, or if they can
+         * store them externally (using a KDF or key wrapping)
+         * @property {String} [authenticatorSelectionCriteria.userVerification] Indicates whether user verification is required for authenticators. User verification
+         * means that an authenticator will validate a use through their biometrics (e.g. fingerprint) or knowledge (e.g. PIN). Allowed
+         * values for `userVerification` are "required", meaning that registration will fail if no authenticator provides user verification;
+         * "preferred", meaning that if multiple authenticators are available, the one(s) that provide user verification should be used; or
+         * "discouraged", which means that authenticators that don't provide user verification are preferred.
          */
         setOpt(options.rp, "name", this.config.rpName);
         setOpt(options.rp, "id", this.config.rpId);
@@ -186,7 +207,9 @@ class Fido2Lib {
         setOpt(options, "pubKeyCredParams", pubKeyCredParams);
         setOpt(options, "timeout", this.config.timeout);
         setOpt(options, "attestation", this.config.attestation);
-        if (this.config.authenticatorAttachment !== undefined) {
+        if (this.config.authenticatorAttachment !== undefined ||
+            this.config.authenticatorRequireResidentKey !== undefined ||
+            this.config.authenticatorUserVerification !== undefined) {
             options.authenticatorSelectionCriteria = {};
             setOpt(options.authenticatorSelectionCriteria, "attachment", this.config.authenticatorAttachment);
             setOpt(options.authenticatorSelectionCriteria, "requireResidentKey", this.config.authenticatorRequireResidentKey);
@@ -229,8 +252,9 @@ class Fido2Lib {
     }
 
     /**
-     * Creates an assertion challenge and any other parameters for the `navigator.credentials.get()` call
-     * @returns {PublicKeyCredentialRequestOptions} The options to be passed to `navigator.credentials.get()`
+     * Creates an assertion challenge and any other parameters for the `navigator.credentials.get()` call.
+     * The `challenge` property is an `ArrayBuffer` and will need to be encoded to be transmitted to the client.
+     * @returns {Promise&lt;PublicKeyCredentialRequestOptions>} The options to be passed to `navigator.credentials.get()`
      */
     async assertionOptions() {
         // https://w3c.github.io/webauthn/#dictdef-publickeycredentialcreationoptions
@@ -240,7 +264,20 @@ class Fido2Lib {
 
         /**
          * @typedef {Object} PublicKeyCredentialRequestOptions
-         * @property {[type]} [propName] [description]
+         * @description This object is returned by {@link assertionOptions} and is basially the same as
+         * the [PublicKeyCredentialRequestOptions]{@link https://w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions}
+         * object that is required to be passed to `navigator.credentials.get()`. With the exception of the `challenge` property,
+         * all other properties are optional and only set if they were specified in the configuration paramater
+         * that was passed to the constructor.
+         * @property {ArrayBuffer} challenge An ArrayBuffer filled with random bytes. This will be verified in {@link attestationResult}
+         * @property {Number} [timeout] The amount of time that the call should take before returning an error
+         * @property {String} [rpId] Relying party ID, a domain name (e.g. - "example.com"). This is only set if `rpId` was specified during the `new` call.
+         * @property {String} [attestation] Whether the client should request attestation from the authenticator or not
+         * @property {String} [userVerification] Indicates whether user verification is required for authenticators. User verification
+         * means that an authenticator will validate a use through their biometrics (e.g. fingerprint) or knowledge (e.g. PIN). Allowed
+         * values for `userVerification` are "required", meaning that authentication will fail if no authenticator provides user verification;
+         * "preferred", meaning that if multiple authenticators are available, the one(s) that provide user verification should be used; or
+         * "discouraged", which means that authenticators that don't provide user verification are preferred.
          */
         setOpt(options, "challenge", challenge);
         setOpt(options, "timeout", this.config.timeout);
@@ -499,7 +536,7 @@ module.exports = {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 03:56:58 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 05:40:39 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
