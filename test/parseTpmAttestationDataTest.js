@@ -89,8 +89,10 @@ describe("parseAttestationObject (tpm)", function() {
     it("parses alg", function() {
         var alg = ret.get("alg");
 
-        assert.isNumber(alg);
-        assert.strictEqual(alg, -65535);
+        assert.isObject(alg);
+        assert.strictEqual(Object.keys(alg).length, 2);
+        assert.strictEqual(alg.algName, "RSASSA-PKCS1-v1_5_w_SHA1");
+        assert.strictEqual(alg.hashAlg, "SHA1");
     });
 
     describe("certInfo", function() {
