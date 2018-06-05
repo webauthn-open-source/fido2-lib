@@ -112,11 +112,6 @@ describe("Fido2Lib", function() {
             assert.strictEqual(fs.config.rpId, "example.com");
         });
 
-        it("has default rpId", function() {
-            var fs = new Fido2Lib();
-            assert.strictEqual(fs.config.rpId, "localhost");
-        });
-
         it("throws on bad rpId", function() {
             assert.throws(function() {
                 new Fido2Lib({
