@@ -153,14 +153,33 @@ describe("Fido2AttestationResult", function() {
         assert.isTrue(ret.audit.warning.has("attesation-not-validated"), "audit warning has attesation-not-validated");
     });
 
-    // XXX TPM
-    it.skip("passes with 'tpm' attestation", async function() {
+    it("passes with 'tpm' attestation", async function() {
         var ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationTpmResponse, {
             origin: "https://webauthn.org",
             challenge: "wk6LqEXAMAZpqcTYlY2yor5DjiyI_b1gy9nDOtCB1yGYnm_4WG4Uk24FAr7AxTOFfQMeigkRxOTLZNrLxCvV_Q",
             flags: ["UP", "AT"]
         });
-        assert.fail();
+
+        assert.strictEqual(ret.authnrData.get("fmt"), "tpm");
+        assert.isObject(ret.authnrData.get("alg"));
+        assert.strictEqual(ret.authnrData.get("alg").algName, "RSASSA-PKCS1-v1_5_w_SHA1");
+        assert.strictEqual(ret.authnrData.get("alg").hashAlg, "SHA1");
+        assert.isString(ret.authnrData.get("ver"));
+        assert.strictEqual(ret.authnrData.get("ver"), "2.0");
+
+        // audit
+        var auditInfo = ret.audit.info;
+        assert.strictEqual(auditInfo.size, 9);
+        assert.isTrue(auditInfo.has("key-usage"), "audit info has key-usage");
+        assert.isTrue(auditInfo.has("basic-constraints"), "audit info has basic-constraints");
+        assert.isTrue(auditInfo.has("certificate-policies"), "audit info has certificate-policies");
+        assert.isTrue(auditInfo.has("ext-key-usage"), "audit info has ext-key-usage");
+        assert.isTrue(auditInfo.has("subject-alt-name"), "audit info has subject-alt-name");
+        assert.isTrue(auditInfo.has("authority-key-identifier"), "audit info has authority-key-identifier");
+        assert.isTrue(auditInfo.has("subject-key-identifier"), "audit info has subject-key-identifier");
+        assert.isTrue(auditInfo.has("authority-info-access"), "audit info has authority-info-access");
+        assert.isTrue(auditInfo.has("attestation-type"), "audit info has attestation-type");
+        assert.isTrue(ret.audit.warning.has("attesation-not-validated"), "audit warning has attesation-not-validated");
     });
 });
 
