@@ -1,6 +1,5 @@
 "use strict";
 
-const { Fido2Lib } = require("../index");
 const {
     Certificate,
     CertManager,
@@ -8,9 +7,7 @@ const {
 } = require("../lib/certUtils");
 const { resolveOid } = certHelpers;
 var assert = require("chai").assert;
-var sinon = require("sinon");
 var h = require("fido2-helpers");
-const noneAttestation = require("../lib/attestations/none");
 const { printHex } = require("../lib/utils");
 let abEqual = h.functions.abEqual;
 
@@ -221,19 +218,9 @@ describe("cert utils", function() {
                 assert.isTrue(abEqual(aaguid, expectedAaguid), "correct aaguid value");
             });
 
-            // XXX TPM
-            it.skip("returns correct extensions for TPM attestation", function() {
+            it("returns correct extensions for TPM attestation", function() {
                 var cert = new Certificate(h.certs.tpmAttestation);
                 var extensions = cert.getExtensions();
-                console.log("extensions", extensions);
-                // 'key-usage' => Set { 'digitalSignature' },
-                // 'basic-constraints' => BasicConstraints { cA: false },
-                // '2.5.29.32' => CertificatePolicies { certificatePolicies: [ [Object] ] },
-                // '2.5.29.37' => ExtKeyUsage { keyPurposes: [ '2.23.133.8.3' ] },
-                // '2.5.29.17' => AltName { altNames: [ [Object] ] },
-                // 'authority-key-identifier' => Map { 'key-identifier' => ArrayBuffer { byteLength: 20 } },
-                // 'subject-key-identifier' => ArrayBuffer { byteLength: 20 },
-                // '1.3.6.1.5.5.7.1.1' => InfoAccess { accessDescriptions: [ [Object] ] } }
                 assert.instanceOf(extensions, Map);
                 assert.strictEqual(extensions.size, 8);
                 // key usage
@@ -257,12 +244,28 @@ describe("cert utils", function() {
                 assert.strictEqual(policyQualifiers.value.length, 1);
                 var policyQualifier = policyQualifiers.value[0];
                 assert.isObject(policyQualifier);
-                console.log("policyQualifier", policyQualifier);
-                assert.fail();
+                assert.strictEqual(policyQualifier.id, "policy-qualifier");
+                assert.isArray(policyQualifier.value);
+                assert.strictEqual(policyQualifier.value.length, 1);
+                assert.strictEqual(policyQualifier.value[0], "TCPA  Trusted  Platform  Identity");
                 // extended key usage
-                assert.fail();
+                var extKeyUsage = extensions.get("ext-key-usage");
+                assert.isArray(extKeyUsage);
+                assert.strictEqual(extKeyUsage.length, 1);
+                assert.strictEqual(extKeyUsage[0], "tcg-kp-aik-certificate");
                 // alternate name
-                assert.fail();
+                var subjAltNames = extensions.get("subject-alt-name");
+                assert.isArray(subjAltNames);
+                assert.strictEqual(subjAltNames.length, 1);
+                var subjAltName = subjAltNames[0];
+                assert.isObject(subjAltName);
+                assert.strictEqual(Object.keys(subjAltName).length, 1);
+                var generalNames = subjAltName.directoryName;
+                assert.instanceOf(generalNames, Map);
+                assert.strictEqual(generalNames.size, 3);
+                assert.strictEqual(generalNames.get("tcg-at-tpm-version"), "id:13");
+                assert.strictEqual(generalNames.get("tcg-at-tpm-model"), "NPCT6xx");
+                assert.strictEqual(generalNames.get("tcg-at-tpm-manufacturer"), "id:4E544300");
                 // authority key identifier
                 var authKeyId = extensions.get("authority-key-identifier");
                 assert.instanceOf(authKeyId, Map);
@@ -283,7 +286,13 @@ describe("cert utils", function() {
                 ]).buffer;
                 assert.isTrue(abEqual(subjectKeyId, expectedSubjectKeyId), "got expected authority key identifier");
                 // info access
-                assert.fail();
+                var infoAccess = extensions.get("authority-info-access");
+                assert.instanceOf(infoAccess, Map);
+                assert.strictEqual(infoAccess.size, 1);
+                var certAuthIss = infoAccess.get("cert-authority-issuers");
+                assert.isObject(certAuthIss);
+                assert.strictEqual(Object.keys(certAuthIss).length, 1);
+                assert.strictEqual(certAuthIss.uniformResourceIdentifier, "https://azcsprodncuaikpublish.blob.core.windows.net/ncu-ntc-keyid-1591d4b6eaf98d0104864b6903a48dd0026077d3/3b918ae4-07e1-4059-9491-0ad248190818.cer");
             });
         });
 
