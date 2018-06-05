@@ -316,7 +316,7 @@ describe("parseAttestationObject (tpm)", function() {
             var exponent = pubArea.get("exponent");
 
             assert.isNumber(exponent);
-            assert.strictEqual(exponent, 65536);
+            assert.strictEqual(exponent, 65537);
         });
 
         it("parses unique", function() {
