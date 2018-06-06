@@ -1,7 +1,10 @@
 "use strict";
 
 const parser = require("../lib/parser");
-var assert = require("chai").assert;
+const assert = require("chai").assert;
+const h = require("fido2-helpers");
+const coerceToArrayBuffer = h.functions.coerceToArrayBuffer;
+const abEqual = h.functions.abEqual;
 
 describe("parseExpectations", function() {
     it("parser is object", function() {
@@ -221,6 +224,64 @@ describe("parseExpectations", function() {
     it("throws when prevCount is not a number");
     it("adds publicKey to map when it exists");
     it("throws when publicKey is not a string");
+
+    it("adds userHandle to map when it exists", function() {
+        var exp = {
+            origin: "https://webauthn.bin.coffee",
+            challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+            prevCounter: 0,
+            userHandle: "YWs"
+        };
+
+        var ret = parser.parseExpectations(exp);
+        var userHandle = ret.get("userHandle");
+        assert.isString(userHandle);
+        assert.strictEqual(userHandle.length, 3);
+        userHandle = coerceToArrayBuffer(userHandle);
+        var expectedUserHandle = new Uint8Array([
+            0x61, 0x6B
+        ]).buffer;
+
+        assert.isTrue(abEqual(userHandle, expectedUserHandle), "userHandle has correct value");
+    });
+
+    it("doesn't add userHandle when null", function() {
+        var exp = {
+            origin: "https://webauthn.bin.coffee",
+            challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+            prevCounter: 0,
+            userHandle: null
+        };
+
+        var ret = parser.parseExpectations(exp);
+        var userHandle = ret.get("userHandle");
+        assert.isUndefined(userHandle);
+    });
+
+    it("doesn't add userHandle when empty string", function() {
+        var exp = {
+            origin: "https://webauthn.bin.coffee",
+            challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+            prevCounter: 0,
+            userHandle: ""
+        };
+
+        var ret = parser.parseExpectations(exp);
+        var userHandle = ret.get("userHandle");
+        assert.isUndefined(userHandle);
+    });
+
+    it("works when userHandle is undefined", function() {
+        var exp = {
+            origin: "https://webauthn.bin.coffee",
+            challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+            prevCounter: 0
+        };
+
+        var ret = parser.parseExpectations(exp);
+        var userHandle = ret.get("userHandle");
+        assert.isUndefined(userHandle);
+    });
 
     it("works with typical attestation expectations", function() {
         var exp = {
