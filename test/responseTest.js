@@ -212,7 +212,7 @@ describe("Fido2AssertionResult", function() {
         assert.instanceOf(ret, Fido2AssertionResult);
     });
 
-    it.only("works with WindowsHello", async function() {
+    it("works with WindowsHello", async function() {
         var ret = await Fido2AssertionResult.create(h.lib.assertionResponseWindowsHello, {
             origin: "https://webauthn.org",
             challenge: "m7ZU0Z-_IiwviFnF1JXeJjFhVBincW69E1Ctj8AQ-Ybb1uc41bMHtItg6JACh1sOj_ZXjonw2acj_JD2i-axEQ",
