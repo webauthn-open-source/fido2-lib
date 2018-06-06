@@ -499,7 +499,8 @@ describe("Fido2Lib", function() {
                 origin: "https://localhost:8443",
                 factor: "either",
                 publicKey: h.lib.assnPublicKey,
-                prevCounter: 362
+                prevCounter: 362,
+                userHandle: null
             };
 
             return serv.assertionResult(h.lib.assertionResponse, expectations).then((res) => {
@@ -653,17 +654,17 @@ describe("Fido2Lib", function() {
         });
 
         it("throws if validateFn doesn't return true", async function() {
-            assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), Error, "foo validateFn did not return 'true'");
+            return assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), Error, "foo validateFn did not return 'true'");
         });
 
         it("throws on non-string format", function() {
             fakeRequest.authnrData.set("fmt", {});
-            assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: object");
+            return assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: object");
         });
 
         it("throws on missing format", function() {
             fakeRequest.authnrData.clear();
-            assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: undefined");
+            return assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: undefined");
         });
     });
 });
