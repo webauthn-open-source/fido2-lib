@@ -21,6 +21,14 @@ There is also an extension point for adding new attestation formats.
 
 Full documentation can be found [here](https://apowers313.github.io/fido2-lib/).
 
+## Features
+
+* Attestation formats: packed, tpm, fido-u2f, none
+* Convenient API for adding more attestation formats
+* Crypto families: ECDSA, RSA
+* x509 cert parsing and validation
+* Returns parsed and validated data, along with extra audit data for risk engines
+
 ## Example
 
 **Instantiate Library (Simple):**
