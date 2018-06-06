@@ -207,7 +207,8 @@ describe("Fido2AssertionResult", function() {
             challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
             flags: ["UP"],
             prevCounter: 362,
-            publicKey: h.lib.assnPublicKey
+            publicKey: h.lib.assnPublicKey,
+            userHandle: null
         });
         assert.instanceOf(ret, Fido2AssertionResult);
     });
