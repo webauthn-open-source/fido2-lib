@@ -508,6 +508,32 @@ describe("Fido2Lib", function() {
                 return res;
             });
         });
+
+        it("valid assertion without userHandle", function() {
+            var expectations = {
+                challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+                origin: "https://localhost:8443",
+                factor: "either",
+                publicKey: h.lib.assnPublicKey,
+                prevCounter: 362,
+                userHandle: null
+            };
+
+            var assertionResponse = {
+                rawId: h.lib.assertionResponse.rawId,
+                response: {
+                    clientDataJSON: h.lib.assertionResponse.response.clientDataJSON,
+                    authenticatorData: h.lib.assertionResponse.response.authenticatorData,
+                    signature: h.lib.assertionResponse.response.signature,
+                    // userHandle: h.lib.assertionResponse.response.userHandle
+                }
+            };
+
+            return serv.assertionResult(assertionResponse, expectations).then((res) => {
+                assert.instanceOf(res, Fido2AssertionResult);
+                return res;
+            });
+        });
     });
 
     describe("addAttestationFormat", function() {
