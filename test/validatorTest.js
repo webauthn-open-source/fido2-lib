@@ -58,52 +58,52 @@ describe("attestation validation", function() {
 
         it("throws if expectations aren't found", function() {
             delete attResp.expectations;
-            assert.isRejected(attResp.validateExpectations(), Error, "expectations should be of type Map");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expectations should be of type Map");
         });
 
         it("throws if expectations aren't Map", function() {
             attResp.expectations = {};
-            assert.isRejected(attResp.validateExpectations(), Error, "expectations should be of type Map");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expectations should be of type Map");
         });
 
         it("throws if too many expectations", function() {
             attResp.expectations.set("foo", "bar");
-            assert.isRejected(attResp.validateExpectations(), Error, "wrong number of expectations: should have 3 but got 4");
+            return assert.isRejected(attResp.validateExpectations(), Error, "wrong number of expectations: should have 3 but got 4");
         });
 
         it("throws if too many expectations, but expectations are valid", function() {
             attResp.expectations.set("prevCounter", 42);
-            assert.isRejected(attResp.validateExpectations(), Error, "wrong number of expectations: should have 3 but got 4");
+            return assert.isRejected(attResp.validateExpectations(), Error, "wrong number of expectations: should have 3 but got 4");
         });
 
         it("throws if missing challenge", function() {
             attResp.expectations.delete("challenge");
-            assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'challenge'");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'challenge'");
         });
 
         it("throws if missing flags", function() {
             attResp.expectations.delete("flags");
-            assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'flags'");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'flags'");
         });
 
         it("throws if missing origin", function() {
             attResp.expectations.delete("origin");
-            assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'origin'");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'origin'");
         });
 
         it("throws if challenge is undefined", function() {
             attResp.expectations.set("challenge", undefined);
-            assert.isRejected(attResp.validateExpectations(), Error, "expected challenge should be of type String, got: undefined");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expected challenge should be of type String, got: undefined");
         });
 
         it("throws if challenge isn't string", function() {
             attResp.expectations.set("challenge", { foo: "bar" });
-            assert.isRejected(attResp.validateExpectations(), Error, "expected challenge should be of type String, got: object");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expected challenge should be of type String, got: object");
         });
 
         it("throws if challenge isn't base64 encoded string", function() {
             attResp.expectations.set("challenge", "miles&me");
-            assert.isRejected(attResp.validateExpectations(), Error, "expected challenge should be properly encoded base64url String");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expected challenge should be properly encoded base64url String");
         });
 
         it("calls checkOrigin");
@@ -116,22 +116,22 @@ describe("attestation validation", function() {
 
         it("throws if Set contains non-string", function() {
             attResp.expectations.set("flags", new Set([3, "UP", "AT"]));
-            assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: 3");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: 3");
         });
 
         it("throws if Array contains non-string", function() {
             attResp.expectations.set("flags", [3, "UP", "AT"]);
-            assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: 3");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: 3");
         });
 
         it("throws on unknown flag", function() {
             attResp.expectations.set("flags", new Set(["foo", "UP", "AT"]));
-            assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: foo");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: foo");
         });
 
         it("throws on undefined flag", function() {
             attResp.expectations.set("flags", new Set([undefined, "UP", "AT"]));
-            assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: undefined");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: undefined");
         });
 
         it("throws if counter is not a number");
@@ -263,12 +263,12 @@ describe("attestation validation", function() {
 
         it("throws if missing", function() {
             attResp.clientData.delete("rawClientDataJson");
-            assert.isRejected(attResp.validateRawClientDataJson(), Error, "clientData clientDataJson should be ArrayBuffer");
+            return assert.isRejected(attResp.validateRawClientDataJson(), Error, "clientData clientDataJson should be ArrayBuffer");
         });
 
         it("throws if not ArrayBuffer", function() {
             attResp.clientData.set("rawClientDataJson", "foo");
-            assert.isRejected(attResp.validateRawClientDataJson(), Error, "clientData clientDataJson should be ArrayBuffer");
+            return assert.isRejected(attResp.validateRawClientDataJson(), Error, "clientData clientDataJson should be ArrayBuffer");
         });
     });
 
@@ -304,19 +304,19 @@ describe("attestation validation", function() {
         it("throws on port mismatch", function() {
             attResp.expectations.set("origin", "https://webauthn.bin.coffee:8080");
             attResp.clientData.set("origin", "https://webauthn.bin.coffee:8443");
-            assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
+            return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
         });
 
         it("throws on domain mismatch", function() {
             attResp.expectations.set("origin", "https://webauthn.bin.coffee:8080");
             attResp.clientData.set("origin", "https://bin.coffee:8080");
-            assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
+            return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
         });
 
         it("throws on protocol mismatch", function() {
             attResp.expectations.set("origin", "http://webauthn.bin.coffee:8080");
             attResp.clientData.set("origin", "https://webauthn.bin.coffee:8080");
-            assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
+            return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
         });
 
         it("calls checkOrigin");
@@ -333,17 +333,17 @@ describe("attestation validation", function() {
 
         it("throws when undefined", function() {
             attResp.clientData.set("type", undefined);
-            assert.isRejected(attResp.validateCreateType(), Error, "clientData type should be 'webauthn.create'");
+            return assert.isRejected(attResp.validateCreateType(), Error, "clientData type should be 'webauthn.create'");
         });
 
         it("throws on 'webauthn.get'", function() {
             attResp.clientData.set("type", "webauthn.get");
-            assert.isRejected(attResp.validateCreateType(), Error, "clientData type should be 'webauthn.create'");
+            return assert.isRejected(attResp.validateCreateType(), Error, "clientData type should be 'webauthn.create'");
         });
 
         it("throws on unknown string", function() {
             attResp.clientData.set("type", "asdf");
-            assert.isRejected(attResp.validateCreateType(), Error, "clientData type should be 'webauthn.create'");
+            return assert.isRejected(attResp.validateCreateType(), Error, "clientData type should be 'webauthn.create'");
         });
     });
 
@@ -357,17 +357,17 @@ describe("attestation validation", function() {
 
         it("throws when undefined", function() {
             attResp.clientData.set("type", undefined);
-            assert.isRejected(attResp.validateGetType(), Error, "clientData type should be 'webauthn.get'");
+            return assert.isRejected(attResp.validateGetType(), Error, "clientData type should be 'webauthn.get'");
         });
 
         it("throws on 'webauthn.create'", function() {
             attResp.clientData.set("type", "webauthn.create");
-            assert.isRejected(attResp.validateGetType(), "clientData type should be 'webauthn.get'");
+            return assert.isRejected(attResp.validateGetType(), "clientData type should be 'webauthn.get'");
         });
 
         it("throws on unknown string", function() {
             attResp.clientData.set("type", "asdf");
-            assert.isRejected(attResp.validateGetType(), "clientData type should be 'webauthn.get'");
+            return assert.isRejected(attResp.validateGetType(), "clientData type should be 'webauthn.get'");
         });
     });
 
@@ -398,43 +398,43 @@ describe("attestation validation", function() {
         it("throws on three equal signs", function() {
             attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
             attResp.clientData.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w===");
-            assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not properly encoded base64url");
+            return assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not properly encoded base64url");
         });
 
         it("does not remove equal sign from middle of string", function() {
             attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
             attResp.clientData.set("challenge", "33EHav-jZ1v9qwH783aU-j0A=Rx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
-            assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not properly encoded base64url");
+            return assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not properly encoded base64url");
         });
 
         it("throws if challenge is not a string", function() {
             attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
             attResp.clientData.set("challenge", ["foo"]);
-            assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not a string");
+            return assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not a string");
         });
 
         it("throws if challenge is base64url encoded", function() {
             attResp.expectations.set("challenge", "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg");
             attResp.clientData.set("challenge", "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg");
-            assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not properly encoded base64url");
+            return assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not properly encoded base64url");
         });
 
         it("throws if challenge is not base64 string", function() {
             attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
             attResp.clientData.set("challenge", "miles&me");
-            assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not properly encoded base64url");
+            return assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not properly encoded base64url");
         });
 
         it("throws on undefined challenge", function() {
             attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
             attResp.clientData.set("challenge", undefined);
-            assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not a string");
+            return assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge was not a string");
         });
 
         it("throws on challenge mismatch", function() {
             attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
             attResp.clientData.set("challenge", "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg");
-            assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge mismatch");
+            return assert.isRejected(attResp.validateChallenge(), Error, "clientData challenge mismatch");
         });
     });
 
@@ -447,12 +447,12 @@ describe("attestation validation", function() {
 
         it("throws if missing", function() {
             attResp.authnrData.delete("rawAuthnrData");
-            assert.isRejected(attResp.validateRawAuthnrData(), Error, "authnrData rawAuthnrData should be ArrayBuffer");
+            return assert.isRejected(attResp.validateRawAuthnrData(), Error, "authnrData rawAuthnrData should be ArrayBuffer");
         });
 
         it("throws if not ArrayBuffer", function() {
             attResp.authnrData.set("rawAuthnrData", "foo");
-            assert.isRejected(attResp.validateRawAuthnrData(), Error, "authnrData rawAuthnrData should be ArrayBuffer");
+            return assert.isRejected(attResp.validateRawAuthnrData(), Error, "authnrData rawAuthnrData should be ArrayBuffer");
         });
     });
 
@@ -465,12 +465,12 @@ describe("attestation validation", function() {
 
         it("throws on unknown fmt", function() {
             attResp.authnrData.set("fmt", "asdf");
-            assert.isRejected(attResp.validateAttestation(), Error, "no support for attestation format: asdf");
+            return assert.isRejected(attResp.validateAttestation(), Error, "no support for attestation format: asdf");
         });
 
         it("throws on undefined fmt", function() {
             attResp.authnrData.delete("fmt");
-            assert.isRejected(attResp.validateAttestation(), Error, "expected 'fmt' to be string, got: undefined");
+            return assert.isRejected(attResp.validateAttestation(), Error, "expected 'fmt' to be string, got: undefined");
         });
     });
 
@@ -483,12 +483,12 @@ describe("attestation validation", function() {
 
         it("throws when it doesn't match", function() {
             attResp.clientData.set("origin", "https://google.com");
-            assert.isRejected(attResp.validateRpIdHash(), Error, "authnrData rpIdHash mismatch");
+            return assert.isRejected(attResp.validateRpIdHash(), Error, "authnrData rpIdHash mismatch");
         });
 
         it("throws when length mismatches", function() {
             attResp.authnrData.set("rpIdHash", new Uint8Array([1, 2, 3]).buffer);
-            assert.isRejected(attResp.validateRpIdHash(), Error, "authnrData rpIdHash length mismatch");
+            return assert.isRejected(attResp.validateRpIdHash(), Error, "authnrData rpIdHash length mismatch");
         });
     });
 
@@ -501,7 +501,7 @@ describe("attestation validation", function() {
 
         it("throws if too short", function() {
             attResp.authnrData.set("aaguid", new Uint8Array([1, 2, 3]).buffer);
-            assert.isRejected(attResp.validateAaguid(), Error, "authnrData AAGUID was wrong length");
+            return assert.isRejected(attResp.validateAaguid(), Error, "authnrData AAGUID was wrong length");
         });
     });
 
@@ -515,27 +515,27 @@ describe("attestation validation", function() {
 
         it("throws if length is undefined", function() {
             attResp.authnrData.delete("credIdLen");
-            assert.isRejected(attResp.validateCredId(), Error, "authnrData credIdLen should be number, got undefined");
+            return assert.isRejected(attResp.validateCredId(), Error, "authnrData credIdLen should be number, got undefined");
         });
 
         it("throws if length is not number", function() {
             attResp.authnrData.set("credIdLen", new Uint8Array());
-            assert.isRejected(attResp.validateCredId(), Error, "authnrData credIdLen should be number, got object");
+            return assert.isRejected(attResp.validateCredId(), Error, "authnrData credIdLen should be number, got object");
         });
 
         it("throws if length is wrong", function() {
             attResp.authnrData.set("credIdLen", 42);
-            assert.isRejected(attResp.validateCredId(), "authnrData credId was wrong length");
+            return assert.isRejected(attResp.validateCredId(), "authnrData credId was wrong length");
         });
 
         it("throws if credId is undefined", function() {
             attResp.authnrData.delete("credId");
-            assert.isRejected(attResp.validateCredId(), "authnrData credId should be ArrayBuffer");
+            return assert.isRejected(attResp.validateCredId(), "authnrData credId should be ArrayBuffer");
         });
 
         it("throws if not array buffer", function() {
             attResp.authnrData.set("credId", "foo");
-            assert.isRejected(attResp.validateCredId(), "authnrData credId should be ArrayBuffer");
+            return assert.isRejected(attResp.validateCredId(), "authnrData credId should be ArrayBuffer");
         });
     });
 
@@ -571,7 +571,7 @@ describe("attestation validation", function() {
 
         it("throws on invalid expectations", function() {
             attResp.expectations.set("flags", ["ED"]);
-            assert.isRejected(attResp.validateFlags(), Error, "expected flag was not set: ED");
+            return assert.isRejected(attResp.validateFlags(), Error, "expected flag was not set: ED");
         });
 
         it("returns true on UP with UP-or-UV", async function() {
@@ -593,7 +593,7 @@ describe("attestation validation", function() {
         it("throws if UP-or-UV and neither is set", function() {
             attResp.expectations.set("flags", ["UP-or-UV"]);
             attResp.authnrData.set("flags", new Set(["ED"]));
-            assert.isRejected(attResp.validateFlags(), Error, "expected User Presence (UP) or User Verification (UV) flag to be set and neither was");
+            return assert.isRejected(attResp.validateFlags(), Error, "expected User Presence (UP) or User Verification (UV) flag to be set and neither was");
         });
 
         it("throws if any of the RFU flags are set");
@@ -608,7 +608,7 @@ describe("attestation validation", function() {
 
         it("throws if not a number", function() {
             attResp.authnrData.set("counter", "foo");
-            assert.isRejected(attResp.validateInitialCounter(), Error, "authnrData counter wasn't a number");
+            return assert.isRejected(attResp.validateInitialCounter(), Error, "authnrData counter wasn't a number");
         });
     });
 
@@ -640,7 +640,7 @@ describe("attestation validation", function() {
         });
 
         it("throws on untested verifies", function() {
-            assert.isRejected(attResp.validateAudit(), Error, /^internal audit failed: .* was not validated$/);
+            return assert.isRejected(attResp.validateAudit(), Error, /^internal audit failed: .* was not validated$/);
         });
 
         it("throws on extra journal entries");
@@ -698,7 +698,7 @@ describe("assertion validation", function() {
 
         it("throws if not undefined", function() {
             assnResp.authnrData.set("userHandle", "foo");
-            assert.isRejected(assnResp.validateUserHandle(), Error, "unable to validate userHandle");
+            return assert.isRejected(assnResp.validateUserHandle(), Error, "unable to validate userHandle");
         });
     });
 
@@ -714,13 +714,13 @@ describe("assertion validation", function() {
         it("throws if counter is the same", function() {
             assert.strictEqual(assnResp.authnrData.get("counter"), 363);
             assnResp.expectations.set("prevCounter", 363);
-            assert.isRejected(assnResp.validateCounter(), Error, "counter rollback detected");
+            return assert.isRejected(assnResp.validateCounter(), Error, "counter rollback detected");
         });
 
         it("throws if counter has rolled back", function() {
             assert.strictEqual(assnResp.authnrData.get("counter"), 363);
             assnResp.expectations.set("prevCounter", 364);
-            assert.isRejected(assnResp.validateCounter(), Error, "counter rollback detected");
+            return assert.isRejected(assnResp.validateCounter(), Error, "counter rollback detected");
         });
     });
 
