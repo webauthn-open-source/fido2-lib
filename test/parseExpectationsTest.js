@@ -245,7 +245,7 @@ describe("parseExpectations", function() {
         assert.isTrue(abEqual(userHandle, expectedUserHandle), "userHandle has correct value");
     });
 
-    it("doesn't add userHandle when null", function() {
+    it("adds userHandle to map when null", function() {
         var exp = {
             origin: "https://webauthn.bin.coffee",
             challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -255,10 +255,10 @@ describe("parseExpectations", function() {
 
         var ret = parser.parseExpectations(exp);
         var userHandle = ret.get("userHandle");
-        assert.isUndefined(userHandle);
+        assert.isNull(userHandle);
     });
 
-    it("doesn't add userHandle when empty string", function() {
+    it("adds userHandle to map when empty string", function() {
         var exp = {
             origin: "https://webauthn.bin.coffee",
             challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -268,7 +268,9 @@ describe("parseExpectations", function() {
 
         var ret = parser.parseExpectations(exp);
         var userHandle = ret.get("userHandle");
-        assert.isUndefined(userHandle);
+        assert.isString(userHandle);
+        assert.strictEqual(userHandle.length, 0);
+        assert.strictEqual(userHandle, "");
     });
 
     it("works when userHandle is undefined", function() {
