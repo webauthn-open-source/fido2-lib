@@ -26,6 +26,7 @@ Full documentation can be found [here](https://apowers313.github.io/fido2-lib/).
 * Attestation formats: packed, tpm, fido-u2f, none
 * Convenient API for adding more attestation formats
 * Crypto families: ECDSA, RSA
+* Works with Windows Hello
 * x509 cert parsing and validation
 * Returns parsed and validated data, along with extra audit data for risk engines
 
