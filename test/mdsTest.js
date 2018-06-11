@@ -337,6 +337,12 @@ describe("MdsCollection", function() {
             mc.validate();
         });
 
+        it("throws if id is bad type", function() {
+            assert.throws(function() {
+                mc.findEntry();
+            }, Error, "expected 'id' to be String, got: undefined");
+        });
+
         it("returns MdsEntry", function() {
             var entry = mc.findEntry("4e4e#4005");
             assert.instanceOf(entry, MdsEntry);
