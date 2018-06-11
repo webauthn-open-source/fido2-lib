@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Fido2AssertionResult - Documentation</title>
+    <title>MdsEntry - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Fido2AssertionResult</h1>
+    <h1 class="page-title">MdsEntry</h1>
     
 
     
@@ -40,10 +40,27 @@
 <header>
     
         <h2>
-        Fido2AssertionResult
+        MdsEntry
         </h2>
         
-            <div class="class-description"><p>A validated assertion result</p></div>
+            <div class="class-description"><p>Holds a single MDS entry that provides the metadata for an authenticator. Contains
+both the TOC data (such as <code>statusReports</code> and <code>url</code>) as well as all the metadata
+statment data. All the metadata has been converted from the integers found in the
+<a href="https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-registry-v2.0-id-20180227.html">FIDORegistry</a>
+and <a href="https://fidoalliance.org/specs/fido-uaf-v1.2-rd-20171128/fido-uaf-reg-v1.2-rd-20171128.html">FIDO UAF Registry</a>
+have been converted to more friendly values. The following values are converted:</p>
+<ul>
+<li>attachmentHint - converted to Array of Strings</li>
+<li>attestationTypes - converted to Array of Strings</li>
+<li>authenticationAlgorithm - converted to String</li>
+<li>keyProtection - converted to Array of Strings</li>
+<li>matcherProtection - converted to Array of Strings</li>
+<li>publicKeyAlgAndEncoding - converted to String</li>
+<li>tcDisplay - converted to Array of Strings</li>
+<li>userVerificationDetails - converted to Array of Array of <a href="global.html#UserVerificationDesc">UserVerificationDesc</a></li>
+</ul>
+<p>See the <a href="https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-statement-v2.0-id-20180227.html">FIDO Metadata Specification</a>
+for a description of each of the properties of this class.</p></div>
         
     
 </header>
@@ -57,7 +74,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="Fido2AssertionResult"><span class="type-signature"></span>new Fido2AssertionResult<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="MdsEntry"><span class="type-signature"></span>new MdsEntry<span class="signature">(mdsEntry, tocEntry)</span><span class="type-signature"></span></h4>
 
     
 
@@ -69,7 +86,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="response.js.html">response.js</a>, <a href="response.js.html#line115">line 115</a>
+        <a href="mds.js.html">mds.js</a>, <a href="mds.js.html#line57">line 57</a>
     </li></ul></dd>
     
 
@@ -108,6 +125,11 @@
 
 
 
+<div class="description">
+    <p>Creates a new MDS entry. It is assumed that the entry has already been validated.
+The typical way of creating new MdsEntry objects is via the <a href="MdsCollection.html#addEntry">MdsCollection#addEntry</a> and <a href="MdsCollection.html#validate">MdsCollection#validate</a>
+methods, which will take care of parsing and validing the MDS entry for you.</p>
+</div>
 
 
 
@@ -116,6 +138,79 @@
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mdsEntry</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The parsed and validated metadata statement Object for this entry</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tocEntry</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The parsed and validated TOC information Object for this entry</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -134,17 +229,6 @@
 
     
     </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li><a href="Fido2Result.html">Fido2Result</a></li>
-    </ul>
-
 
     
 

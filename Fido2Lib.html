@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.parseAttestation">parseAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#.validateAttestation">validateAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.clearMdsCollection">clearMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.createMdsCollection">createMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.findMdsEntry">findMdsEntry</a></li><li data-type='method'><a href="Fido2Lib.html#.parseAttestation">parseAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#.setMdsCollection">setMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.validateAttestation">validateAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li><li><a href="MdsCollection.html">MdsCollection</a><ul class='methods'><li data-type='method'><a href="MdsCollection.html#addEntry">addEntry</a></li><li data-type='method'><a href="MdsCollection.html#addToc">addToc</a></li><li data-type='method'><a href="MdsCollection.html#findEntry">findEntry</a></li><li data-type='method'><a href="MdsCollection.html#getToc">getToc</a></li><li data-type='method'><a href="MdsCollection.html#validate">validate</a></li></ul></li><li><a href="MdsEntry.html">MdsEntry</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
 </nav>
 
 <div id="main">
@@ -69,7 +69,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line18">line 18</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -670,7 +670,7 @@ ordered by the preference in which the authenticator should use them.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line289">line 289</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line292">line 292</a>
     </li></ul></dd>
     
 
@@ -845,6 +845,203 @@ calling context (<code>this</code>).</p></td>
 
     
 
+    <h4 class="name" id=".clearMdsCollection"><span class="type-signature">(static) </span>clearMdsCollection<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line426">line 426</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Sets the global MDS collection to <code>null</code>. Mostly used for testing.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".createMdsCollection"><span class="type-signature">(static) </span>createMdsCollection<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="MdsCollection.html">MdsCollection</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line406">line 406</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="MdsCollection.html">MdsCollection</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Creates a new <a href="MdsCollection.html">MdsCollection</a></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The MdsCollection that was created</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="MdsCollection.html">MdsCollection</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
     <h4 class="name" id=".deleteAllAttestationFormats"><span class="type-signature">(static) </span>deleteAllAttestationFormats<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
@@ -857,7 +1054,7 @@ calling context (<code>this</code>).</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line319">line 319</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line322">line 322</a>
     </li></ul></dd>
     
 
@@ -929,6 +1126,178 @@ calling context (<code>this</code>).</p></td>
 
     
 
+    <h4 class="name" id=".findMdsEntry"><span class="type-signature">(static) </span>findMdsEntry<span class="signature">(id)</span><span class="type-signature"> &rarr; {<a href="MdsEntry.html">MdsEntry</a>|null}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line440">line 440</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="MdsCollection.html">MdsCollection</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Returns a MDS entry for the specified id, or <code>null</code> if none is found. The
+lookup is done by calling <a href="MdsCollection.html#findEntry">MdsCollection#findEntry</a> on the current global
+MDS collection. If the global MDS collection hasn't been specified using
+setMdsCollection, an <code>Error</code> will be thrown.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">ArrayBuffer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The authenticator id to look up metadata for</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Returns a <a href="MdsEntry.html">MdsEntry</a> for the entry that was found
+or <code>null</code> if no entry was found.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="MdsEntry.html">MdsEntry</a></span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
     <h4 class="name" id=".parseAttestation"><span class="type-signature">(static) </span>parseAttestation<span class="signature">(fmt, attStmt)</span><span class="type-signature"> &rarr; {Map}</span></h4>
 
     
@@ -941,7 +1310,7 @@ calling context (<code>this</code>).</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line334">line 334</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line337">line 337</a>
     </li></ul></dd>
     
 
@@ -1166,6 +1535,146 @@ At this point the fields have not yet been verified.</p>
 
     
 
+    <h4 class="name" id=".setMdsCollection"><span class="type-signature">(static) </span>setMdsCollection<span class="signature">(mdsCollection)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line415">line 415</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="MdsCollection.html">MdsCollection</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Sets the global MDS collection that will be used for findMdsEntry</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mdsCollection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="MdsCollection.html">MdsCollection</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The MDS collection that will be used</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id=".validateAttestation"><span class="type-signature">(async, static) </span>validateAttestation<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
@@ -1178,7 +1687,7 @@ At this point the fields have not yet been verified.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line370">line 370</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line373">line 373</a>
     </li></ul></dd>
     
 
@@ -1262,7 +1771,7 @@ At this point the fields have not yet been verified.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line213">line 213</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line216">line 216</a>
     </li></ul></dd>
     
 
@@ -1369,7 +1878,7 @@ The <code>challenge</code> property is an <code>ArrayBuffer</code> and will need
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line269">line 269</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line272">line 272</a>
     </li></ul></dd>
     
 
@@ -1972,7 +2481,7 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line120">line 120</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line123">line 123</a>
     </li></ul></dd>
     
 
@@ -2079,7 +2588,7 @@ The <code>challenge</code> property is an <code>ArrayBuffer</code> and will need
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line202">line 202</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line205">line 205</a>
     </li></ul></dd>
     
 
@@ -2543,7 +3052,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 11 2018 06:05:20 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 11 2018 07:45:08 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

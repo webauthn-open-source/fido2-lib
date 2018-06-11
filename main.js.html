@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.parseAttestation">parseAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#.validateAttestation">validateAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.clearMdsCollection">clearMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.createMdsCollection">createMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.findMdsEntry">findMdsEntry</a></li><li data-type='method'><a href="Fido2Lib.html#.parseAttestation">parseAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#.setMdsCollection">setMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.validateAttestation">validateAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li><li><a href="MdsCollection.html">MdsCollection</a><ul class='methods'><li data-type='method'><a href="MdsCollection.html#addEntry">addEntry</a></li><li data-type='method'><a href="MdsCollection.html#addToc">addToc</a></li><li data-type='method'><a href="MdsCollection.html#findEntry">findEntry</a></li><li data-type='method'><a href="MdsCollection.html#getToc">getToc</a></li><li data-type='method'><a href="MdsCollection.html#validate">validate</a></li></ul></li><li><a href="MdsEntry.html">MdsEntry</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
 </nav>
 
 <div id="main">
@@ -47,9 +47,12 @@ const {
 const {
     coerceToArrayBuffer
 } = require("./utils");
-
+const {
+    MdsCollection
+} = require("./mds");
 
 var globalAttestationMap = new Map();
+var globalMdsCollection = null;
 
 /**
  * The main FIDO2 server class
@@ -433,6 +436,53 @@ class Fido2Lib {
         // return result
         return ret;
     }
+
+    /**
+     * Creates a new {@link MdsCollection}
+     * @return {MdsCollection} The MdsCollection that was created
+     * @see  MdsCollection
+     */
+    static createMdsCollection() {
+        return new MdsCollection();
+    }
+
+    /**
+     * Sets the global MDS collection that will be used for {@link findMdsEntry}
+     * @param {MdsCollection} mdsCollection The MDS collection that will be used
+     * @see  MdsCollection
+     */
+    static setMdsCollection(mdsCollection) {
+        if (!(mdsCollection instanceof MdsCollection)) {
+            throw new Error("expected 'mdsCollection' to be instance of MdsCollection, got: " + mdsCollection);
+        }
+        mdsCollection.validate();
+        globalMdsCollection = mdsCollection;
+    }
+
+    /**
+     * Sets the global MDS collection to `null`. Mostly used for testing.
+     */
+    static clearMdsCollection() {
+        globalMdsCollection = null;
+    }
+
+    /**
+     * Returns a MDS entry for the specified id, or `null` if none is found. The
+     * lookup is done by calling {@link MdsCollection#findEntry} on the current global
+     * MDS collection. If the global MDS collection hasn't been specified using
+     * {@link setMdsCollection}, an `Error` will be thrown.
+     * @param  {String|ArrayBuffer} id The authenticator id to look up metadata for
+     * @return {MdsEntry|null}    Returns a {@link MdsEntry} for the entry that was found
+     * or `null` if no entry was found.
+     * @see  MdsCollection
+     */
+    static findMdsEntry(id) {
+        if (!(globalMdsCollection instanceof MdsCollection)) {
+            throw new Error("must set MDS collection before attempting to find an MDS entry");
+        }
+
+        return globalMdsCollection.findEntry(id);
+    }
 }
 
 function checkOptType(opts, prop, type) {
@@ -530,7 +580,7 @@ module.exports = {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 11 2018 06:05:20 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 11 2018 07:45:08 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.parseAttestation">parseAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#.validateAttestation">validateAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.clearMdsCollection">clearMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.createMdsCollection">createMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.findMdsEntry">findMdsEntry</a></li><li data-type='method'><a href="Fido2Lib.html#.parseAttestation">parseAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#.setMdsCollection">setMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.validateAttestation">validateAttestation</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li><li><a href="MdsCollection.html">MdsCollection</a><ul class='methods'><li data-type='method'><a href="MdsCollection.html#addEntry">addEntry</a></li><li data-type='method'><a href="MdsCollection.html#addToc">addToc</a></li><li data-type='method'><a href="MdsCollection.html#findEntry">findEntry</a></li><li data-type='method'><a href="MdsCollection.html#getToc">getToc</a></li><li data-type='method'><a href="MdsCollection.html#validate">validate</a></li></ul></li><li><a href="MdsEntry.html">MdsEntry</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
 </nav>
 
 <div id="main">
@@ -448,7 +448,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line137">line 137</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line140">line 140</a>
     </li></ul></dd>
     
 
@@ -983,7 +983,7 @@ that was passed to the constructor.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line219">line 219</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line222">line 222</a>
     </li></ul></dd>
     
 
@@ -1236,6 +1236,159 @@ that was passed to the constructor.</p>
 
 
             
+                
+<h4 class="name" id="UserVerificationDesc">UserVerificationDesc</h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="mds.js.html">mds.js</a>, <a href="mds.js.html#line185">line 185</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The type of user verification that the authenticator performs.
+Valid options are &quot;code&quot; (i.e. PIN), &quot;biometric&quot;, or &quot;pattern&quot;.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userVerification</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The specific type of user verification performed,
+such as &quot;fingerprint&quot;, &quot;presence&quot;, &quot;passcode&quot;, etc.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>A description of a user verification method that an authenticator will peform.
+The properties are as described below, plus the contents of <code>caDesc</code>, <code>baDesc</code> or <code>paDesc</code>
+(depending on whether &quot;code&quot;, &quot;biometrics&quot;, or &quot;pattern&quot; are being described)
+as described in the <a href="https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-statement-v2.0-id-20180227.html">FIDO Metadata specification</a></p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+            
     
 
     
@@ -1251,7 +1404,7 @@ that was passed to the constructor.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 11 2018 06:05:20 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 11 2018 07:45:08 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
