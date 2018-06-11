@@ -3,10 +3,14 @@
 const {
     Certificate,
     CertManager,
+    CRL,
     helpers: certHelpers
 } = require("../lib/certUtils");
 const { resolveOid } = certHelpers;
-var assert = require("chai").assert;
+const chai = require("chai");
+var chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
+var assert = chai.assert;
 var h = require("fido2-helpers");
 const { printHex } = require("../lib/utils");
 let abEqual = h.functions.abEqual;
@@ -45,6 +49,8 @@ describe("cert utils", function() {
                     new Certificate([]);
                 }, Error, "cert was empty (0 bytes)");
             });
+
+            it("can create from PEM");
         });
 
 
@@ -398,7 +404,21 @@ describe("cert utils", function() {
         });
     });
 
-    describe("RootManager", function() {
+    describe("CRL", function() {
+        it("can create mdsRootCrl", function() {
+            var ret = new CRL(h.mds.mdsRootCrl);
+            assert.isObject(ret);
+            assert.isObject(ret._crl);
+        });
+
+        it("can create ca1Crl", function() {
+            var ret = new CRL(h.mds.ca1Crl);
+            assert.isObject(ret);
+            assert.isObject(ret._crl);
+        });
+    });
+
+    describe("CertManager", function() {
         it("is function", function() {
             assert.isFunction(CertManager);
         });
@@ -438,6 +458,56 @@ describe("cert utils", function() {
 
         describe("removeAll", function() {
             it("can clear all"); // if this didn't work, afterEach would fail...
+        });
+
+        describe("verifyCertChain", function() {
+            it("rejects on empty arguments", function() {
+                return assert.isRejected(CertManager.verifyCertChain(), Error, "expected 'certs' to be non-empty Array, got: undefined");
+            });
+
+            it("works for MDS2", function() {
+                var certs = [
+                    new Certificate(h.mds.mdsSigningCert),
+                    new Certificate(h.mds.mdsIntermediateCert),
+                ];
+                var trustedRoots = [
+                    new Certificate(h.mds.mdsRootCert)
+                ];
+
+                var certRevocationLists = [
+                    new CRL(h.mds.mdsRootCrl),
+                    new CRL(h.mds.ca1Crl)
+                ];
+
+                var ret = CertManager.verifyCertChain(certs, trustedRoots, certRevocationLists);
+                assert.instanceOf(ret, Promise);
+                return ret;
+            });
+
+            it("works for TPM");
+
+            it("will create certs from input arrays", function() {
+                var certs = [
+                    h.mds.mdsSigningCert,
+                    h.mds.mdsIntermediateCert,
+                ];
+                var trustedRoots = [
+                    h.mds.mdsRootCert
+                ];
+
+                var certRevocationLists = [
+                    h.mds.mdsRootCrl,
+                    h.mds.ca1Crl
+                ];
+
+                var ret = CertManager.verifyCertChain(certs, trustedRoots, certRevocationLists);
+                assert.instanceOf(ret, Promise);
+                return ret;
+            });
+
+            it("rejects on bad value in certs");
+            it("rejects on bad value in roots");
+            it("rejects on bad value in CRLs");
         });
     });
 });
