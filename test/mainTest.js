@@ -8,13 +8,17 @@ const {
 const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
-var assert = chai.assert;
-var sinon = require("sinon");
-var h = require("fido2-helpers");
+const assert = chai.assert;
+const sinon = require("sinon");
+const h = require("fido2-helpers");
 const noneAttestation = require("../lib/attestations/none");
 const u2fAttestation = require("../lib/attestations/fidoU2F");
 const packedAttestation = require("../lib/attestations/packed");
 const tpmAttestation = require("../lib/attestations/tpm");
+const {
+    MdsCollection,
+    MdsEntry
+} = require("../lib/mds");
 
 function restoreAttestationFormats() {
     // add 'none' attestation format
@@ -692,5 +696,68 @@ describe("Fido2Lib", function() {
             fakeRequest.authnrData.clear();
             return assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: undefined");
         });
+    });
+
+    describe("createMdsCollection", function() {
+        it("returns a MdsCollection", function() {
+            var mc = Fido2Lib.createMdsCollection();
+            assert.instanceOf(mc, MdsCollection);
+        });
+    });
+
+    describe("setMdsCollection", function() {
+        afterEach(function() {
+            Fido2Lib.clearMdsCollection();
+        });
+
+        it("throws if argument isn't a MdsCollection", function() {
+            assert.throws(function() {
+                Fido2Lib.setMdsCollection();
+            }, Error, "expected 'mdsCollection' to be instance of MdsCollection, got: undefined");
+        });
+
+        it("sets the current global MDS collection", async function() {
+            var mc = Fido2Lib.createMdsCollection();
+            await mc.addToc(h.mds.mds2TocJwt);
+            mc.addEntry(h.mds.mds2Entry);
+            assert.strictEqual(mc.entryList.size, 0);
+            Fido2Lib.setMdsCollection(mc);
+            assert.strictEqual(mc.entryList.size, 1);
+        });
+    });
+
+    describe("findMdsEntry", function() {
+        afterEach(function() {
+            Fido2Lib.clearMdsCollection();
+        });
+
+        it("throws if a global MDS collection hasn't been set", function() {
+            assert.throws(function() {
+                Fido2Lib.findMdsEntry("4e4e#4005");
+            }, Error, "must set MDS collection before attempting to find an MDS entry");
+        });
+
+        it("finds a MDS entry in the global collection", async function() {
+            var mc = Fido2Lib.createMdsCollection();
+            await mc.addToc(h.mds.mds2TocJwt);
+            mc.addEntry(h.mds.mds2Entry);
+            Fido2Lib.setMdsCollection(mc);
+
+            var entry = Fido2Lib.findMdsEntry("4e4e#4005");
+            assert.instanceOf(entry, MdsEntry);
+            assert.strictEqual(entry.aaid, "4e4e#4005");
+        });
+
+        it("throws if id isn't specified", async function() {
+            var mc = Fido2Lib.createMdsCollection();
+            await mc.addToc(h.mds.mds2TocJwt);
+            mc.addEntry(h.mds.mds2Entry);
+            Fido2Lib.setMdsCollection(mc);
+
+            assert.throws(function() {
+                Fido2Lib.findMdsEntry();
+            }, Error, "expected 'id' to be String, got: undefined");
+        });
+
     });
 });
