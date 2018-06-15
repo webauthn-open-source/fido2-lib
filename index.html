@@ -22,7 +22,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.addExtension">addExtension</a></li><li data-type='method'><a href="Fido2Lib.html#.clearMdsCollection">clearMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.createMdsCollection">createMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllExtensions">deleteAllExtensions</a></li><li data-type='method'><a href="Fido2Lib.html#.findMdsEntry">findMdsEntry</a></li><li data-type='method'><a href="Fido2Lib.html#.setMdsCollection">setMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li><li data-type='method'><a href="Fido2Lib.html#disableExtension">disableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#enableExtension">enableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#setExtensionOptions">setExtensionOptions</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li><li><a href="MdsCollection.html">MdsCollection</a><ul class='methods'><li data-type='method'><a href="MdsCollection.html#addEntry">addEntry</a></li><li data-type='method'><a href="MdsCollection.html#addToc">addToc</a></li><li data-type='method'><a href="MdsCollection.html#findEntry">findEntry</a></li><li data-type='method'><a href="MdsCollection.html#getToc">getToc</a></li><li data-type='method'><a href="MdsCollection.html#validate">validate</a></li></ul></li><li><a href="MdsEntry.html">MdsEntry</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.addExtension">addExtension</a></li><li data-type='method'><a href="Fido2Lib.html#.addMdsCollection">addMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.clearMdsCollections">clearMdsCollections</a></li><li data-type='method'><a href="Fido2Lib.html#.createMdsCollection">createMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllExtensions">deleteAllExtensions</a></li><li data-type='method'><a href="Fido2Lib.html#.findMdsEntry">findMdsEntry</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li><li data-type='method'><a href="Fido2Lib.html#disableExtension">disableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#enableExtension">enableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#setExtensionOptions">setExtensionOptions</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li><li><a href="MdsCollection.html">MdsCollection</a><ul class='methods'><li data-type='method'><a href="MdsCollection.html#addEntry">addEntry</a></li><li data-type='method'><a href="MdsCollection.html#addToc">addToc</a></li><li data-type='method'><a href="MdsCollection.html#findEntry">findEntry</a></li><li data-type='method'><a href="MdsCollection.html#getToc">getToc</a></li><li data-type='method'><a href="MdsCollection.html#validate">validate</a></li></ul></li><li><a href="MdsEntry.html">MdsEntry</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
 </nav>
 
 <div id="main">
@@ -58,12 +58,16 @@
 </ol>
 <p>There is also an extension point for adding new attestation formats.</p>
 <p>Full documentation can be found <a href="https://apowers313.github.io/fido2-lib/">here</a>.</p>
+<p>For working examples see <a href="https://github.com/apowers313/fido2-server-demo">fido2-server-demo</a> and / or <a href="https://webauthn.org">webauthn.org</a></p>
 <h2>Features</h2><ul>
-<li>Attestation formats: packed, tpm, fido-u2f, none</li>
-<li>Convenient API for adding more attestation formats</li>
-<li>Crypto families: ECDSA, RSA</li>
 <li>Works with Windows Hello</li>
-<li>x509 cert parsing and validation</li>
+<li>Attestation formats: packed, tpm, android-safetynet, fido-u2f, none</li>
+<li>Convenient API for adding more attestation formats</li>
+<li>Convenient API for adding extensions</li>
+<li>Metadata service (MDS) support enables authenticator root of trust and authenticator metadata</li>
+<li>Support for multiple simultaneous metadata services (e.g. FIDO MDS 1 &amp; 2)</li>
+<li>Crypto families: ECDSA, RSA</li>
+<li>x509 cert parsing, support for FIDO-related extensions, and NIST Public Key Interoperability Test Suite (PKITS) chain validation (from <a href="https://github.com/PeculiarVentures/PKI.js/">pki.js</a>)</li>
 <li>Returns parsed and validated data, along with extra audit data for risk engines</li>
 </ul>
 <h2>Example</h2><p><strong>Instantiate Library (Simple):</strong></p>
@@ -119,7 +123,7 @@ var assertionExpectations = {
 };
 var authnResult = await f2l.attestationResult(clientAssertionResponse, assertionExpectations); // will throw on error
 
-// authentication complete!</code></pre></article>
+// authentication complete!</code></pre><p>For a real-life example, refer to <a href="https://github.com/apowers313/component-fido2">component-fido2</a>.</p></article>
     </section>
 
 
@@ -132,7 +136,7 @@ var authnResult = await f2l.attestationResult(clientAssertionResponse, assertion
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jun 14 2018 05:51:26 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Jun 15 2018 05:44:23 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
