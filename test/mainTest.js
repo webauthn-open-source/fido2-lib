@@ -759,7 +759,7 @@ describe("Fido2Lib", function() {
             }, Error, "must set MDS collection before attempting to find an MDS entry");
         });
 
-        it("finds a MDS entry in the global collection", async function() {
+        it("finds a UAF MDS entry in the global collection", async function() {
             var mc = Fido2Lib.createMdsCollection("test");
             await mc.addToc(h.mds.mds2TocJwt);
             mc.addEntry(h.mds.mds2UafEntry);
@@ -771,6 +771,21 @@ describe("Fido2Lib", function() {
             var entry = entryList[0];
             assert.instanceOf(entry, MdsEntry);
             assert.strictEqual(entry.aaid, "4e4e#4005");
+        });
+
+        it("finds a UAF MDS entry in the global collection", async function() {
+            var mc = Fido2Lib.createMdsCollection("test");
+            await mc.addToc(h.mds.mds1TocJwt);
+            mc.addEntry(h.mds.mds1U2fEntry);
+            Fido2Lib.addMdsCollection(mc);
+
+            var entryList = Fido2Lib.findMdsEntry("923881fe2f214ee465484371aeb72e97f5a58e0a");
+            assert.isArray(entryList);
+            assert.strictEqual(entryList.length, 1);
+            var entry = entryList[0];
+            assert.strictEqual(entry.protocolFamily, "u2f");
+            assert.deepEqual(entry.attestationCertificateKeyIdentifiers, ["923881fe2f214ee465484371aeb72e97f5a58e0a"]);
+            assert.strictEqual(entry.description, "Feitian BioPass FIDO Security Key");
         });
 
         it("throws if id isn't specified", async function() {
