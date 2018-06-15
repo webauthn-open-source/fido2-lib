@@ -21,13 +21,18 @@ There is also an extension point for adding new attestation formats.
 
 Full documentation can be found [here](https://apowers313.github.io/fido2-lib/).
 
+For working examples see [fido2-server-demo](https://github.com/apowers313/fido2-server-demo) and / or [webauthn.org](https://webauthn.org)
+
 ## Features
 
-* Attestation formats: packed, tpm, fido-u2f, none
-* Convenient API for adding more attestation formats
-* Crypto families: ECDSA, RSA
 * Works with Windows Hello
-* x509 cert parsing and validation
+* Attestation formats: packed, tpm, android-safetynet, fido-u2f, none
+* Convenient API for adding more attestation formats
+* Convenient API for adding extensions
+* Metadata service (MDS) support enables authenticator root of trust and authenticator metadata
+* Support for multiple simultaneous metadata services (e.g. FIDO MDS 1 & 2)
+* Crypto families: ECDSA, RSA
+* x509 cert parsing, support for FIDO-related extensions, and NIST Public Key Interoperability Test Suite (PKITS) chain validation (from [pki.js](https://github.com/PeculiarVentures/PKI.js/))
 * Returns parsed and validated data, along with extra audit data for risk engines
 
 ## Example
@@ -100,3 +105,5 @@ var authnResult = await f2l.attestationResult(clientAssertionResponse, assertion
 
 // authentication complete!
 ```
+
+For a real-life example, refer to [component-fido2](https://github.com/apowers313/component-fido2).
