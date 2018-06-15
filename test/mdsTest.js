@@ -10,10 +10,7 @@ chai.use(chaiAsPromised);
 var assert = chai.assert;
 const h = require("fido2-helpers");
 const {
-    printHex,
-    ab2str,
     str2ab,
-    coerceToArrayBuffer,
     coerceToBase64Url
 } = require("../lib/utils");
 
@@ -23,18 +20,31 @@ describe("MdsCollection", function() {
     });
 
     it("is a class", function() {
-        var mdsCollection = new MdsCollection();
+        var mdsCollection = new MdsCollection("test");
         assert.isObject(mdsCollection);
         assert.isFunction(mdsCollection.addToc);
         assert.isFunction(mdsCollection.addEntry);
         assert.isFunction(mdsCollection.validate);
         assert.isFunction(mdsCollection.findEntry);
+        assert.strictEqual(mdsCollection.name, "test");
+    });
+
+    it("throws if no name specified in constructor", function() {
+        assert.throws(function() {
+            new MdsCollection();
+        }, Error, "expected 'collectionName' to be non-empty string, got: undefined");
+    });
+
+    it("throws if name is empty string", function() {
+        assert.throws(function() {
+            new MdsCollection("");
+        }, Error, "expected 'collectionName' to be non-empty string, got: ");
     });
 
     describe("addToc", function() {
         var mc;
         beforeEach(function() {
-            mc = new MdsCollection();
+            mc = new MdsCollection("test");
         });
 
         it("returns a promise", async function() {
@@ -48,7 +58,83 @@ describe("MdsCollection", function() {
         });
 
         it("rejects if no jwk provided", function() {
-            return assert.isRejected(mc.addToc(), Error, "expected MDS TOC to be non-empty string");
+            return assert.isRejected(mc.addToc(undefined), Error, "expected MDS TOC to be non-empty string");
+        });
+
+        it("rejects if TOC is empty string", function() {
+            // bad toc
+            var toc = "";
+            return assert.isRejected(mc.addToc(toc), Error, "expected MDS TOC to be non-empty string");
+        });
+
+        it("rejects if TOC is junk string", function() {
+            // bad toc
+            var toc = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: Unexpected token � in JSON at position 0");
+        });
+
+        it("rejects if TOC header is missing alg", function() {
+            var jwtHeader = {
+                // alg: "foo",
+                typ: "JWT",
+                x5c: [
+                    "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r",
+                    "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r"
+                ]
+            };
+            jwtHeader = coerceToBase64Url(str2ab(JSON.stringify(jwtHeader)), "JWT header");
+            var jwtBody = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            var jwtSig = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            var toc = jwtHeader + "." + jwtBody + "." + jwtSig;
+            return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: Algorithm not allowed: undefined");
+        });
+
+        it("rejects if TOC header is missing typ", function() {
+            var jwtHeader = {
+                alg: "foo",
+                // typ: "JWT",
+                x5c: [
+                    "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r",
+                    "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r"
+                ]
+            };
+            jwtHeader = coerceToBase64Url(str2ab(JSON.stringify(jwtHeader)), "JWT header");
+            var jwtBody = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            var jwtSig = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            var toc = jwtHeader + "." + jwtBody + "." + jwtSig;
+            return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: no key found");
+        });
+
+        it("rejects if TOC header x5c only has one entry", function() {
+            var jwtHeader = {
+                alg: "foo",
+                typ: "JWT",
+                x5c: [
+                    "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r",
+                    // "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r"
+                ]
+            };
+            jwtHeader = coerceToBase64Url(str2ab(JSON.stringify(jwtHeader)), "JWT header");
+            var jwtBody = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            var jwtSig = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            var toc = jwtHeader + "." + jwtBody + "." + jwtSig;
+            return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: no key found");
+        });
+
+        it("rejects if TOC header x5c is missing", function() {
+            var jwtHeader = {
+                alg: "foo",
+                typ: "JWT",
+                // x5c: [
+                //     "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r",
+                //     "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r"
+                // ]
+            };
+            jwtHeader = coerceToBase64Url(str2ab(JSON.stringify(jwtHeader)), "JWT header");
+            var jwtBody = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            var jwtSig = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
+            var toc = jwtHeader + "." + jwtBody + "." + jwtSig;
+            return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: no key found");
         });
 
         it("parses MDS1 TOC", async function() {
@@ -68,6 +154,7 @@ describe("MdsCollection", function() {
             assert.isArray(toc.entries);
             assert.strictEqual(toc.entries.length, 66);
             assert.isString(toc.raw);
+            assert.strictEqual(toc.raw, h.mds.mds1TocJwt);
         });
 
         it("parses MDS2 TOC", async function() {
@@ -126,7 +213,7 @@ describe("MdsCollection", function() {
             var tocParts = h.mds.mds2TocJwt.split(".");
             tocParts[2] = tocParts[2].toUpperCase(); // mess up the signature
             var toc = tocParts.join(".");
-            return assert.isRejected(mc.addToc(toc), Error, "invalid signature");
+            return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: no key found");
         });
 
         it("throws on bad cert chain", function() {
@@ -137,7 +224,7 @@ describe("MdsCollection", function() {
     describe("getToc", function() {
         var mc;
         beforeEach(function() {
-            mc = new MdsCollection();
+            mc = new MdsCollection("test");
         });
 
         it("starts as null", function() {
@@ -157,6 +244,8 @@ describe("MdsCollection", function() {
             assert.strictEqual(toc.no, 62);
             assert.isArray(toc.entries);
             assert.strictEqual(toc.entries.length, 66);
+            assert.isString(toc.raw);
+            assert.strictEqual(toc.raw, h.mds.mds1TocJwt);
         });
 
         it("returns correct object for MDS2", async function() {
@@ -171,15 +260,15 @@ describe("MdsCollection", function() {
             assert.strictEqual(toc.no, 2);
             assert.isArray(toc.entries);
             assert.strictEqual(toc.entries.length, 7);
+            assert.isString(toc.raw);
+            assert.strictEqual(toc.raw, h.mds.mds2TocJwt);
         });
-
-        it("has raw");
     });
 
     describe("addEntry", function() {
         var mc;
         beforeEach(function() {
-            mc = new MdsCollection();
+            mc = new MdsCollection("test");
         });
 
         it("throws on invalid jwk", function() {
@@ -190,8 +279,24 @@ describe("MdsCollection", function() {
 
         it("creates new MDS1 entry");
 
-        it("creates new MDS2 entry", function() {
-            mc.addEntry(h.mds.mds2Entry);
+        it("creates new MDS1 UAF entry", function() {
+            assert.strictEqual(mc.unvalidatedEntryList.size, 0);
+            mc.addEntry(h.mds.mds1UafEntry);
+            assert.strictEqual(mc.unvalidatedEntryList.size, 1);
+        });
+
+        it("creates new MDS1 U2F entry", function() {
+            assert.strictEqual(mc.unvalidatedEntryList.size, 0);
+            mc.addEntry(h.mds.mds1U2fEntry);
+            assert.strictEqual(mc.unvalidatedEntryList.size, 1);
+            assert.isTrue(mc.unvalidatedEntryList.has("923881fe2f214ee465484371aeb72e97f5a58e0a"));
+        });
+
+        it("creates new MDS2 UAF entry", function() {
+            assert.strictEqual(mc.unvalidatedEntryList.size, 0);
+            mc.addEntry(h.mds.mds2UafEntry);
+            assert.strictEqual(mc.unvalidatedEntryList.size, 1);
+            assert.isTrue(mc.unvalidatedEntryList.has("4e4e#4005"));
         });
 
         it("has raw");
@@ -201,15 +306,17 @@ describe("MdsCollection", function() {
     describe("validate", function() {
         var mc;
         beforeEach(function() {
-            mc = new MdsCollection();
+            mc = new MdsCollection("test");
         });
 
         it("throws if no TOC", function() {
-            mc.addEntry(h.mds.mds2Entry);
+            mc.addEntry(h.mds.mds2UafEntry);
             assert.throws(function() {
                 mc.validate();
             }, Error, "add MDS TOC before attempting to validate MDS collection");
         });
+
+        it("throws if entry hash doesn't match TOC hash");
 
         it("throws if no entries", async function() {
             await mc.addToc(h.mds.mds2TocJwt);
@@ -218,9 +325,49 @@ describe("MdsCollection", function() {
             }, Error, "add MDS entries before attempting to validate MDS collection");
         });
 
-        it("adds good entry", async function() {
+        it("adds MDS1 U2F entry", async function() {
+            await mc.addToc(h.mds.mds1TocJwt);
+            mc.addEntry(h.mds.mds1U2fEntry);
+            mc.validate();
+            assert.strictEqual(mc.entryList.size, 1);
+            assert.isTrue(mc.entryList.has("923881fe2f214ee465484371aeb72e97f5a58e0a"), "added entry 4e4e#4005");
+            var entry = mc.entryList.get("923881fe2f214ee465484371aeb72e97f5a58e0a");
+            assert.strictEqual(entry.protocolFamily, "u2f");
+            assert.strictEqual(entry.authenticationAlgorithm, "ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW");
+            assert.strictEqual(entry.publicKeyAlgAndEncoding, "ALG_KEY_ECC_X962_RAW");
+            assert.deepEqual(entry.attestationTypes, ["basic-full"]);
+            assert.deepEqual(entry.userVerificationDetails, [[{ userVerification: ["fingerprint"] }]]);
+            assert.strictEqual(entry.isSecondFactorOnly, true);
+            assert.deepEqual(entry.statusReports, [
+                {
+                    status: "FIDO_CERTIFIED",
+                    url: "",
+                    certificate: "",
+                    effectiveDate: "2017-11-28"
+                }
+            ]);
+        });
+
+        it("adds MDS1 UAF entry", async function() {
+            await mc.addToc(h.mds.mds1TocJwt);
+            mc.addEntry(h.mds.mds1UafEntry);
+            mc.validate();
+            assert.strictEqual(mc.entryList.size, 1);
+            assert.isTrue(mc.entryList.has("0013#0001"), "added entry 4e4e#4005");
+            var entry = mc.entryList.get("0013#0001");
+            assert.strictEqual(entry.protocolFamily, "uaf");
+            assert.strictEqual(entry.hash, "06LZxJ5mNuNZj48IZLV816bfp3A7GVtO2O-EeQ1pkTY=");
+            assert.strictEqual(entry.aaid, "0013#0001");
+            assert.strictEqual(entry.timeOfLastStatusChange, "2015-05-20");
+        });
+
+        it("adds MDS1 FIDO2 entry");
+
+        it("adds MDS2 U2F entry");
+        it("adds MDS2 FIDO2 entry");
+        it("adds MDS2 UAF entry", async function() {
             await mc.addToc(h.mds.mds2TocJwt);
-            mc.addEntry(h.mds.mds2Entry);
+            mc.addEntry(h.mds.mds2UafEntry);
             mc.validate();
             assert.strictEqual(mc.entryList.size, 1);
             assert.isTrue(mc.entryList.has("4e4e#4005"), "added entry 4e4e#4005");
@@ -325,15 +472,17 @@ describe("MdsCollection", function() {
             );
             // raw
             assert.isString(entry.raw);
+            // collection
+            assert.instanceOf(entry.collection, MdsCollection);
         });
     });
 
     describe("findEntry", function() {
         var mc;
         before(async function() {
-            mc = new MdsCollection();
+            mc = new MdsCollection("test");
             await mc.addToc(h.mds.mds2TocJwt);
-            mc.addEntry(h.mds.mds2Entry);
+            mc.addEntry(h.mds.mds2UafEntry);
             mc.validate();
         });
 
