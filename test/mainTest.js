@@ -699,36 +699,58 @@ describe("Fido2Lib", function() {
     });
 
     describe("createMdsCollection", function() {
+        it("throws if no name provided", function() {
+            assert.throws(function() {
+                Fido2Lib.createMdsCollection();
+            }, Error, "expected 'collectionName' to be non-empty string, got: undefined");
+        });
+
         it("returns a MdsCollection", function() {
-            var mc = Fido2Lib.createMdsCollection();
+            var mc = Fido2Lib.createMdsCollection("test");
             assert.instanceOf(mc, MdsCollection);
         });
     });
 
-    describe("setMdsCollection", function() {
+    describe("addMdsCollection", function() {
         afterEach(function() {
-            Fido2Lib.clearMdsCollection();
+            Fido2Lib.clearMdsCollections();
         });
 
         it("throws if argument isn't a MdsCollection", function() {
             assert.throws(function() {
-                Fido2Lib.setMdsCollection();
+                Fido2Lib.addMdsCollection();
             }, Error, "expected 'mdsCollection' to be instance of MdsCollection, got: undefined");
         });
 
         it("sets the current global MDS collection", async function() {
-            var mc = Fido2Lib.createMdsCollection();
+            var mc = Fido2Lib.createMdsCollection("test");
             await mc.addToc(h.mds.mds2TocJwt);
-            mc.addEntry(h.mds.mds2Entry);
+            mc.addEntry(h.mds.mds2UafEntry);
             assert.strictEqual(mc.entryList.size, 0);
-            Fido2Lib.setMdsCollection(mc);
+            Fido2Lib.addMdsCollection(mc);
             assert.strictEqual(mc.entryList.size, 1);
+        });
+
+        it("can add multiple collections", async function() {
+            var mc1 = Fido2Lib.createMdsCollection("fido-mds-1");
+            await mc1.addToc(h.mds.mds1TocJwt);
+            mc1.addEntry(h.mds.mds1UafEntry);
+            assert.strictEqual(mc1.entryList.size, 0);
+            Fido2Lib.addMdsCollection(mc1);
+            assert.strictEqual(mc1.entryList.size, 1);
+
+            var mc2 = Fido2Lib.createMdsCollection("fido-mds-2");
+            await mc2.addToc(h.mds.mds2TocJwt);
+            mc2.addEntry(h.mds.mds2UafEntry);
+            assert.strictEqual(mc2.entryList.size, 0);
+            Fido2Lib.addMdsCollection(mc2);
+            assert.strictEqual(mc2.entryList.size, 1);
         });
     });
 
     describe("findMdsEntry", function() {
         afterEach(function() {
-            Fido2Lib.clearMdsCollection();
+            Fido2Lib.clearMdsCollections();
         });
 
         it("throws if a global MDS collection hasn't been set", function() {
@@ -738,26 +760,60 @@ describe("Fido2Lib", function() {
         });
 
         it("finds a MDS entry in the global collection", async function() {
-            var mc = Fido2Lib.createMdsCollection();
+            var mc = Fido2Lib.createMdsCollection("test");
             await mc.addToc(h.mds.mds2TocJwt);
-            mc.addEntry(h.mds.mds2Entry);
-            Fido2Lib.setMdsCollection(mc);
+            mc.addEntry(h.mds.mds2UafEntry);
+            Fido2Lib.addMdsCollection(mc);
 
-            var entry = Fido2Lib.findMdsEntry("4e4e#4005");
+            var entryList = Fido2Lib.findMdsEntry("4e4e#4005");
+            assert.isArray(entryList);
+            assert.strictEqual(entryList.length, 1);
+            var entry = entryList[0];
             assert.instanceOf(entry, MdsEntry);
             assert.strictEqual(entry.aaid, "4e4e#4005");
         });
 
         it("throws if id isn't specified", async function() {
-            var mc = Fido2Lib.createMdsCollection();
+            var mc = Fido2Lib.createMdsCollection("test");
             await mc.addToc(h.mds.mds2TocJwt);
-            mc.addEntry(h.mds.mds2Entry);
-            Fido2Lib.setMdsCollection(mc);
+            mc.addEntry(h.mds.mds2UafEntry);
+            Fido2Lib.addMdsCollection(mc);
 
             assert.throws(function() {
                 Fido2Lib.findMdsEntry();
             }, Error, "expected 'id' to be String, got: undefined");
         });
 
+        it("can find multiple entries", async function() {
+            // Add UAF 4e4e#4005 from FIDO MDS 1
+            var mc1 = Fido2Lib.createMdsCollection("fido-mds1-toc");
+            await mc1.addToc(h.mds.mds1TocJwt);
+            mc1.addEntry(h.mds.mds1UafEntry4e4e4005);
+            Fido2Lib.addMdsCollection(mc1);
+
+            // Add UAF 4e4e#4005 from FIDO MDS 2
+            var mc2 = Fido2Lib.createMdsCollection("fido-mds2-toc");
+            await mc2.addToc(h.mds.mds2TocJwt);
+            mc2.addEntry(h.mds.mds2UafEntry);
+            Fido2Lib.addMdsCollection(mc2);
+
+            var entryList = Fido2Lib.findMdsEntry("4e4e#4005");
+            assert.isArray(entryList);
+            assert.strictEqual(entryList.length, 2);
+
+            // first entry from MDS1
+            var entry1 = entryList[0];
+            assert.strictEqual(entry1.aaid, "4e4e#4005");
+            assert.isObject(entry1.collection);
+            assert.strictEqual(entry1.collection.name, "fido-mds1-toc");
+            assert.isUndefined(entry1.legalHeader);
+
+            // second entry from MDS2
+            var entry2 = entryList[1];
+            assert.strictEqual(entry2.aaid, "4e4e#4005");
+            assert.isObject(entry2.collection);
+            assert.strictEqual(entry2.collection.name, "fido-mds2-toc");
+            assert.isString(entry2.legalHeader); // distinguishing characteristic of MDS2
+        });
     });
 });
