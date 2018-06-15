@@ -9,7 +9,7 @@ var {
     printHex,
 } = require("../lib/utils");
 
-describe("parseAttestationObject (tpm)", function() {
+describe.skip("parseAttestationObject (tpm)", function() {
     it("parser is object", function() {
         assert.isObject(parser);
     });
