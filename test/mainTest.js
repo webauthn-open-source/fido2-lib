@@ -15,6 +15,8 @@ const noneAttestation = require("../lib/attestations/none");
 const u2fAttestation = require("../lib/attestations/fidoU2F");
 const packedAttestation = require("../lib/attestations/packed");
 const tpmAttestation = require("../lib/attestations/tpm");
+const androidSafetyNetAttestation = require("../lib/attestations/androidSafetyNet");
+
 const {
     MdsCollection,
     MdsEntry
@@ -44,6 +46,12 @@ function restoreAttestationFormats() {
         tpmAttestation.name,
         tpmAttestation.parseFn,
         tpmAttestation.validateFn
+    );
+    // add 'android-safetynet' attestation format
+    Fido2Lib.addAttestationFormat(
+        androidSafetyNetAttestation.name,
+        androidSafetyNetAttestation.parseFn,
+        androidSafetyNetAttestation.validateFn
     );
 }
 

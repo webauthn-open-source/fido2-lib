@@ -9,7 +9,7 @@ var {
     printHex,
 } = require("../lib/utils");
 
-describe("parseAttestationObject (tpm)", function() {
+describe("parseAttestationObject (android-safetynet)", function() {
     it("parser is object", function() {
         assert.isObject(parser);
     });
