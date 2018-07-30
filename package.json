@@ -31,7 +31,7 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "docdash": "^0.4.0",
-    "fido2-helpers": "^1.7.1",
+    "fido2-helpers": "^1.7.2",
     "gh-pages": "^0.12.0",
     "istanbul": "^1.1.0-alpha.1",
     "istanbul-coveralls": "^1.0.3",
