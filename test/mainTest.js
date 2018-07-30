@@ -22,6 +22,14 @@ const {
     MdsEntry
 } = require("../lib/mds");
 
+const {
+    abToBuf,
+    abEqual,
+    printHex
+} = require("../lib/utils");
+
+const crypto = require("crypto");
+
 function restoreAttestationFormats() {
     // add 'none' attestation format
     Fido2Lib.addAttestationFormat(
@@ -431,6 +439,20 @@ describe("Fido2Lib", function() {
                 assert.strictEqual(opts.attestation, "none");
             });
         });
+
+        it("accepts extraData and returns rawChallenge", async function() {
+            let extraData = new Uint8Array([0x1, 0x2, 0x3, 0x4]).buffer;
+            let opts = await serv.attestationOptions({
+                extraData: extraData
+            });
+
+            let challenge = opts.challenge;
+            let hash = crypto.createHash("sha256");
+            hash.update(abToBuf(opts.rawChallenge));
+            hash.update(abToBuf(extraData));
+            let calculatedChallenge = new Uint8Array(hash.digest()).buffer;
+            assert.isTrue(abEqual(challenge, calculatedChallenge), "extraData hashes match");
+        });
     });
 
     describe("attestationResult", function() {
@@ -496,6 +518,20 @@ describe("Fido2Lib", function() {
                 assert.isString(opts.userVerification);
                 assert.strictEqual(opts.userVerification, "required");
             });
+        });
+
+        it("accepts extraData and returns rawChallenge", async function() {
+            let extraData = new Uint8Array([0x1, 0x2, 0x3, 0x4]).buffer;
+            let opts = await serv.assertionOptions({
+                extraData: extraData
+            });
+
+            let challenge = opts.challenge;
+            let hash = crypto.createHash("sha256");
+            hash.update(abToBuf(opts.rawChallenge));
+            hash.update(abToBuf(extraData));
+            let calculatedChallenge = new Uint8Array(hash.digest()).buffer;
+            assert.isTrue(abEqual(challenge, calculatedChallenge), "extraData hashes match");
         });
     });
 
