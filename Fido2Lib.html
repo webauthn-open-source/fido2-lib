@@ -69,7 +69,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line22">line 22</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line24">line 24</a>
     </li></ul></dd>
     
 
@@ -670,7 +670,7 @@ ordered by the preference in which the authenticator should use them.</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line327">line 327</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line364">line 364</a>
     </li></ul></dd>
     
 
@@ -857,7 +857,7 @@ calling context (<code>this</code>).</p></td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line503">line 503</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line540">line 540</a>
     </li></ul></dd>
     
 
@@ -1061,7 +1061,7 @@ enableExtension for each instantiation of a Fido2Lib.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line455">line 455</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line492">line 492</a>
     </li></ul></dd>
     
 
@@ -1201,7 +1201,7 @@ enableExtension for each instantiation of a Fido2Lib.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line466">line 466</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line503">line 503</a>
     </li></ul></dd>
     
 
@@ -1285,7 +1285,7 @@ enableExtension for each instantiation of a Fido2Lib.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line446">line 446</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line483">line 483</a>
     </li></ul></dd>
     
 
@@ -1449,7 +1449,7 @@ finds multiple matching entries from different sources (e.g. FIDO MDS 1 &amp; FI
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line357">line 357</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line394">line 394</a>
     </li></ul></dd>
     
 
@@ -1533,7 +1533,7 @@ finds multiple matching entries from different sources (e.g. FIDO MDS 1 &amp; FI
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line534">line 534</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line571">line 571</a>
     </li></ul></dd>
     
 
@@ -1617,7 +1617,7 @@ finds multiple matching entries from different sources (e.g. FIDO MDS 1 &amp; FI
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line480">line 480</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line517">line 517</a>
     </li></ul></dd>
     
 
@@ -1774,7 +1774,7 @@ If no entry was found, the Array will be empty.</p>
 
     
 
-    <h4 class="name" id="assertionOptions"><span class="type-signature">(async) </span>assertionOptions<span class="signature">(opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="global.html#PublicKeyCredentialRequestOptions">PublicKeyCredentialRequestOptions</a>>}</span></h4>
+    <h4 class="name" id="assertionOptions"><span class="type-signature">(async) </span>assertionOptions<span class="signature">(opts<span class="signature-attributes">opt</span>, extraData<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="global.html#PublicKeyCredentialRequestOptions">PublicKeyCredentialRequestOptions</a>>}</span></h4>
 
     
 
@@ -1786,7 +1786,7 @@ If no entry was found, the Array will be empty.</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line242">line 242</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line263">line 263</a>
     </li></ul></dd>
     
 
@@ -1963,6 +1963,40 @@ if an extension was disabled with disableExtension but it is included in this ob
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>extraData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Extra data to be signed by the authenticator during attestation. The challenge will be a hash:
+SHA256(rawChallenge + extraData) and the <code>rawChallenge</code> will be returned as part of PublicKeyCredentialCreationOptions.</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -2020,7 +2054,7 @@ if an extension was disabled with disableExtension but it is included in this ob
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line307">line 307</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line344">line 344</a>
     </li></ul></dd>
     
 
@@ -2611,7 +2645,7 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
 
     
 
-    <h4 class="name" id="attestationOptions"><span class="type-signature">(async) </span>attestationOptions<span class="signature">(opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="global.html#PublicKeyCredentialCreationOptions">PublicKeyCredentialCreationOptions</a>>}</span></h4>
+    <h4 class="name" id="attestationOptions"><span class="type-signature">(async) </span>attestationOptions<span class="signature">(opts<span class="signature-attributes">opt</span>, extraData<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="global.html#PublicKeyCredentialCreationOptions">PublicKeyCredentialCreationOptions</a>>}</span></h4>
 
     
 
@@ -2623,7 +2657,7 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line133">line 133</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line137">line 137</a>
     </li></ul></dd>
     
 
@@ -2800,6 +2834,40 @@ if an extension was disabled with disableExtension but it is included in this ob
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>extraData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Extra data to be signed by the authenticator during attestation. The challenge will be a hash:
+SHA256(rawChallenge + extraData) and the <code>rawChallenge</code> will be returned as part of PublicKeyCredentialCreationOptions.</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -2857,7 +2925,7 @@ if an extension was disabled with disableExtension but it is included in this ob
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line224">line 224</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line243">line 243</a>
     </li></ul></dd>
     
 
@@ -3320,7 +3388,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line612">line 612</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line649">line 649</a>
     </li></ul></dd>
     
 
@@ -3453,7 +3521,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line596">line 596</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line633">line 633</a>
     </li></ul></dd>
     
 
@@ -3586,7 +3654,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line629">line 629</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line666">line 666</a>
     </li></ul></dd>
     
 
@@ -3743,7 +3811,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jul 30 2018 23:37:04 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jul 31 2018 05:44:43 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
