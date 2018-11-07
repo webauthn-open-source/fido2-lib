@@ -13,7 +13,7 @@ describe("parseExpectations", function() {
 
 	it("returns Map on good expectations", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
 		};
 		var ret = parser.parseExpectations(exp);
@@ -25,7 +25,7 @@ describe("parseExpectations", function() {
 
 	it("doesn't add extra items to Map", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
 			foo: "bar",
 			beer: true,
@@ -37,29 +37,29 @@ describe("parseExpectations", function() {
 		assert.strictEqual(ret.get("challenge"), exp.challenge);
 	});
 
-	it("throws on invalid origin", function() {
+	it("throws on invalid rpId", function() {
 		var exp = {
-			origin: "asdf",
+			rpId: "asdf",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
 		};
 		assert.throws(() => {
 			parser.parseExpectations(exp);
-		}, TypeError, "Invalid URL: asdf");
+		}, Error, "rpId is not a valid eTLD+1");
 	});
 
-	it("throws if expected origin is https:443", function() {
+	it("throws if expected rpId is a TLD", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee:443",
+			rpId: "coffee",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
 		};
 		assert.throws(() => {
 			parser.parseExpectations(exp);
-		}, Error, "origin was malformatted");
+		}, Error, "rpId is not a valid eTLD+1");
 	});
 
 	it("coerces Array challenge to base64url", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: [
 				0xe0, 0x14, 0xb5, 0x60, 0x92, 0x91, 0x09, 0xe0, 0x95, 0xa0, 0xb7, 0x5f, 0x1b, 0xf6, 0xfa, 0xe8,
 				0x1b, 0x92, 0x43, 0xe2, 0x36, 0x9f, 0x7e, 0x16, 0xb0, 0xb1, 0x6f, 0xcb, 0xad, 0x9f, 0xa4, 0x85,
@@ -78,7 +78,7 @@ describe("parseExpectations", function() {
 
 	it("coerces Uint8Array challenge to base64url", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: Uint8Array.from([
 				0xe0, 0x14, 0xb5, 0x60, 0x92, 0x91, 0x09, 0xe0, 0x95, 0xa0, 0xb7, 0x5f, 0x1b, 0xf6, 0xfa, 0xe8,
 				0x1b, 0x92, 0x43, 0xe2, 0x36, 0x9f, 0x7e, 0x16, 0xb0, 0xb1, 0x6f, 0xcb, 0xad, 0x9f, 0xa4, 0x85,
@@ -96,7 +96,7 @@ describe("parseExpectations", function() {
 
 	it("coerces ArrayBuffer challenge to base64url", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: Uint8Array.from([
 				0xe0, 0x14, 0xb5, 0x60, 0x92, 0x91, 0x09, 0xe0, 0x95, 0xa0, 0xb7, 0x5f, 0x1b, 0xf6, 0xfa, 0xe8,
 				0x1b, 0x92, 0x43, 0xe2, 0x36, 0x9f, 0x7e, 0x16, 0xb0, 0xb1, 0x6f, 0xcb, 0xad, 0x9f, 0xa4, 0x85,
@@ -114,7 +114,7 @@ describe("parseExpectations", function() {
 
 	it("coerces Buffer challenge to base64url", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: Buffer.from([
 				0xe0, 0x14, 0xb5, 0x60, 0x92, 0x91, 0x09, 0xe0, 0x95, 0xa0, 0xb7, 0x5f, 0x1b, 0xf6, 0xfa, 0xe8,
 				0x1b, 0x92, 0x43, 0xe2, 0x36, 0x9f, 0x7e, 0x16, 0xb0, 0xb1, 0x6f, 0xcb, 0xad, 0x9f, 0xa4, 0x85,
@@ -132,7 +132,7 @@ describe("parseExpectations", function() {
 
 	it("coerces base64 challenge to base64url", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 		};
 		var base64UrlChallenge = "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg";
@@ -152,7 +152,7 @@ describe("parseExpectations", function() {
 
 	it("adds flags to map when they exist", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			flags: new Set(["UP", "AT"]),
 		};
@@ -168,7 +168,7 @@ describe("parseExpectations", function() {
 
 	it("converts Array of flags to Set", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			flags: ["UP", "AT"],
 		};
@@ -184,7 +184,7 @@ describe("parseExpectations", function() {
 
 	it("throws if flags is something other than Array or Set", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			flags: "foo",
 		};
@@ -195,7 +195,7 @@ describe("parseExpectations", function() {
 
 	it("adds prevCount to map when it exists", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			prevCounter: 666,
 		};
@@ -209,7 +209,7 @@ describe("parseExpectations", function() {
 
 	it("adds prevCount to map when it's zero", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			prevCounter: 0,
 		};
@@ -227,7 +227,7 @@ describe("parseExpectations", function() {
 
 	it("adds userHandle to map when it exists", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			prevCounter: 0,
 			userHandle: "YWs",
@@ -247,7 +247,7 @@ describe("parseExpectations", function() {
 
 	it("adds userHandle to map when null", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			prevCounter: 0,
 			userHandle: null,
@@ -260,7 +260,7 @@ describe("parseExpectations", function() {
 
 	it("adds userHandle to map when empty string", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			prevCounter: 0,
 			userHandle: "",
@@ -275,7 +275,7 @@ describe("parseExpectations", function() {
 
 	it("works when userHandle is undefined", function() {
 		var exp = {
-			origin: "https://webauthn.bin.coffee",
+			rpId: "bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
 			prevCounter: 0,
 		};
@@ -288,7 +288,7 @@ describe("parseExpectations", function() {
 	it("works with typical attestation expectations", function() {
 		var exp = {
 			challenge: "HcsOvH431SaLt1hc7mpkqohMaub+oTO5ao/hzJOkUwQEdTWDhOYTdp4ejQcOCsIYdB64c1fkeqiblg6EkygpUA==",
-			origin: "https://localhost:8443",
+			rpId: "localhost",
 			publicKey: "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESe3kuy9dZzFYR/uw+exFJxKLt6E+\n3Sp0RamB8J63CxYnbRhv6SF6MwQx/LNHJHw7rrN2xioEu88ArEDdk0jHAQ==\n-----END PUBLIC KEY-----\n",
 			prevCounter: 0,
 			flags: ["UP-or-UV"],

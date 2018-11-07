@@ -46,7 +46,7 @@ describe("Fido2AttestationResult", function() {
 
 	it("passes with 'none' attestation", async function() {
 		var ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationNoneResponse, {
-			origin: "https://localhost:8443",
+			rpId: "localhost",
 			challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
 			flags: ["UP", "AT"],
 		});
@@ -55,7 +55,7 @@ describe("Fido2AttestationResult", function() {
 
 	it("passes with 'u2f' attestation", async function() {
 		var ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationU2fResponse, {
-			origin: "https://localhost:8443",
+			rpId: "localhost",
 			challenge: "Vu8uDqnkwOjd83KLj6Scn2BgFNLFbGR7Kq_XJJwQnnatztUR7XIBL7K8uMPCIaQmKw1MCVQ5aazNJFk7NakgqA",
 			flags: ["UP", "AT"],
 		});
@@ -77,7 +77,7 @@ describe("Fido2AttestationResult", function() {
 
 	it("passes with Hypersecu u2f attestation", async function() {
 		var ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationHypersecuU2fResponse, {
-			origin: "https://webauthn.org",
+			rpId: "webauthn.org",
 			challenge: "pSG9z6Gd5m48WWw9e03AJixbKia0ynEqm7o_9KEkPY0zcaXhjmxoChC5QRnK4E6XIT2QFc_uGycO5lUMygeZgw",
 			flags: ["UP", "AT"],
 		});
@@ -105,7 +105,7 @@ describe("Fido2AttestationResult", function() {
 		};
 		var samAnon1Challenge = "kNWoUtrQ0O2pxKd84IaZOJ-CLJ69eevmV-o8bHcThxgoJ-lsrEZUPhWLWzw4ZJKzZeoBDdNZucIEyUm_4cur2Q";
 		var ret = await Fido2AttestationResult.create(samAnon1, {
-			origin: "https://webauthn.org",
+			rpId: "webauthn.org",
 			challenge: samAnon1Challenge,
 			flags: ["UP", "AT"],
 		});
@@ -122,7 +122,7 @@ describe("Fido2AttestationResult", function() {
 		};
 		var ffNonAnonChallenge = "QQTc246fjLHnnwNrminCKyJE-Ng3skW30uq4L2vqx_xNdj9ZIa4B3AGhw6f__RijOs6SbbP6m6lkLcMJG4gRYg";
 		var ret = await Fido2AttestationResult.create(ffNonAnon, {
-			origin: "https://webauthn.org",
+			rpId: "webauthn.org",
 			challenge: ffNonAnonChallenge,
 			flags: ["UP", "AT"],
 		});
@@ -130,7 +130,7 @@ describe("Fido2AttestationResult", function() {
 
 	it("passes with 'packed' attestation", async function() {
 		var ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationPackedResponse, {
-			origin: "https://webauthn.org",
+			rpId: "webauthn.org",
 			challenge: "uVX88IgRa0SSrMIRT_q7cRcdfgfRBxCgn_pkpUAnXJK2zOb307wd1OLXQ0AuNaMtBR3amk6HYzp-_VxJTPpwGw",
 			flags: ["UP", "AT"],
 		});
@@ -155,7 +155,7 @@ describe("Fido2AttestationResult", function() {
 
 	it("passes with 'tpm' attestation", async function() {
 		var ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationTpmResponse, {
-			origin: "https://webauthn.org",
+			rpId: "webauthn.org",
 			challenge: "wk6LqEXAMAZpqcTYlY2yor5DjiyI_b1gy9nDOtCB1yGYnm_4WG4Uk24FAr7AxTOFfQMeigkRxOTLZNrLxCvV_Q",
 			flags: ["UP", "AT"],
 		});
@@ -203,7 +203,7 @@ describe("Fido2AssertionResult", function() {
 
 	it("returns Fido2AssertionResult object on success", async function() {
 		var ret = await Fido2AssertionResult.create(h.lib.assertionResponse, {
-			origin: "https://localhost:8443",
+			rpId: "localhost",
 			challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
 			flags: ["UP"],
 			prevCounter: 362,
@@ -215,7 +215,7 @@ describe("Fido2AssertionResult", function() {
 
 	it("works with WindowsHello", async function() {
 		var ret = await Fido2AssertionResult.create(h.lib.assertionResponseWindowsHello, {
-			origin: "https://webauthn.org",
+			rpId: "webauthn.org",
 			challenge: "m7ZU0Z-_IiwviFnF1JXeJjFhVBincW69E1Ctj8AQ-Ybb1uc41bMHtItg6JACh1sOj_ZXjonw2acj_JD2i-axEQ",
 			flags: ["UP"],
 			prevCounter: 0,
