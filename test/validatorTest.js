@@ -18,12 +18,12 @@ describe("attestation validation", function() {
         attResp = {
             request: {},
             requiredExpectations: new Set([
-                "origin",
+                "rpId",
                 "challenge",
                 "flags"
             ]),
             expectations: new Map([
-                ["origin", "https://localhost:8443"],
+                ["rpId", "localhost"],
                 ["challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w"],
                 ["flags", ["UP", "AT"]]
             ]),
@@ -86,9 +86,9 @@ describe("attestation validation", function() {
             return assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'flags'");
         });
 
-        it("throws if missing origin", function() {
-            attResp.expectations.delete("origin");
-            return assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'origin'");
+        it("throws if missing rpId", function() {
+            attResp.expectations.delete("rpId");
+            return assert.isRejected(attResp.validateExpectations(), Error, "expectation did not contain value for 'rpId'");
         });
 
         it("throws if challenge is undefined", function() {
@@ -294,29 +294,25 @@ describe("attestation validation", function() {
 
     describe("validateOrigin", function() {
         it("accepts exact match", async function() {
-            attResp.expectations.set("origin", "https://webauthn.bin.coffee:8080");
+            attResp.expectations.set("rpId", "webauthn.bin.coffee");
             attResp.clientData.set("origin", "https://webauthn.bin.coffee:8080");
             var ret = await attResp.validateOrigin();
             assert.isTrue(ret);
             assert.isTrue(attResp.audit.journal.has("origin"));
         });
 
-        it("throws on port mismatch", function() {
-            attResp.expectations.set("origin", "https://webauthn.bin.coffee:8080");
-            attResp.clientData.set("origin", "https://webauthn.bin.coffee:8443");
-            return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
-        });
-
-        it("throws on domain mismatch", function() {
-            attResp.expectations.set("origin", "https://webauthn.bin.coffee:8080");
-            attResp.clientData.set("origin", "https://bin.coffee:8080");
-            return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
-        });
-
-        it("throws on protocol mismatch", function() {
-            attResp.expectations.set("origin", "http://webauthn.bin.coffee:8080");
+        it("accepts suffix match", async function() {
+            attResp.expectations.set("rpId", "bin.coffee");
             attResp.clientData.set("origin", "https://webauthn.bin.coffee:8080");
-            return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin did not match expected origin");
+            var ret = await attResp.validateOrigin();
+            assert.isTrue(ret);
+            assert.isTrue(attResp.audit.journal.has("origin"));
+        });
+
+        it("throws on suffix mismatch", function() {
+            attResp.expectations.set("rpId", "foo.coffee");
+            attResp.clientData.set("origin", "https://webauthn.bin.coffee:8443");
+            return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin does not end with expected rpId");
         });
 
         it("calls checkOrigin");
@@ -482,7 +478,7 @@ describe("attestation validation", function() {
         });
 
         it("throws when it doesn't match", function() {
-            attResp.clientData.set("origin", "https://google.com");
+            attResp.expectations.set("rpId", "google.com");
             return assert.isRejected(attResp.validateRpIdHash(), Error, "authnrData rpIdHash mismatch");
         });
 
