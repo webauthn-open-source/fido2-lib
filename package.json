@@ -46,7 +46,7 @@
     "cose-to-jwk": "^1.1.0",
     "jwk-to-pem": "^2.0.0",
     "node-jose": "^1.0.0",
-    "node-webcrypto-ossl": "^1.0.35",
+    "@peculiar/webcrypto": "^1.0.1",
     "pkijs": "=2.1.58",
     "psl": "^1.1.24"
   }
