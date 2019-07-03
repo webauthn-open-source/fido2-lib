@@ -47,7 +47,11 @@
 
     <section class="readme">
         <article><p><a href="https://travis-ci.org/apowers313/fido2-lib"><img src="https://travis-ci.org/apowers313/fido2-lib.svg?branch=master" alt="Build Status"></a> <a href="https://coveralls.io/github/apowers313/fido2-lib?branch=master"><img src="https://coveralls.io/repos/github/apowers313/fido2-lib/badge.svg?branch=master" alt="Coverage Status"></a> <a href="https://snyk.io/test/github/apowers313/fido2-lib?targetFile=package.json"><img src="https://snyk.io/test/github/apowers313/fido2-lib/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a></p>
-<h2>Install</h2><pre class="prettyprint source lang-bash"><code>npm install fido2-lib</code></pre><h2>Overview</h2><p>A library for performing FIDO 2.0 / WebAuthn server functionality</p>
+<h2>Install</h2>
+<pre class="prettyprint source lang-bash"><code>npm install fido2-lib
+</code></pre>
+<h2>Overview</h2>
+<p>A library for performing FIDO 2.0 / WebAuthn server functionality</p>
 <p>This library contains all the functionality necessary for implementing a full FIDO2 / WebAuthn server. It intentionally does not implement any kind of networking protocol (e.g. - REST endpoints) so that it can remain independent of any messaging protocols.</p>
 <p>There are four primary functions:</p>
 <ol>
@@ -59,7 +63,8 @@
 <p>There is also an extension point for adding new attestation formats.</p>
 <p>Full documentation can be found <a href="https://apowers313.github.io/fido2-lib/">here</a>.</p>
 <p>For working examples see <a href="https://github.com/apowers313/fido2-server-demo">fido2-server-demo</a> and / or <a href="https://webauthn.org">webauthn.org</a></p>
-<h2>Features</h2><ul>
+<h2>Features</h2>
+<ul>
 <li>Works with Windows Hello</li>
 <li>Attestation formats: packed, tpm, android-safetynet, fido-u2f, none</li>
 <li>Convenient API for adding more attestation formats</li>
@@ -70,11 +75,14 @@
 <li>x509 cert parsing, support for FIDO-related extensions, and NIST Public Key Interoperability Test Suite (PKITS) chain validation (from <a href="https://github.com/PeculiarVentures/PKI.js/">pki.js</a>)</li>
 <li>Returns parsed and validated data, along with extra audit data for risk engines</li>
 </ul>
-<h2>Example</h2><p><strong>Instantiate Library (Simple):</strong></p>
+<h2>Example</h2>
+<p><strong>Instantiate Library (Simple):</strong></p>
 <pre class="prettyprint source lang-js"><code>const { Fido2Lib } = require(&quot;fido2-lib&quot;);
 
 // create a new instance of the library
-var f2l = new Fido2Lib();</code></pre><p><strong>Instantiate Library (Complex):</strong></p>
+var f2l = new Fido2Lib();
+</code></pre>
+<p><strong>Instantiate Library (Complex):</strong></p>
 <pre class="prettyprint source lang-js"><code>// could also use one or more of the options below,
 // which just makes the options calls easier later on:
 var f2l = new Fido2Lib({
@@ -88,7 +96,9 @@ var f2l = new Fido2Lib({
     authenticatorAttachment: &quot;platform&quot;,
     authenticatorRequireResidentKey: false,
     authenticatorUserVerification: &quot;required&quot;
-});</code></pre><p><strong>Registration:</strong></p>
+});
+</code></pre>
+<p><strong>Registration:</strong></p>
 <pre class="prettyprint source lang-js"><code>var registrationOptions = await f2l.attestationOptions();
 
 // make sure to add registrationOptions.user.id
@@ -104,7 +114,9 @@ var attestationExpectations = {
 var regResult = await f2l.attestationResult(clientAttestationResponse, attestationExpectations); // will throw on error
 
 // registration complete!
-// save publicKey and counter from regResult to user's info for future authentication calls</code></pre><p><strong>Authentication:</strong></p>
+// save publicKey and counter from regResult to user's info for future authentication calls
+</code></pre>
+<p><strong>Authentication:</strong></p>
 <pre class="prettyprint source lang-js"><code>var authnOptions = await f2l.assertionOptions();
 
 // save the challenge in the session information...
@@ -123,8 +135,11 @@ var assertionExpectations = {
 };
 var authnResult = await f2l.attestationResult(clientAssertionResponse, assertionExpectations); // will throw on error
 
-// authentication complete!</code></pre><p>For a real-life example, refer to <a href="https://github.com/apowers313/component-fido2">component-fido2</a>.</p>
-<h2>Sponsor</h2><p>Note that while I used to be Technical Director for FIDO Alliance (and I am currently the Technical Advisor for FIDO Alliance), THIS PROJECT IS NOT ENDORSED OR SPONSORED BY FIDO ALLIANCE.</p>
+// authentication complete!
+</code></pre>
+<p>For a real-life example, refer to <a href="https://github.com/apowers313/component-fido2">component-fido2</a>.</p>
+<h2>Sponsor</h2>
+<p>Note that while I used to be Technical Director for FIDO Alliance (and I am currently the Technical Advisor for FIDO Alliance), THIS PROJECT IS NOT ENDORSED OR SPONSORED BY FIDO ALLIANCE.</p>
 <p>Work for this project is supported by my consulting company: <a href="https://webauthn.consulting/">WebAuthn Consulting</a>.</p></article>
     </section>
 
@@ -138,7 +153,7 @@ var authnResult = await f2l.attestationResult(clientAssertionResponse, assertion
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jul 31 2018 05:44:53 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.2</a> on Wed Jul 03 2019 23:38:08 GMT+0000 (UTC) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
