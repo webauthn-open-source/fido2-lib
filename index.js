@@ -1,6 +1,4 @@
-"use strict";
-
-var { Fido2Lib } = require("./lib/main.js");
+const { Fido2Lib } = require("./lib/main.js");
 
 // // add 'none' attestation format
 // const noneAttestation = require("./lib/attestations/none");
