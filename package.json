@@ -6,7 +6,7 @@
   "scripts": {
     "test": "istanbul cover _mocha",
     "docs": "jsdoc -c ./.jsdoc-conf.json",
-    "publish-docs": "gh-pages --repo https://$GH_TOKEN@github.com/apowers313/fido2-lib.git --dist docs"
+    "publish-docs": "gh-pages --repo https://$GH_TOKEN@github.com/webauthn-open-source/fido2-lib.git --dist docs"
   },
   "keywords": [
     "webauthn",
@@ -21,10 +21,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apowers313/fido2-lib"
+    "url": "https://github.com/webauthn-open-source/fido2-lib"
   },
   "bugs": {
-    "url": "https://github.com/apowers313/fido2-lib/issues",
+    "url": "https://github.com/webauthn-open-source/fido2-lib/issues",
     "email": "apowers@ato.ms"
   },
   "devDependencies": {
