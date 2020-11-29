@@ -7,7 +7,7 @@
 	"scripts": {
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"test": "nyc mocha",
+		"test": "nyc mocha && npm run lint",
 		"report": "nyc report --reporter=text-lcov > coverage.lcov",
 		"codecov": "codecov -e TRAVIS_NODE_VERSION",
 		"docs": "jsdoc -c ./.jsdoc-conf.json",
