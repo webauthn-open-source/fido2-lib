@@ -19,7 +19,7 @@ describe("parseExpectations", function() {
 		var ret = parser.parseExpectations(exp);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 2);
-		assert.strictEqual(ret.get("origin"), exp.origin);
+		assert.strictEqual(ret.get("rpId"), exp.rpId);
 		assert.strictEqual(ret.get("challenge"), exp.challenge);
 	});
 
@@ -33,7 +33,7 @@ describe("parseExpectations", function() {
 		var ret = parser.parseExpectations(exp);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 2);
-		assert.strictEqual(ret.get("origin"), exp.origin);
+		assert.strictEqual(ret.get("rpId"), exp.rpId);
 		assert.strictEqual(ret.get("challenge"), exp.challenge);
 	});
 
@@ -71,7 +71,7 @@ describe("parseExpectations", function() {
 		var ret = parser.parseExpectations(exp);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 2);
-		assert.strictEqual(ret.get("origin"), exp.origin);
+		assert.strictEqual(ret.get("rpId"), exp.rpId);
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
@@ -90,7 +90,7 @@ describe("parseExpectations", function() {
 		var ret = parser.parseExpectations(exp);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 2);
-		assert.strictEqual(ret.get("origin"), exp.origin);
+		assert.strictEqual(ret.get("rpId"), exp.rpId);
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
@@ -108,7 +108,7 @@ describe("parseExpectations", function() {
 		var ret = parser.parseExpectations(exp);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 2);
-		assert.strictEqual(ret.get("origin"), exp.origin);
+		assert.strictEqual(ret.get("rpId"), exp.rpId);
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
@@ -126,7 +126,7 @@ describe("parseExpectations", function() {
 		var ret = parser.parseExpectations(exp);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 2);
-		assert.strictEqual(ret.get("origin"), exp.origin);
+		assert.strictEqual(ret.get("rpId"), exp.rpId);
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
@@ -139,7 +139,7 @@ describe("parseExpectations", function() {
 		var ret = parser.parseExpectations(exp);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 2);
-		assert.strictEqual(ret.get("origin"), exp.origin);
+		assert.strictEqual(ret.get("rpId"), exp.rpId);
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
