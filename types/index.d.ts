@@ -64,7 +64,8 @@ declare module "fido2-lib" {
 
   interface ExpectedAttestationResult {
     rpId: string;
-    origin?: string | string[];
+    /** @deprecated use rpId instead */
+    origin??: string | string[];
     challenge: string;
     factor: Factor;
   }
@@ -105,7 +106,8 @@ declare module "fido2-lib" {
   interface ExpectedAssertionResult {
     rpId: string;
     challenge: string;
-    origin: string | string[];
+    /** @deprecated use rpId instead */
+    origin?: string | string[];
     factor: Factor;
     publicKey: string;
     prevCounter: number;
