@@ -5,7 +5,9 @@
   "main": "index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "test": "istanbul cover _mocha",
+    "test": "nyc mocha",
+    "report": "nyc report --reporter=text-lcov > coverage.lcov",
+    "codecov": "codecov -e TRAVIS_NODE_VERSION",
     "docs": "jsdoc -c ./.jsdoc-conf.json",
     "publish-docs": "gh-pages --repo https://$GH_TOKEN@github.com/webauthn-open-source/fido2-lib.git --dist docs"
   },
@@ -31,11 +33,10 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
+    "codecov": "^3.5.0",
     "docdash": "^0.4.0",
     "fido2-helpers": "^1.7.2",
-    "gh-pages": "^0.12.0",
-    "istanbul": "^1.1.0-alpha.1",
-    "istanbul-coveralls": "^1.0.3",
+    "gh-pages": "^3.1.0",
     "jsdoc": "^3.5.5",
     "mocha": "^6.1.4",
     "mockery": "^2.0.0",
