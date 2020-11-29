@@ -481,7 +481,7 @@ describe("Fido2Lib", function() {
 			var serv = new Fido2Lib();
 			var expectations = {
 				challenge: "NrRzgRhGy5Y0NlKNhEAqs4ZFVgNGtN49ZyCTOfLk8G1EPY3vnN3zasIZynlCAyUOLdB3-AALfy1XG2MiVps_Vw",
-				origin: "https://contubernio.tic.udc.es",
+				rpId: "contubernio.tic.udc.es",
 				factor: "second",
 			};
 
