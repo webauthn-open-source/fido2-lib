@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/apowers313/fido2-lib.svg?branch=master)](https://travis-ci.org/apowers313/fido2-lib)
+[![Build Status](https://travis-ci.org/webauthn-open-source/fido2-lib.svg?branch=master)](https://travis-ci.org/webauthn-open-source/fido2-lib)
 [![Code Coverage](https://codecov.io/gh/webauthn-open-source/fido2-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/webauthn-open-source/fido2-lib)
 [![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json)
 
