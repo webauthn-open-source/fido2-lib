@@ -11,16 +11,27 @@ describe("parseExpectations", function() {
 		assert.isObject(parser);
 	});
 
-	it("returns Map on good expectations", function() {
-		var exp = {
-			rpId: "bin.coffee",
-			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
-		};
-		var ret = parser.parseExpectations(exp);
-		assert.instanceOf(ret, Map);
-		assert.strictEqual(ret.size, 2);
-		assert.strictEqual(ret.get("rpId"), exp.rpId);
-		assert.strictEqual(ret.get("challenge"), exp.challenge);
+	[
+		["rpId", { rpId: "bin.coffee" }],
+		["deprecated origin", { origin: "https://bin.coffee" }],
+	].forEach(([title, expectationProps]) => {
+		describe(`when using the ${title} option`, function() {
+			it("returns Map on good expectations", function() {
+				var exp = {
+					...expectationProps,
+					challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
+				};
+				var ret = parser.parseExpectations(exp);
+				assert.instanceOf(ret, Map);
+				assert.deepEqual(
+					Object.fromEntries(ret.entries()),
+					{
+						rpId: "bin.coffee",
+						challenge: exp.challenge,
+					},
+				);
+			});
+		});
 	});
 
 	it("doesn't add extra items to Map", function() {
