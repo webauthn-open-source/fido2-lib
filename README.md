@@ -101,7 +101,7 @@ var assertionExpectations = {
         "-----END PUBLIC KEY-----\n",
     prevCounter: 362
 };
-var authnResult = await f2l.attestationResult(clientAssertionResponse, assertionExpectations); // will throw on error
+var authnResult = await f2l.assertionResult(clientAssertionResponse, assertionExpectations); // will throw on error
 
 // authentication complete!
 ```
