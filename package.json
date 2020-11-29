@@ -37,9 +37,9 @@
     "istanbul": "^1.1.0-alpha.1",
     "istanbul-coveralls": "^1.0.3",
     "jsdoc": "^3.5.5",
-    "mocha": "^2.5.3",
+    "mocha": "^6.1.4",
     "mockery": "^2.0.0",
-    "sinon": "^1.17.6"
+    "sinon": "^7.3.2"
   },
   "dependencies": {
     "asn1js": "^2.0.18",
@@ -47,7 +47,7 @@
     "cose-to-jwk": "^1.1.0",
     "jwk-to-pem": "^2.0.0",
     "node-jose": "^2.0.0",
-    "node-webcrypto-ossl": "^1.0.35",
+    "node-webcrypto-ossl": "^1.0.49",
     "pkijs": "=2.1.58",
     "psl": "^1.1.24"
   }
