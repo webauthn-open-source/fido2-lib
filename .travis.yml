@@ -5,12 +5,15 @@ notifications:
   email: true
 language: node_js
 node_js:
-  - '11'
   - '12'
-  - '13'
+  - '14'
+  - '15'
 before_script:
   - npm prune
   - 'curl -Lo travis_after_all.py https://git.io/vLSON'
+script:
+  - npm run lint
+  - npm test
 after_success:
   - python travis_after_all.py
   - export $(cat .to_export_back)
@@ -20,3 +23,10 @@ after_success:
   - git config --global user.name "Adam Powers"
   - git config --global user.email "apowers@ato.ms"
   - npm run publish-docs
+
+deploy:
+  provider: npm
+  email: "apowers@ato.ms"
+  api_token: $NPM_AUTH_TOKEN
+  on:
+    branch: master

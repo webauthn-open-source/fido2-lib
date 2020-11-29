@@ -1,10 +1,23 @@
-[![Build Status](https://travis-ci.org/apowers313/fido2-lib.svg?branch=master)](https://travis-ci.org/apowers313/fido2-lib) [![Coverage Status](https://coveralls.io/repos/github/apowers313/fido2-lib/badge.svg?branch=master)](https://coveralls.io/github/apowers313/fido2-lib?branch=master) [![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json)
+[![Build Status](https://travis-ci.org/apowers313/fido2-lib.svg?branch=master)](https://travis-ci.org/apowers313/fido2-lib)
+[![Code Coverage](https://codecov.io/gh/webauthn-open-source/fido2-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/webauthn-open-source/fido2-lib)
+[![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json)
 
 ## Install
 
 ``` bash
 npm install fido2-lib
 ```
+
+[![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib)
+
+> :warning: The NPM package above is currently [outdated and cannot be updated](https://github.com/webauthn-open-source/fido2-lib/issues/45#issuecomment-735363927).
+You can use [a fork](https://github.com/FIDO-Tools/fido2-library) until this issue is resolved.
+
+``` bash
+npm install fido2-library
+```
+
+[![npm version](https://badge.fury.io/js/fido2-library.svg)](https://badge.fury.io/js/fido2-library)
 
 ## Overview
 A library for performing FIDO 2.0 / WebAuthn server functionality
@@ -21,7 +34,7 @@ There is also an extension point for adding new attestation formats.
 
 Full documentation can be found [here](https://webauthn-open-source.github.io/fido2-lib/).
 
-For working examples see [fido2-server-demo](https://github.com/webauthn-open-source/fido2-server-demo) and / or [webauthn.org](https://webauthn.org)
+For working examples see [OWASP Single Sign-On](https://github.com/OWASP/SSO_Project) and / or [webauthn.io](https://webauthn.io/)
 
 ## Features
 
@@ -106,9 +119,7 @@ var authnResult = await f2l.assertionResult(clientAssertionResponse, assertionEx
 // authentication complete!
 ```
 
-For a real-life example, refer to [component-fido2](https://github.com/webauthn-open-source/component-fido2).
+For a real-life example, refer to [OWASP Single Sign-On](https://github.com/OWASP/SSO_Project).
 
 ## Sponsor
-Note that while I used to be Technical Director for FIDO Alliance (and I am currently the Technical Advisor for FIDO Alliance), THIS PROJECT IS NOT ENDORSED OR SPONSORED BY FIDO ALLIANCE.
-
-Work for this project is supported by my consulting company: [WebAuthn Consulting](https://webauthn.consulting/).
+Work for this project was supported by [Adam Power](https://github.com/apowers313).

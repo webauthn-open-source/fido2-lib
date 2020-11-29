@@ -12,7 +12,7 @@
     ],
     "opts": {
         "systemName": "FIDO2 Library",
-        "copyright": "Copyright 2018, Adam Powers",
+        "copyright": "Copyright 2018, Adam Powers & Contributors",
         "template": "node_modules/docdash",
         "readme": "README.md",
         "encoding": "utf8",
