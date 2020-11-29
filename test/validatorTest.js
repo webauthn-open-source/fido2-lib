@@ -309,10 +309,26 @@ describe("attestation validation", function() {
 			assert.isTrue(attResp.audit.journal.has("origin"));
 		});
 
-		it("throws on suffix mismatch", function() {
+		it("throws on single origin rpid mismatch", function() {
+			attResp.expectations.set("rpId", "webauthn2.bin.coffee");
+			attResp.clientData.set("origin", "https://webauthn.bin.coffee:8443");
+			return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin does not end with expected rpId");
+		});
+
+		it("throws on multi-origin rpid mismatch", function() {
 			attResp.expectations.set("rpId", "foo.coffee");
 			attResp.clientData.set("origin", "https://webauthn.bin.coffee:8443");
 			return assert.isRejected(attResp.validateOrigin(), Error, "clientData origin does not end with expected rpId");
+		});
+
+		it("throws on multi-origin rpid mismatch when the prid/origin is a substring of each other", async function() {
+			attResp.expectations.set("rpId", "in.coffee");
+			attResp.clientData.set("origin", "https://webauthn.bin.coffee:8080");
+			await assert.isRejected(attResp.validateOrigin(), Error, "clientData origin does not end with expected rpId");
+
+			attResp.expectations.set("rpId", "foobin.coffee");
+			attResp.clientData.set("origin", "https://webauthn.bin.coffee:8080");
+			await assert.isRejected(attResp.validateOrigin(), Error, "clientData origin does not end with expected rpId");
 		});
 
 		it("calls checkOrigin");
