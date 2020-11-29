@@ -64,7 +64,7 @@ var f2l = new Fido2Lib();
 // which just makes the options calls easier later on:
 var f2l = new Fido2Lib({
     timeout: 42,
-    rpId: "example.com",
+    rpId: "example.com", // or "subdomain.example.com" authentication should only work on a specific subdomain
     rpName: "ACME",
     rpIcon: "https://example.com/logo.png",
     challengeSize: 128,
@@ -87,7 +87,7 @@ var registrationOptions = await f2l.attestationOptions();
 
 var attestationExpectations = {
     challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
-    origin: "https://localhost:8443",
+    rpId: "example.com", // or "localhost" while developing
     factor: "either"
 };
 var regResult = await f2l.attestationResult(clientAttestationResponse, attestationExpectations); // will throw on error
@@ -106,7 +106,7 @@ var authnOptions = await f2l.assertionOptions();
 
 var assertionExpectations = {
     challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
-    origin: "https://localhost:8443",
+    rpId: "example.com", // or "localhost" while developing
     factor: "either",
     publicKey: "-----BEGIN PUBLIC KEY-----\n" +
         "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERez9aO2wBAWO54MuGbEqSdWahSnG\n" +
@@ -117,6 +117,25 @@ var assertionExpectations = {
 var authnResult = await f2l.assertionResult(clientAssertionResponse, assertionExpectations); // will throw on error
 
 // authentication complete!
+```
+
+### Deprecated origin attestation & assertion option
+```js
+var attestationExpectations = {
+    challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+    origin: "https://example.com", // or "https://localhost", or even with a port "https://localhost:8443" while developing
+    factor: "either"
+};
+var assertionExpectations = {
+    challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+    origin: "https://example.com", // or "https://localhost", or even with a port "https://localhost:8443" while developing
+    factor: "either",
+    publicKey: "-----BEGIN PUBLIC KEY-----\n" +
+        "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERez9aO2wBAWO54MuGbEqSdWahSnG\n" +
+        "MAg35BCNkaE3j8Q+O/ZhhKqTeIKm7El70EG6ejt4sg1ZaoQ5ELg8k3ywTg==\n" +
+        "-----END PUBLIC KEY-----\n",
+    prevCounter: 362
+};
 ```
 
 For a real-life example, refer to [OWASP Single Sign-On](https://github.com/OWASP/SSO_Project).
