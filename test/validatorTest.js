@@ -709,6 +709,7 @@ describe("assertion validation", function() {
 			var ret = await assnResp.validateCounter();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.journal.has("counter"));
+			assert.equal(assnResp.audit.info.get("counter-supported"), "true");
 		});
 
 		it("returns true if counter is not supported but do not add it to journal", async function () {
@@ -716,7 +717,8 @@ describe("assertion validation", function() {
 			assnResp.expectations.set("prevCounter", 0);
 			var ret = await assnResp.validateCounter();
 			assert.isTrue(ret);
-			assert.isFalse(assnResp.audit.journal.has("counter"));
+			assert.isTrue(assnResp.audit.journal.has("counter"));
+			assert.equal(assnResp.audit.info.get("counter-supported"), "false");
 		});
 
 		it("throws if counter is the same", function() {
