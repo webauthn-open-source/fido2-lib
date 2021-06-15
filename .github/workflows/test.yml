@@ -38,6 +38,6 @@ jobs:
       - run: npm run publish-docs
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
