@@ -1,4 +1,4 @@
-name: "Continuous Integration"
+name: "CI"
 on:
   push:
     branches: [ master ]
@@ -6,7 +6,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,8 +21,8 @@ jobs:
       - run: npm run lint
       - run: npm test
   release:
-    if: ${{ github.ref == 'master' }}
-    needs: build
+    if: github.ref == 'refs/heads/master' && needs.test.result == 'success'
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,6 +36,8 @@ jobs:
       - run: git config --global user.name "JamesCullum (Pseudonym)"
       - run: git config --global user.email "https://mailhide.io/e/Wno7k"
       - run: npm run publish-docs
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
