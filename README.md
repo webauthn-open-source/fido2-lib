@@ -10,15 +10,6 @@ npm install fido2-lib
 
 [![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib)
 
-> :warning: The NPM package above is currently [outdated and cannot be updated](https://github.com/webauthn-open-source/fido2-lib/issues/45#issuecomment-735363927).
-You can use [a fork](https://github.com/FIDO-Tools/fido2-library) until this issue is resolved.
-
-``` bash
-npm install fido2-library
-```
-
-[![npm version](https://badge.fury.io/js/fido2-library.svg)](https://badge.fury.io/js/fido2-library)
-
 ## Overview
 A library for performing FIDO 2.0 / WebAuthn server functionality
 

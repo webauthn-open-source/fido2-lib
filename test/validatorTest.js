@@ -22,6 +22,9 @@ describe("attestation validation", function() {
 				"challenge",
 				"flags",
 			]),
+			optionalExpectations: new Set([
+				"rpId",
+			]),
 			expectations: new Map([
 				["origin", "https://localhost:8443"],
 				["challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w"],
@@ -64,6 +67,16 @@ describe("attestation validation", function() {
 		it("throws if expectations aren't Map", function() {
 			attResp.expectations = {};
 			return assert.isRejected(attResp.validateExpectations(), Error, "expectations should be of type Map");
+		});
+
+		it("throws if optionalExpectations aren't Set", function() {
+			attResp.optionalExpectations = { rpId: true };
+			return assert.isRejected(attResp.validateExpectations(), Error, "optionalExpectations should be of type Set");
+		});
+
+		it("should not throw if  optionalExpectations are array", async function() {
+			attResp.optionalExpectations = ["rpId"];
+			assert.isFulfilled(attResp.validateExpectations());
 		});
 
 		it("throws if too many expectations", function() {
@@ -132,6 +145,30 @@ describe("attestation validation", function() {
 		it("throws on undefined flag", function() {
 			attResp.expectations.set("flags", new Set([undefined, "UP", "AT"]));
 			return assert.isRejected(attResp.validateExpectations(), Error, "expected flag unknown: undefined");
+		});
+
+		it("throws on invalid rpId type", function() {
+			attResp.expectations.set("rpId", 123);
+			return assert.isRejected(attResp.validateExpectations(), Error, "rpId must be a string");
+		});
+
+		it("throws on invalid rpId", function() {
+			attResp.expectations.set("rpId", "test");
+			return assert.isRejected(attResp.validateExpectations(), Error, "rpId is not a valid eTLD+1");
+		});
+
+		it("works with valid rpId", async function() {
+			attResp.expectations.set("rpId", "google.com");
+			var ret = await attResp.validateExpectations();
+			assert.isTrue(ret);
+			assert.isTrue(attResp.audit.validExpectations);
+		});
+
+		it("works with localhost rpId", async function() {
+			attResp.expectations.set("rpId", "localhost");
+			var ret = await attResp.validateExpectations();
+			assert.isTrue(ret);
+			assert.isTrue(attResp.audit.validExpectations);
 		});
 
 		it("throws if counter is not a number");
@@ -475,6 +512,10 @@ describe("attestation validation", function() {
 	});
 
 	describe("validateRpIdHash", function() {
+		after(() => {
+			attResp.expectations.delete("rpId");
+		});
+
 		it("returns true when matches", async function() {
 			var ret = await attResp.validateRpIdHash();
 			assert.isTrue(ret);
@@ -482,7 +523,13 @@ describe("attestation validation", function() {
 		});
 
 		it("throws when it doesn't match", function() {
-			attResp.clientData.set("origin", "https://google.com");
+			attResp.expectations.set("origin", "https://google.com");
+			return assert.isRejected(attResp.validateRpIdHash(), Error, "authnrData rpIdHash mismatch");
+		});
+
+		it("throws when it doesn't match in case of invalid rpId", function() {
+			attResp.expectations.set("origin", "localhost");
+			attResp.expectations.set("rpId", "google.com");
 			return assert.isRejected(attResp.validateRpIdHash(), Error, "authnrData rpIdHash mismatch");
 		});
 
@@ -665,6 +712,9 @@ describe("assertion validation", function() {
 				"flags",
 				"counter",
 				"publicKey",
+			]),
+			optionalExpectations: new Set([
+				"rpId",
 			]),
 			expectations: new Map([
 				["origin", "https://localhost:8443"],

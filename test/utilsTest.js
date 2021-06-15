@@ -3,6 +3,7 @@
 const utils = require("../lib/utils");
 const {
 	checkOrigin,
+	checkRpId,
 	coerceToBase64,
 	coerceToBase64Url,
 	coerceToArrayBuffer,
@@ -34,13 +35,13 @@ describe("utils", function() {
 		it("throws on undefined origin", function() {
 			assert.throws(() => {
 				checkOrigin(undefined);
-			}, Error, "Invalid URL: undefined");
+			}, Error, "Invalid URL");
 		});
 
 		it("throws invalid url", function() {
 			assert.throws(() => {
 				checkOrigin("qwertyasdf");
-			}, Error, "Invalid URL: qwertyasdf");
+			}, Error, "Invalid URL");
 		});
 
 		it("allows localhost", function() {
@@ -65,6 +66,26 @@ describe("utils", function() {
 		it("rejects invalid eTLD+1 international domain");
 		it("allows punycoded domain");
 		it("correctly compares punycoded and international domain");
+	});
+
+	describe("checkRpId", function() {
+		it("throws on invalid eTLD+1", function() {
+			assert.throws(() => {
+				checkRpId("test");
+			}, Error, "rpId is not a valid eTLD+1");
+		});
+
+		it("throws on undefined rpId", function() {
+			assert.throws(() => {
+				checkRpId(undefined);
+			}, Error, "rpId must be a string");
+		});
+
+
+		it("allows localhost", function() {
+			var ret = checkRpId("test.localhost");
+			assert.strictEqual(ret, "test.localhost");
+		});
 	});
 
 	describe("coerceToBase64Url", () => {
