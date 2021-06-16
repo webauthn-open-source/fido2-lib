@@ -133,6 +133,7 @@ declare module "fido2-lib" {
     publicKey: string;
     prevCounter: number;
     userHandle: string | null;
+    allowCredentials?: PublicKeyCredentialDescriptor[];
   }
 
   interface Fido2AssertionResult {
