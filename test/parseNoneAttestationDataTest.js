@@ -4,15 +4,15 @@ const parser = require("../lib/parser");
 var assert = require("chai").assert;
 const h = require("fido2-helpers");
 
-describe("parseAttestationObject (none)", function() {
-	it("parser is object", function() {
+describe("parseAuthnrAttestationResponse (none)", function () {
+	it("parser is object", function () {
 		assert.isObject(parser);
 	});
 
-	it("correctly parses 'none' format", function() {
-		var ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationNoneResponse.response.attestationObject);
+	it("correctly parses 'none' format", function () {
+		var ret = parser.parseAuthnrAttestationResponse(h.lib.makeCredentialAttestationNoneResponse);
 		assert.instanceOf(ret, Map);
-		assert.strictEqual(ret.size, 11);
+		assert.strictEqual(ret.size, 12);
 		// attStmt
 		// var attStmt = ret.get("attStmt");
 		// assert.isObject(attStmt);
@@ -128,10 +128,10 @@ describe("parseAttestationObject (none)", function() {
 		var credentialPublicKeyPem = ret.get("credentialPublicKeyPem");
 		assert.isString(credentialPublicKeyPem);
 		var expectedPem =
-            "-----BEGIN PUBLIC KEY-----\n" +
-            "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEuxHN3W6ehp0VWXKaMNie1J82MVJC\n" +
-            "FZYScau74o17cx/b1jkTLi7lYZZbgwUwpqAk8QmIiPMTVQUVkhGEyGrKww==\n" +
-            "-----END PUBLIC KEY-----\n";
+			"-----BEGIN PUBLIC KEY-----\n" +
+			"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEuxHN3W6ehp0VWXKaMNie1J82MVJC\n" +
+			"FZYScau74o17cx/b1jkTLi7lYZZbgwUwpqAk8QmIiPMTVQUVkhGEyGrKww==\n" +
+			"-----END PUBLIC KEY-----\n";
 		assert.strictEqual(credentialPublicKeyPem, expectedPem);
 	});
 });

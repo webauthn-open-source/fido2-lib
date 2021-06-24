@@ -4,23 +4,23 @@ const parser = require("../lib/parser");
 var assert = require("chai").assert;
 const h = require("fido2-helpers");
 
-describe("parseAttestationObject (fido-u2f)", function() {
-	it("parser is object", function() {
+describe("parseAuthnrAttestationResponse (fido-u2f)", function () {
+	it("parser is object", function () {
 		assert.isObject(parser);
 	});
 
-	var ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationU2fResponse.response.attestationObject);
-	it("parser returns Map with correct size", function() {
+	var ret = parser.parseAuthnrAttestationResponse(h.lib.makeCredentialAttestationU2fResponse);
+	it("parser returns Map with correct size", function () {
 		assert.instanceOf(ret, Map);
-		assert.strictEqual(ret.size, 14);
+		assert.strictEqual(ret.size, 15);
 	});
 
-	it("parses fmt", function() {
+	it("parses fmt", function () {
 		var fmt = ret.get("fmt");
 		assert.strictEqual(fmt, "fido-u2f");
 	});
 
-	it("parses sig", function() {
+	it("parses sig", function () {
 		var sig = ret.get("sig");
 		assert.instanceOf(sig, ArrayBuffer);
 		assert.strictEqual(sig.byteLength, 72);
@@ -34,13 +34,13 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert(h.functions.arrayBufferEquals(sig, expectedSig), "sig contains right bytes");
 	});
 
-	it("parses x5c", function() {
+	it("parses x5c", function () {
 		var x5c = ret.get("x5c");
 		assert.isArray(x5c);
 		assert.strictEqual(x5c.length, 0);
 	});
 
-	it("parses attestation cert", function() {
+	it("parses attestation cert", function () {
 		var attCert = ret.get("attCert");
 		assert.instanceOf(attCert, ArrayBuffer);
 		var expectedAttCert = new Uint8Array([
@@ -85,7 +85,7 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert(h.functions.arrayBufferEquals(attCert, expectedAttCert), "attCert contains right bytes");
 	});
 
-	it("parses raw authCBOR", function() {
+	it("parses raw authCBOR", function () {
 		var rawAuthnrData = ret.get("rawAuthnrData");
 		assert.instanceOf(rawAuthnrData, ArrayBuffer);
 		var expectedRawAuthnrData = new Uint8Array([
@@ -106,7 +106,7 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert(h.functions.arrayBufferEquals(rawAuthnrData, expectedRawAuthnrData), "authData contains right bytes");
 	});
 
-	it("parses rpIdHash", function() {
+	it("parses rpIdHash", function () {
 		var rpIdHash = ret.get("rpIdHash");
 		var expectedRpIdHash = new Uint8Array([
 			0x49, 0x96, 0x0D, 0xE5, 0x88, 0x0E, 0x8C, 0x68, 0x74, 0x34, 0x17, 0x0F, 0x64, 0x76, 0x60, 0x5B,
@@ -115,7 +115,7 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert(h.functions.arrayBufferEquals(rpIdHash, expectedRpIdHash), "correct rpIdHash");
 	});
 
-	it("parses flags", function() {
+	it("parses flags", function () {
 		var flags = ret.get("flags");
 		assert.instanceOf(flags, Set);
 		assert.strictEqual(flags.size, 2);
@@ -123,12 +123,12 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert.isTrue(flags.has("AT"));
 	});
 
-	it("parses counter", function() {
+	it("parses counter", function () {
 		assert.strictEqual(ret.get("counter"), 0);
 		assert.isNumber(ret.get("counter"));
 	});
 
-	it("parses AAGUID", function() {
+	it("parses AAGUID", function () {
 		var aaguid = ret.get("aaguid");
 		assert.instanceOf(aaguid, ArrayBuffer);
 		var expectedAaguid = new Uint8Array([
@@ -138,11 +138,11 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert(h.functions.arrayBufferEquals(aaguid, expectedAaguid), "correct aaguid");
 	});
 
-	it("parses credential ID length", function() {
+	it("parses credential ID length", function () {
 		assert.strictEqual(ret.get("credIdLen"), 64);
 	});
 
-	it("parses credential ID", function() {
+	it("parses credential ID", function () {
 		var credId = ret.get("credId");
 		assert.instanceOf(credId, ArrayBuffer);
 		var expectedCredId = new Uint8Array([
@@ -154,7 +154,7 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert(h.functions.arrayBufferEquals(credId, expectedCredId), "correct credId");
 	});
 
-	it("parses credential public key (COSE)", function() {
+	it("parses credential public key (COSE)", function () {
 		var credentialPublicKeyCose = ret.get("credentialPublicKeyCose");
 		assert.instanceOf(credentialPublicKeyCose, ArrayBuffer);
 		var expectedCredentialPublicKeyCose = new Uint8Array([
@@ -167,7 +167,7 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert(h.functions.arrayBufferEquals(credentialPublicKeyCose, expectedCredentialPublicKeyCose), "correct credentialPublicKeyCose");
 	});
 
-	it("creates public key JWK", function() {
+	it("creates public key JWK", function () {
 		var credentialPublicKeyJwk = ret.get("credentialPublicKeyJwk");
 		assert.isObject(credentialPublicKeyJwk);
 		assert.strictEqual(Object.keys(credentialPublicKeyJwk).length, 5);
@@ -178,22 +178,22 @@ describe("parseAttestationObject (fido-u2f)", function() {
 		assert.strictEqual(credentialPublicKeyJwk.y, "GNNTGu5p2MUUydaVHms8mvbewElP2p7Fj08Jz2jyGZM=");
 	});
 
-	it("creates public key PEM", function() {
+	it("creates public key PEM", function () {
 		var credentialPublicKeyPem = ret.get("credentialPublicKeyPem");
 		assert.isString(credentialPublicKeyPem);
 		var expectedPem =
-            "-----BEGIN PUBLIC KEY-----\n" +
-            "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENXPQCHh+bDesdUPtqke79uebZHhm\n" +
-            "1rNBAgg8N+ZCRgQY01Ma7mnYxRTJ1pUeazya9t7ASU/ansWPTwnPaPIZkw==\n" +
-            "-----END PUBLIC KEY-----\n";
+			"-----BEGIN PUBLIC KEY-----\n" +
+			"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENXPQCHh+bDesdUPtqke79uebZHhm\n" +
+			"1rNBAgg8N+ZCRgQY01Ma7mnYxRTJ1pUeazya9t7ASU/ansWPTwnPaPIZkw==\n" +
+			"-----END PUBLIC KEY-----\n";
 		assert.strictEqual(credentialPublicKeyPem, expectedPem);
 	});
 });
 
-describe("parseAttestationObject (fido-u2f Hypersecu)", function() {
-	it("can parse", function() {
-		var ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationHypersecuU2fResponse.response.attestationObject);
+describe("parseAuthnrAttestationResponse (fido-u2f Hypersecu)", function () {
+	it("can parse", function () {
+		var ret = parser.parseAuthnrAttestationResponse(h.lib.makeCredentialAttestationHypersecuU2fResponse);
 		assert.instanceOf(ret, Map);
-		assert.strictEqual(ret.size, 14);
+		assert.strictEqual(ret.size, 15);
 	});
 });

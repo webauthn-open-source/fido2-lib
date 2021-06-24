@@ -6,26 +6,26 @@ const h = require("fido2-helpers");
 const abEqual = h.functions.abEqual;
 const printHex = h.functions.printHex;
 
-describe("parseAttestationObject (packed)", function() {
-	it("parser is object", function() {
+describe("parseAuthnrAttestationResponse (packed)", function () {
+	it("parser is object", function () {
 		assert.isObject(parser);
 	});
 
-	it("has correct helper", function() {
+	it("has correct helper", function () {
 		assert.isObject(h.lib.makeCredentialAttestationPackedResponse);
 	});
 
-	var ret = parser.parseAttestationObject(h.lib.makeCredentialAttestationPackedResponse.response.attestationObject);
-	it("parser returns Map with correct size", function() {
+	var ret = parser.parseAuthnrAttestationResponse(h.lib.makeCredentialAttestationPackedResponse);
+	it("parser returns Map with correct size", function () {
 		assert.instanceOf(ret, Map);
-		assert.strictEqual(ret.size, 15);
+		assert.strictEqual(ret.size, 16);
 	});
 
-	it("is 'packed' fmt", function() {
+	it("is 'packed' fmt", function () {
 		assert.strictEqual(ret.get("fmt"), "packed");
 	});
 
-	it("has correct alg", function() {
+	it("has correct alg", function () {
 		var alg = ret.get("alg");
 		assert.isObject(alg);
 		assert.strictEqual(Object.keys(alg).length, 2);
@@ -33,7 +33,7 @@ describe("parseAttestationObject (packed)", function() {
 		assert.strictEqual(alg.hashAlg, "SHA256");
 	});
 
-	it("has x5c", function() {
+	it("has x5c", function () {
 		var x5c = ret.get("x5c");
 		assert.isArray(x5c);
 		assert.strictEqual(x5c.length, 2);
@@ -114,7 +114,7 @@ describe("parseAttestationObject (packed)", function() {
 		assert.isTrue(abEqual(x5c[1], expectedX5c1), "x5c[1] has correct value");
 	});
 
-	it("has attCert", function() {
+	it("has attCert", function () {
 		var attCert = ret.get("attCert");
 		assert.instanceOf(attCert, ArrayBuffer);
 
@@ -161,7 +161,7 @@ describe("parseAttestationObject (packed)", function() {
 		assert.isTrue(abEqual(attCert, expectedAttCert), "attCert has correct value");
 	});
 
-	it("has sig", function() {
+	it("has sig", function () {
 		var sig = ret.get("sig");
 		assert.instanceOf(sig, ArrayBuffer);
 
@@ -177,7 +177,7 @@ describe("parseAttestationObject (packed)", function() {
 
 	});
 
-	it("has correct raw authnrData", function() {
+	it("has correct raw authnrData", function () {
 		var rawAuthnrData = ret.get("rawAuthnrData");
 		assert.instanceOf(rawAuthnrData, ArrayBuffer);
 		assert.strictEqual(rawAuthnrData.byteLength, 228);
@@ -202,7 +202,7 @@ describe("parseAttestationObject (packed)", function() {
 		assert.isTrue(abEqual(rawAuthnrData, expectedRawAuthnrData), "rawAuthnrData has correct value");
 	});
 
-	it("has correct rpIdHash", function() {
+	it("has correct rpIdHash", function () {
 		var rpIdHash = ret.get("rpIdHash");
 		assert.instanceOf(rpIdHash, ArrayBuffer);
 		assert.strictEqual(rpIdHash.byteLength, 32);
@@ -214,7 +214,7 @@ describe("parseAttestationObject (packed)", function() {
 		assert.isTrue(abEqual(rpIdHash, expectedRpIdHash), "rpIdHash has correct value");
 	});
 
-	it("has correct flags", function() {
+	it("has correct flags", function () {
 		var flags = ret.get("flags");
 		assert.instanceOf(flags, Set);
 		assert.strictEqual(flags.size, 2);
@@ -222,13 +222,13 @@ describe("parseAttestationObject (packed)", function() {
 		assert.isTrue(flags.has("UP"));
 	});
 
-	it("has correct counter", function() {
+	it("has correct counter", function () {
 		var counter = ret.get("counter");
 		assert.isNumber(counter);
 		assert.strictEqual(counter, 1);
 	});
 
-	it("has correct aaguid", function() {
+	it("has correct aaguid", function () {
 		var aaguid = ret.get("aaguid");
 		assert.instanceOf(aaguid, ArrayBuffer);
 		assert.strictEqual(aaguid.byteLength, 16);
@@ -239,13 +239,13 @@ describe("parseAttestationObject (packed)", function() {
 		assert.isTrue(abEqual(aaguid, expectedAaguid), "aaguid has correct value");
 	});
 
-	it("has correct credIdLen", function() {
+	it("has correct credIdLen", function () {
 		var credIdLen = ret.get("credIdLen");
 		assert.isNumber(credIdLen);
 		assert.strictEqual(credIdLen, 96);
 	});
 
-	it("has correct credentialPublicKeyCose", function() {
+	it("has correct credentialPublicKeyCose", function () {
 		var credentialPublicKeyCose = ret.get("credentialPublicKeyCose");
 		assert.instanceOf(credentialPublicKeyCose, ArrayBuffer);
 		assert.strictEqual(credentialPublicKeyCose.byteLength, 77);

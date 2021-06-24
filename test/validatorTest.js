@@ -7,6 +7,7 @@ var chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 var assert = chai.assert;
 const h = require("fido2-helpers");
+const { coerceToArrayBuffer } = require("../lib/utils");
 const {
 	printHex,
 	cloneObject,
@@ -24,6 +25,7 @@ describe("attestation validation", function () {
 			]),
 			optionalExpectations: new Set([
 				"rpId",
+				"allowCredentials",
 			]),
 			expectations: new Map([
 				["origin", "https://localhost:8443"],
@@ -31,7 +33,7 @@ describe("attestation validation", function () {
 				["flags", ["UP", "AT"]],
 			]),
 			clientData: parser.parseClientResponse(h.lib.makeCredentialAttestationNoneResponse),
-			authnrData: parser.parseAttestationObject(h.lib.makeCredentialAttestationNoneResponse.response.attestationObject),
+			authnrData: parser.parseAuthnrAttestationResponse(h.lib.makeCredentialAttestationNoneResponse),
 		};
 		var testReq = cloneObject(h.lib.makeCredentialAttestationNoneResponse);
 		testReq.rawId = h.lib.makeCredentialAttestationNoneResponse.rawId;
@@ -166,6 +168,67 @@ describe("attestation validation", function () {
 
 		it("works with localhost rpId", async function () {
 			attResp.expectations.set("rpId", "localhost");
+			var ret = await attResp.validateExpectations();
+			assert.isTrue(ret);
+			assert.isTrue(attResp.audit.validExpectations);
+		});
+
+		it("works with valid allowCredentials", async function () {
+			attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["usb", "nfc"] }]);
+			var ret = await attResp.validateExpectations();
+			assert.isTrue(ret);
+			assert.isTrue(attResp.audit.validExpectations);
+		});
+
+		it("works with null allowCredentials", async function () {
+			attResp.expectations.set("allowCredentials", null);
+			var ret = await attResp.validateExpectations();
+			assert.isTrue(ret);
+			assert.isTrue(attResp.audit.validExpectations);
+		});
+
+		it("throws on wrong allowCredentials type", function () {
+			attResp.expectations.set("allowCredentials", { type: "public-key", transports: ["usb", "nfc"] });
+			return assert.isRejected(attResp.validateExpectations(), Error, "expected allowCredentials to be null or array");
+		});
+
+		it("throws on missing id in allowCredentials", function () {
+			attResp.expectations.set("allowCredentials", [{ type: "public-key", transports: ["usb", "nfc"] }]);
+			return assert.isRejected(attResp.validateExpectations(), Error, "expected id of allowCredentials[0] to be ArrayBuffer");
+		});
+
+		it("throws on null id in allowCredentials", function () {
+			attResp.expectations.set("allowCredentials", [{ id: {}, type: "public-key", transports: ["usb", "nfc"] }]);
+			return assert.isRejected(attResp.validateExpectations(), Error, "expected id of allowCredentials[0] to be ArrayBuffer");
+		});
+
+		it("throws on wrong type of id in allowCredentials", function () {
+			attResp.expectations.set("allowCredentials", [{ id: {}, type: "public-key", transports: ["usb", "nfc"] }]);
+			return assert.isRejected(attResp.validateExpectations(), Error, "expected id of allowCredentials[0] to be ArrayBuffer");
+		});
+
+		it("throws on missing type in allowCredentials element", function () {
+			attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, transports: ["usb", "nfc"] }]);
+			return assert.isRejected(attResp.validateExpectations(), Error, "expected type of allowCredentials[0] to be string with value 'public-key'");
+		});
+
+		it("throws on wrong type value in allowCredentials element", function () {
+			attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "test", transports: ["usb", "nfc"] }]);
+			return assert.isRejected(attResp.validateExpectations(), Error, "expected type of allowCredentials[0] to be string with value 'public-key'");
+		});
+
+		it("throws on wrong transports type in allowCredentials element", function () {
+			attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: "test" }]);
+			return assert.isRejected(attResp.validateExpectations(), Error, "expected transports of allowCredentials[0] to be array or null");
+		});
+
+		it("throws on wrong transports value in allowCredentials element", function () {
+			attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["none", "nfc"] }]);
+			return assert.isRejected(attResp.validateExpectations(), Error, "expected transports of allowCredentials[0] to be string with value 'usb', 'nfc', 'ble', 'internal' or null");
+		});
+
+		it("works with null transports in allowCredentials element", async function () {
+			attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key" }]);
 			var ret = await attResp.validateExpectations();
 			assert.isTrue(ret);
 			assert.isTrue(attResp.audit.validExpectations);
@@ -327,6 +390,31 @@ describe("attestation validation", function () {
 			attResp.clientData.set("rawId", undefined);
 			return assert.isRejected(attResp.validateId(), Error, "expected id to be of type ArrayBuffer");
 		});
+	});
+
+	describe("validateTransports", function () {
+		it("returns true on array<string>", async function () {
+			var ret = await attResp.validateTransports();
+			assert.isTrue(ret);
+			assert.isTrue(attResp.audit.journal.has("transports"));
+		});
+
+		it("returns true on null", async function () {
+			var ret = await attResp.validateTransports();
+			assert.isTrue(ret);
+			assert.isTrue(attResp.audit.journal.has("transports"));
+		});
+
+		it("throws on non-Array", function () {
+			attResp.authnrData.set("transports", "test");
+			return assert.isRejected(attResp.validateTransports(), Error, "expected transports to be 'null' or 'array<string>'");
+		});
+
+		it("throws on non-Array<string>", function () {
+			attResp.authnrData.set("transports", [1]);
+			return assert.isRejected(attResp.validateTransports(), Error, "expected transports[0] to be 'string'");
+		});
+
 	});
 
 	describe("validateOrigin", function () {
@@ -670,6 +758,7 @@ describe("attestation validation", function () {
 			await attResp.validateChallenge();
 			await attResp.validateTokenBinding();
 			await attResp.validateId();
+			await attResp.validateTransports();
 			// authnrData validators
 			await attResp.validateRawAuthnrData();
 			await attResp.validateAttestation();
@@ -815,7 +904,15 @@ describe("assertion validation", function () {
 			assnResp.clientData.set("rawId", undefined);
 			return assert.isRejected(assnResp.validateId(), Error, "expected id to be of type ArrayBuffer");
 		});
+
+
+		it("throws on allowCredentials not includes rawId", function () {
+			assnResp.expectations.set("allowCredentials", [{ type: "public-key", id: coerceToArrayBuffer("dGVz", "tes") }]);
+			assnResp.clientData.set("rawId", coerceToArrayBuffer("Y2lhbw==", "ciao"));
+			return assert.isRejected(assnResp.validateId(), Error, "id does not match any value in allowCredentials");
+		});
 	});
+
 
 	describe("validateAssertionSignature", function () {
 		it("returns true on valid signature");
