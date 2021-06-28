@@ -6,12 +6,12 @@ const h = require("fido2-helpers");
 const coerceToArrayBuffer = h.functions.coerceToArrayBuffer;
 const abEqual = h.functions.abEqual;
 
-describe("parseExpectations", function () {
-	it("parser is object", function () {
+describe("parseExpectations", function() {
+	it("parser is object", function() {
 		assert.isObject(parser);
 	});
 
-	it("returns Map on good expectations", function () {
+	it("returns Map on good expectations", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
@@ -23,7 +23,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(ret.get("challenge"), exp.challenge);
 	});
 
-	it("doesn't add extra items to Map", function () {
+	it("doesn't add extra items to Map", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
@@ -37,7 +37,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(ret.get("challenge"), exp.challenge);
 	});
 
-	it("throws on invalid origin", function () {
+	it("throws on invalid origin", function() {
 		var exp = {
 			origin: "asdf",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
@@ -47,7 +47,7 @@ describe("parseExpectations", function () {
 		}, TypeError, "Invalid URL");
 	});
 
-	it("throws if expected origin is https:443", function () {
+	it("throws if expected origin is https:443", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee:443",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",
@@ -57,7 +57,7 @@ describe("parseExpectations", function () {
 		}, Error, "origin was malformatted");
 	});
 
-	it("throws if expected rpId is invalid type", function () {
+	it("throws if expected rpId is invalid type", function() {
 		var exp = {
 			rpId: 23,
 			origin: "https://webauthn.bin.coffee",
@@ -68,7 +68,7 @@ describe("parseExpectations", function () {
 		}, Error, "expected 'rpId' should be string, got number");
 	});
 
-	it("throws if expected rpId is invalid", function () {
+	it("throws if expected rpId is invalid", function() {
 		var exp = {
 			rpId: "foobar",
 			origin: "https://webauthn.bin.coffee",
@@ -79,7 +79,7 @@ describe("parseExpectations", function () {
 		}, Error, "rpId is not a valid eTLD+1");
 	});
 
-	it("sets rpId properly on successful parsing", function () {
+	it("sets rpId properly on successful parsing", function() {
 		var exp = {
 			rpId: "google.com",
 			origin: "https://webauthn.bin.coffee",
@@ -90,7 +90,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(ret.size, 3);
 	});
 
-	it("coerces Array challenge to base64url", function () {
+	it("coerces Array challenge to base64url", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: [
@@ -109,7 +109,7 @@ describe("parseExpectations", function () {
 	});
 
 
-	it("coerces Uint8Array challenge to base64url", function () {
+	it("coerces Uint8Array challenge to base64url", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: Uint8Array.from([
@@ -127,7 +127,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
-	it("coerces ArrayBuffer challenge to base64url", function () {
+	it("coerces ArrayBuffer challenge to base64url", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: Uint8Array.from([
@@ -145,7 +145,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
-	it("coerces Buffer challenge to base64url", function () {
+	it("coerces Buffer challenge to base64url", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: Buffer.from([
@@ -163,7 +163,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
-	it("coerces base64 challenge to base64url", function () {
+	it("coerces base64 challenge to base64url", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -176,14 +176,14 @@ describe("parseExpectations", function () {
 		assert.strictEqual(ret.get("challenge"), base64UrlChallenge);
 	});
 
-	it("empty expectations object returns empty map", function () {
+	it("empty expectations object returns empty map", function() {
 		var exp = {};
 		var ret = parser.parseExpectations(exp);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 0);
 	});
 
-	it("adds flags to map when they exist", function () {
+	it("adds flags to map when they exist", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -199,7 +199,7 @@ describe("parseExpectations", function () {
 		assert.isTrue(flags.has("AT"), "flags has AT");
 	});
 
-	it("converts Array of flags to Set", function () {
+	it("converts Array of flags to Set", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -215,7 +215,7 @@ describe("parseExpectations", function () {
 		assert.isTrue(flags.has("AT"), "flags has AT");
 	});
 
-	it("throws if flags is something other than Array or Set", function () {
+	it("throws if flags is something other than Array or Set", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -226,7 +226,7 @@ describe("parseExpectations", function () {
 		}, TypeError, "expected flags to be an Array or a Set, got: string");
 	});
 
-	it("adds prevCount to map when it exists", function () {
+	it("adds prevCount to map when it exists", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -240,7 +240,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(prevCounter, 666);
 	});
 
-	it("adds prevCount to map when it's zero", function () {
+	it("adds prevCount to map when it's zero", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -254,7 +254,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(prevCounter, 0);
 	});
 
-	it("throws when prevCount is not a number", function () {
+	it("throws when prevCount is not a number", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -265,7 +265,7 @@ describe("parseExpectations", function () {
 		}, TypeError, "expected 'prevCounter' should be Number, got string");
 	});
 
-	it("adds publicKey to map when it exists", function () {
+	it("adds publicKey to map when it exists", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -286,7 +286,7 @@ describe("parseExpectations", function () {
 	});
 
 
-	it("throws when publicKey is not a string", function () {
+	it("throws when publicKey is not a string", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -297,7 +297,7 @@ describe("parseExpectations", function () {
 		}, TypeError, "expected 'publicKey' should be String, got object");
 	});
 
-	it("adds userHandle to map when it exists", function () {
+	it("adds userHandle to map when it exists", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -317,7 +317,7 @@ describe("parseExpectations", function () {
 		assert.isTrue(abEqual(userHandle, expectedUserHandle), "userHandle has correct value");
 	});
 
-	it("adds userHandle to map when null", function () {
+	it("adds userHandle to map when null", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -330,7 +330,7 @@ describe("parseExpectations", function () {
 		assert.isNull(userHandle);
 	});
 
-	it("adds userHandle to map when empty string", function () {
+	it("adds userHandle to map when empty string", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -345,7 +345,7 @@ describe("parseExpectations", function () {
 		assert.strictEqual(userHandle, "");
 	});
 
-	it("adds allowCredentials to map when it exists", function () {
+	it("adds allowCredentials to map when it exists", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -363,7 +363,7 @@ describe("parseExpectations", function () {
 		assert.isTrue(abEqual(allowCredentials[0].id, expectedallowCredentialsId), "allowCredentials has correct value");
 	});
 
-	it("adds allowCredentials to map when null", function () {
+	it("adds allowCredentials to map when null", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -377,7 +377,7 @@ describe("parseExpectations", function () {
 	});
 
 
-	it("works when allowCredentials is undefined", function () {
+	it("works when allowCredentials is undefined", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -389,7 +389,7 @@ describe("parseExpectations", function () {
 		assert.isUndefined(allowCredentials);
 	});
 
-	it("works when userHandle is undefined", function () {
+	it("works when userHandle is undefined", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -401,7 +401,7 @@ describe("parseExpectations", function () {
 		assert.isUndefined(userHandle);
 	});
 
-	it("throws when allowCredentials is not a array", function () {
+	it("throws when allowCredentials is not a array", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
 			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
@@ -413,7 +413,7 @@ describe("parseExpectations", function () {
 		}, TypeError, "expected 'allowCredentials' to be null or array, got object");
 	});
 
-	it("works with typical attestation expectations", function () {
+	it("works with typical attestation expectations", function() {
 		var exp = {
 			challenge: "HcsOvH431SaLt1hc7mpkqohMaub+oTO5ao/hzJOkUwQEdTWDhOYTdp4ejQcOCsIYdB64c1fkeqiblg6EkygpUA==",
 			origin: "https://localhost:8443",
