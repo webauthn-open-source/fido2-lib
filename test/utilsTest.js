@@ -13,6 +13,7 @@ const {
 	isPem,
 	pemToBase64,
 	printHex,
+	bufEqual,
 } = utils;
 var assert = require("chai").assert;
 const h = require("fido2-helpers");
@@ -325,6 +326,24 @@ describe("utils", function() {
 			]).buffer;
 
 			assert.isTrue(abEqual(ab, expectedAb), "expected result from str2ab");
+		});
+	});
+
+	describe("bufEqual", function() {
+		it("compare Buffer with Buffer", function() {
+			var ab = Buffer.from(str2ab("ciao"));
+
+			var expectedAb = Buffer.from("ciao");
+
+			assert.isTrue(bufEqual(ab, expectedAb), "expected result from bufEqual");
+		});
+
+		it("compare Buffer with ArrayBuffer", function() {
+			var ab = str2ab("ciao");
+
+			var expectedAb = Buffer.from("ciao");
+
+			assert.isFalse(bufEqual(ab, expectedAb), "expected result from bufEqual");
 		});
 	});
 

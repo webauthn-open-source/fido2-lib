@@ -91,11 +91,18 @@ var regResult = await f2l.attestationResult(clientAttestationResponse, attestati
 ``` js
 var authnOptions = await f2l.assertionOptions();
 
+// add allowCredentials to limit the number of allowed credential for the authentication process. For further details refer to webauthn specs: (https://www.w3.org/TR/webauthn-2/#dom-publickeycredentialrequestoptions-allowcredentials).
 // save the challenge in the session information...
 // send authnOptions to client and pass them in to `navigator.credentials.get()`...
 // get response back from client (clientAssertionResponse)
 
 var assertionExpectations = {
+    // Remove the following comment if allowCredentials has been added into authnOptions so the credential received will be validate against allowCredentials array.
+    // allowCredentials: [{
+    //     id: "lTqW8H/lHJ4yT0nLOvsvKgcyJCeO8LdUjG5vkXpgO2b0XfyjLMejRvW5oslZtA4B/GgkO/qhTgoBWSlDqCng4Q==",
+    //     type: "public-key",
+    //     transports: ["usb"]
+    // }],
     challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
     origin: "https://localhost:8443",
     factor: "either",
@@ -113,4 +120,5 @@ var authnResult = await f2l.assertionResult(clientAssertionResponse, assertionEx
 For a real-life example, refer to [OWASP Single Sign-On](https://github.com/OWASP/SSO_Project).
 
 ## Sponsor
+
 Work for this project was supported by [Adam Power](https://github.com/apowers313).

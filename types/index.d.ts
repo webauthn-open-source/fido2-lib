@@ -4,10 +4,20 @@ declare module "fido2-lib" {
   class Fido2Lib {
     constructor(opts?: Fido2LibOptions);
 
-    attestationOptions(opts?: AttestationOptions): Promise<PublicKeyCredentialCreationOptions>;
-    attestationResult(res: AttestationResult, expected: ExpectedAttestationResult): Promise<Fido2AttestationResult>;
-    assertionOptions(opts?: AssertionOptions): Promise<PublicKeyCredentialRequestOptions>;
-    assertionResult(res: AssertionResult, expected: ExpectedAssertionResult): Promise<Fido2AssertionResult>;
+    attestationOptions(
+      opts?: AttestationOptions
+    ): Promise<PublicKeyCredentialCreationOptions>;
+    attestationResult(
+      res: AttestationResult,
+      expected: ExpectedAttestationResult
+    ): Promise<Fido2AttestationResult>;
+    assertionOptions(
+      opts?: AssertionOptions
+    ): Promise<PublicKeyCredentialRequestOptions>;
+    assertionResult(
+      res: AssertionResult,
+      expected: ExpectedAssertionResult
+    ): Promise<Fido2AssertionResult>;
   }
 
   interface Fido2LibOptions {
@@ -59,6 +69,7 @@ declare module "fido2-lib" {
   interface AttestationResult {
     id?: ArrayBuffer;
     rawId?: ArrayBuffer;
+    transports?: string[];
     response: { clientDataJSON: string; attestationObject: string };
   }
 
@@ -94,12 +105,24 @@ declare module "fido2-lib" {
     userVerification?: UserVerification;
     rawChallenge?: ArrayBuffer;
     extensions?: any;
+    allowCredentials?: PublicKeyCredentialDescriptor[];
+  }
+
+  interface PublicKeyCredentialDescriptor {
+    type: "public-key";
+    id: ArrayBuffer;
+    transports?: string[];
   }
 
   interface AssertionResult {
     id?: ArrayBuffer;
     rawId?: ArrayBuffer;
-    response: { clientDataJSON: string; authenticatorData: ArrayBuffer; signature: string; userHandle?: string };
+    response: {
+      clientDataJSON: string;
+      authenticatorData: ArrayBuffer;
+      signature: string;
+      userHandle?: string;
+    };
   }
 
   interface ExpectedAssertionResult {
@@ -110,6 +133,7 @@ declare module "fido2-lib" {
     publicKey: string;
     prevCounter: number;
     userHandle: string | null;
+    allowCredentials?: PublicKeyCredentialDescriptor[];
   }
 
   interface Fido2AssertionResult {

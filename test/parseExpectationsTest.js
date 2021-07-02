@@ -254,9 +254,48 @@ describe("parseExpectations", function() {
 		assert.strictEqual(prevCounter, 0);
 	});
 
-	it("throws when prevCount is not a number");
-	it("adds publicKey to map when it exists");
-	it("throws when publicKey is not a string");
+	it("throws when prevCount is not a number", function() {
+		var exp = {
+			origin: "https://webauthn.bin.coffee",
+			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+			prevCounter: "string",
+		};
+		assert.throws(() => {
+			parser.parseExpectations(exp);
+		}, TypeError, "expected 'prevCounter' should be Number, got string");
+	});
+
+	it("adds publicKey to map when it exists", function() {
+		var exp = {
+			origin: "https://webauthn.bin.coffee",
+			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+			publicKey: "-----BEGIN PUBLIC KEY-----\n" +
+				"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERez9aO2wBAWO54MuGbEqSdWahSnG\n" +
+				"MAg35BCNkaE3j8Q+O/ZhhKqTeIKm7El70EG6ejt4sg1ZaoQ5ELg8k3ywTg==\n" +
+				"-----END PUBLIC KEY-----\n",
+		};
+		var ret = parser.parseExpectations(exp);
+		assert.instanceOf(ret, Map);
+		assert.strictEqual(ret.size, 3);
+		var publicKey = ret.get("publicKey");
+		assert.isString(publicKey);
+		assert.strictEqual(publicKey, "-----BEGIN PUBLIC KEY-----\n" +
+			"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAERez9aO2wBAWO54MuGbEqSdWahSnG\n" +
+			"MAg35BCNkaE3j8Q+O/ZhhKqTeIKm7El70EG6ejt4sg1ZaoQ5ELg8k3ywTg==\n" +
+			"-----END PUBLIC KEY-----\n");
+	});
+
+
+	it("throws when publicKey is not a string", function() {
+		var exp = {
+			origin: "https://webauthn.bin.coffee",
+			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+			publicKey: {},
+		};
+		assert.throws(() => {
+			parser.parseExpectations(exp);
+		}, TypeError, "expected 'publicKey' should be String, got object");
+	});
 
 	it("adds userHandle to map when it exists", function() {
 		var exp = {
@@ -306,6 +345,50 @@ describe("parseExpectations", function() {
 		assert.strictEqual(userHandle, "");
 	});
 
+	it("adds allowCredentials to map when it exists", function() {
+		var exp = {
+			origin: "https://webauthn.bin.coffee",
+			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+			allowCredentials: [{ id: "dGVzdA==", transports: ["usb"], type: "public-key" }],
+		};
+
+		var ret = parser.parseExpectations(exp);
+		var allowCredentials = ret.get("allowCredentials");
+		assert.isArray(allowCredentials);
+		assert.strictEqual(allowCredentials.length, 1);
+		allowCredentials[0].id = coerceToArrayBuffer(allowCredentials[0].id);
+		var expectedallowCredentialsId = new Uint8Array([
+			0x74, 0x65, 0x73, 0x74,
+		]).buffer;
+		assert.isTrue(abEqual(allowCredentials[0].id, expectedallowCredentialsId), "allowCredentials has correct value");
+	});
+
+	it("adds allowCredentials to map when null", function() {
+		var exp = {
+			origin: "https://webauthn.bin.coffee",
+			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+			prevCounter: 0,
+			allowCredentials: null,
+		};
+
+		var ret = parser.parseExpectations(exp);
+		var allowCredentials = ret.get("allowCredentials");
+		assert.isNull(allowCredentials);
+	});
+
+
+	it("works when allowCredentials is undefined", function() {
+		var exp = {
+			origin: "https://webauthn.bin.coffee",
+			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+			prevCounter: 0,
+		};
+
+		var ret = parser.parseExpectations(exp);
+		var allowCredentials = ret.get("allowCredentials");
+		assert.isUndefined(allowCredentials);
+	});
+
 	it("works when userHandle is undefined", function() {
 		var exp = {
 			origin: "https://webauthn.bin.coffee",
@@ -316,6 +399,18 @@ describe("parseExpectations", function() {
 		var ret = parser.parseExpectations(exp);
 		var userHandle = ret.get("userHandle");
 		assert.isUndefined(userHandle);
+	});
+
+	it("throws when allowCredentials is not a array", function() {
+		var exp = {
+			origin: "https://webauthn.bin.coffee",
+			challenge: "4BS1YJKRCeCVoLdfG/b66BuSQ+I2n34WsLFvy62fpIVFjrm32/tFRQixX9U8EBVTriTkreAp+1nDvYboRK9WFg",
+			publicKey: "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESe3kuy9dZzFYR/uw+exFJxKLt6E+\n3Sp0RamB8J63CxYnbRhv6SF6MwQx/LNHJHw7rrN2xioEu88ArEDdk0jHAQ==\n-----END PUBLIC KEY-----\n",
+			allowCredentials: {},
+		};
+		assert.throws(() => {
+			parser.parseExpectations(exp);
+		}, TypeError, "expected 'allowCredentials' to be null or array, got object");
 	});
 
 	it("works with typical attestation expectations", function() {
