@@ -720,6 +720,24 @@ describe("attestation validation", function() {
 					return assert.isRejected(attResp.validateFlags(), Error, "expected flag was not set: ED");
 				});
 
+				it("throws if UV is set but UP is not set", function() {
+					attResp.expectations.set("flags", ["UV"]);
+					attResp.authnrData.set("flags", new Set(["UV"]));
+					return assert.isRejected(attResp.validateFlags(), Error, "expected User Presence (UP) flag to be set if User Verification (UV) is set");
+				});
+
+				it("throws if UV is not set", function() {
+					attResp.expectations.set("flags", ["UV"]);
+					attResp.authnrData.set("flags", new Set(["ED"]));
+					return assert.isRejected(attResp.validateFlags(), Error, "expected flag was not set: UV");
+				});
+
+				it("throws if UV but only UP is set", function() {
+					attResp.expectations.set("flags", ["UV"]);
+					attResp.authnrData.set("flags", new Set(["UP"]));
+					return assert.isRejected(attResp.validateFlags(), Error, "expected flag was not set: UV");
+				});
+
 				it("returns true on UP with UP-or-UV", async function() {
 					attResp.expectations.set("flags", ["UP-or-UV"]);
 					attResp.authnrData.set("flags", new Set(["UP"]));
@@ -730,10 +748,16 @@ describe("attestation validation", function() {
 
 				it("returns true on UV with UP-or-UV", async function() {
 					attResp.expectations.set("flags", ["UP-or-UV"]);
-					attResp.authnrData.set("flags", new Set(["UV"]));
+					attResp.authnrData.set("flags", new Set(["UV", "UP"]));
 					var ret = await attResp.validateFlags();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("flags"));
+				});
+
+				it("throws if UP-or-UV and UV is set but not UP", function() {
+					attResp.expectations.set("flags", ["UP-or-UV"]);
+					attResp.authnrData.set("flags", new Set(["UV"]));
+					return assert.isRejected(attResp.validateFlags(), Error, "expected User Presence (UP) flag to be set if User Verification (UV) is set");
 				});
 
 				it("throws if UP-or-UV and neither is set", function() {
