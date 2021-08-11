@@ -82,10 +82,20 @@ describe("utils", function() {
 			}, Error, "rpId must be a string");
 		});
 
-
 		it("allows localhost", function() {
 			var ret = checkRpId("test.localhost");
 			assert.strictEqual(ret, "test.localhost");
+		});
+
+		it("allows fully qualified urls", function() {
+			var ret = checkRpId("https://test.com");
+			assert.strictEqual(ret, "https://test.com");
+		});
+
+		it("rejects http urls", function() {
+			assert.throws(() => {
+				checkRpId("https://test.com");
+			}, Error, "origin should be https");
 		});
 	});
 
