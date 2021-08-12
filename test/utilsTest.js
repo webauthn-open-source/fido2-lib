@@ -94,8 +94,8 @@ describe("utils", function() {
 
 		it("rejects http urls", function() {
 			assert.throws(() => {
-				checkRpId("https://test.com");
-			}, Error, "origin should be https");
+				checkRpId("http://test.com");
+			}, Error, "rpId should be https");
 		});
 	});
 
