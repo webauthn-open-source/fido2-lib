@@ -82,7 +82,7 @@ const main = async () => {
 	const validResponse = authnResult.audit.complete && authnResult.audit.validRequest && authnResult.audit.validExpectations;
 	const newCounter = authnResult.authnrData.get("counter");
 	const authenticated = validResponse && newCounter > expectedAuthn.prevCounter; // double check also counter to make sure auth passed
-  console.log(authenticated) // true
+	console.log(authenticated); // true
 };
 
 // NOTE! for migrating your u2f credentials to webauthn you can use this example:
