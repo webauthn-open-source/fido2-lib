@@ -29,7 +29,10 @@ runs.forEach(function(run) {
 			assert.isObject(parser);
 		});
 
-		var ret = run.functionName == "parseAuthnrAttestationResponse" ? parser[run.functionName](parsedPackedSelfAttestationResponse) :  parser[run.functionName](parsedPackedSelfAttestationResponse.response.attestationObject);
+		var ret = run.functionName == "parseAuthnrAttestationResponse" ?
+			parser[run.functionName](parsedPackedSelfAttestationResponse) :
+			parser[run.functionName](parsedPackedSelfAttestationResponse.response.attestationObject);
+
 		it("parser returns Map with correct size", function() {
 			assert.instanceOf(ret, Map);
 			assert.strictEqual(ret.size, 15);
