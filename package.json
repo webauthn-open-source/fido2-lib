@@ -32,7 +32,7 @@
 		"url": "https://github.com/webauthn-open-source/fido2-lib/issues"
 	},
 	"devDependencies": {
-		"babel-eslint": "^10.1.0",
+		"@babel/eslint-parser": "^7.16.5",
 		"bytestreamjs": "^1.0.29",
 		"chai": "^4.1.2",
 		"chai-as-promised": "^7.1.1",
@@ -114,7 +114,8 @@
 			]
 		},
 		"parserOptions": {
-			"parser": "babel-eslint"
+			"parser": "@babel/eslint-parser",
+			"requireConfigFile": false
 		},
 		"overrides": [
 			{
