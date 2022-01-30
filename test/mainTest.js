@@ -16,6 +16,7 @@ const u2fAttestation = require("../lib/attestations/fidoU2F");
 const packedAttestation = require("../lib/attestations/packed");
 const tpmAttestation = require("../lib/attestations/tpm");
 const androidSafetyNetAttestation = require("../lib/attestations/androidSafetyNet");
+const packedSelfAttestationResponse = require("../fixtures/packedSelfAttestationData.json");
 
 const {
 	MdsCollection,
@@ -477,6 +478,29 @@ describe("Fido2Lib", function() {
 
 		it("validates a credential request with 'u2f' attestation");
 
+		it("validates a packed credential that has self attestation", function() {
+			const expectations = {
+				challenge: "zBNZ9XmBj4cu7xxYI_uSJauAj89yOTZX1xEqKxhQydhYCTdoKB0k8bzs3llRrBxQlNn3WyRovWvYAXmuIiswLQ",
+				origin: "http://localhost:3000",
+				factor: "either",
+			};
+
+			const parsedPackedSelfAttestationResponse = {
+				...packedSelfAttestationResponse,
+				id: h.functions.b64decode(packedSelfAttestationResponse.id),
+				rawId: h.functions.b64decode(packedSelfAttestationResponse.rawId),
+				response: {
+					attestationObject: h.functions.b64decode(packedSelfAttestationResponse.response.attestationObject),
+					clientDataJSON: h.functions.b64decode(packedSelfAttestationResponse.response.clientDataJSON),
+				},
+			};
+
+			return serv.attestationResult(parsedPackedSelfAttestationResponse, expectations).then((res) => {
+				assert.instanceOf(res, Fido2AttestationResult);
+				return res;
+			});
+		});
+
 		it("validates a credential request with 'android-safetynet' attestation", function(){
 			var serv = new Fido2Lib();
 			var expectations = {
@@ -507,7 +531,7 @@ describe("Fido2Lib", function() {
 					clientDataJSON: coerceToArrayBuffer("eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiTnJSemdSaEd5NVkwTmxLTmhFQXFzNFpGVmdOR3RONDlaeUNUT2ZMazhHMUVQWTN2bk4zemFzSVp5bmxDQXlVT0xkQjMtQUFMZnkxWEcyTWlWcHNfVnciLCJvcmlnaW4iOiJodHRwczpcL1wvY29udHViZXJuaW8udGljLnVkYy5lcyIsImFuZHJvaWRQYWNrYWdlTmFtZSI6ImNvbS5hbmRyb2lkLmNocm9tZSJ9","clientDataJSON"),
 				},
 			};
-			
+
 			return serv.attestationResult(makeCredentialAttestationSafetyNetResponse, expectations).then(res => {
 				assert.instanceOf(res, Fido2AttestationResult);
 				return res;
@@ -638,7 +662,7 @@ describe("Fido2Lib", function() {
 			var assertionResponse = {
 				rawId: coerceToArrayBuffer("7S8aQSSxqPkztahKbgw36Mr_-hE", "rawId"),
 				response: {
-					authenticatorData: coerceToArrayBuffer("YS67HU8UTNyqQ5f-EVzitWw5paVnpyhQli2ahN6PS6UFAAAAAA", "authenticatorData"), 
+					authenticatorData: coerceToArrayBuffer("YS67HU8UTNyqQ5f-EVzitWw5paVnpyhQli2ahN6PS6UFAAAAAA", "authenticatorData"),
 					clientDataJSON: coerceToArrayBuffer("eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiZ19QdTMyYnBsdWt0eHVnTk5CTFgtWk81Tjl1YjBENTBiSkVSYktpVTJHV09OM21kMHJSOUNhUVlkUEhkQ2dvLWRwaTEtOWdiSkp2bUN1SERuaDA0UmciLCJvcmlnaW4iOiJodHRwczovL21pZ2h0eS1maXJlYW50LTg0LmxvY2EubHQifQ", "clientDataJSON"),
 					signature: coerceToArrayBuffer("MEQCIEhIhQBglBn1iGMDgF4WFDG7ISJHD1C1Q60drTaijjV2AiBOnQleadMnzcMJ0EBpwoP8zr2V5lBuKvpNfJrcbC1T4w", "signature"),
 				},
