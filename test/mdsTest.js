@@ -8,7 +8,7 @@ const {
 const {
 	str2ab,
 	coerceToBase64Url,
-	jsObjectToB64
+	jsObjectToB64,
 } = require("../lib/utils");
 
 const chai = require("chai");
@@ -512,7 +512,7 @@ describe("MdsCollection", function() {
 
 			// check the entry data was copied to new entry:
 			// description
-			assert.strictEqual(entry.description, "Touch ID, Face ID, or Passcode")
+			assert.strictEqual(entry.description, "Touch ID, Face ID, or Passcode");
 			// authenticatorVersion
 			assert.strictEqual(entry.authenticatorVersion, 256);
 			// protocolFamily
@@ -525,7 +525,7 @@ describe("MdsCollection", function() {
 				{
 					major: 1,
 					minor: 1,
-				}
+				},
 			]);
 			// authenticationAlgorithms
 			assert.deepEqual(entry.authenticationAlgorithms, [ "rsa_emsa_pkcs1_sha256_raw" ]);
@@ -563,19 +563,19 @@ describe("MdsCollection", function() {
 				]
 			);
 			// keyProtection
-			assert.deepEqual(entry.keyProtection, [ "hardware", "tee" ])
+			assert.deepEqual(entry.keyProtection, [ "hardware", "tee" ]);
 			// matcherProtection
-			assert.deepEqual(entry.matcherProtection, [ "tee" ])
+			assert.deepEqual(entry.matcherProtection, [ "tee" ]);
 			// attachmentHint
-			assert.deepEqual(entry.attachmentHint, [ "internal" ])
+			assert.deepEqual(entry.attachmentHint, [ "internal" ]);
 			// tcDisplay
-			assert.deepEqual(entry.tcDisplay, [ "any" ])
+			assert.deepEqual(entry.tcDisplay, [ "any" ]);
 			// tcDisplayContentType
-			assert.strictEqual(entry.tcDisplayContentType, "text/plain")
+			assert.strictEqual(entry.tcDisplayContentType, "text/plain");
 			// attestationRootCertificates
-			assert.deepEqual(entry.attestationRootCertificates, [])
+			assert.deepEqual(entry.attestationRootCertificates, []);
 			// icon
-			assert.isString(entry.icon)
+			assert.isString(entry.icon);
 			// raw
 			assert.isString(entry.raw);
 			// collection
@@ -613,7 +613,7 @@ describe("MdsCollection", function() {
 
 			// check the entry data was copied to new entry:
 			// description
-			assert.strictEqual(entry.description, "YubiKey 5Ci")
+			assert.strictEqual(entry.description, "YubiKey 5Ci");
 			// authenticatorVersion
 			assert.strictEqual(entry.authenticatorVersion, 50200);
 			// protocolFamily
@@ -622,7 +622,7 @@ describe("MdsCollection", function() {
 				{
 					major: 1,
 					minor: 0,
-				}
+				},
 			]);
 			// authenticationAlgorithms
 			assert.deepEqual(entry.authenticationAlgorithms, [ "ed25519_eddsa_sha512_raw", "secp256r1_ecdsa_sha256_raw" ]);
@@ -652,31 +652,31 @@ describe("MdsCollection", function() {
 				]
 			);
 			// keyProtection
-			assert.deepEqual(entry.keyProtection, [ "hardware", "secure_element" ])
+			assert.deepEqual(entry.keyProtection, [ "hardware", "secure_element" ]);
 			// matcherProtection
-			assert.deepEqual(entry.matcherProtection, [ "on_chip" ])
+			assert.deepEqual(entry.matcherProtection, [ "on_chip" ]);
 			// cryptoStrength
-			assert.strictEqual(entry.cryptoStrength, 128)
+			assert.strictEqual(entry.cryptoStrength, 128);
 			// attachmentHint
-			assert.deepEqual(entry.attachmentHint, [ "external", "wired" ])
+			assert.deepEqual(entry.attachmentHint, [ "external", "wired" ]);
 			// tcDisplay
-			assert.deepEqual(entry.tcDisplay, [ ])
+			assert.deepEqual(entry.tcDisplay, [ ]);
 			// tcDisplayContentType
-			assert.isUndefined(entry.tcDisplayContentType)
+			assert.isUndefined(entry.tcDisplayContentType);
 			// attestationRootCertificates
-			assert.deepEqual(entry.attestationRootCertificates, [ "MIIDHjCCAgagAwIBAgIEG0BT9zANBgkqhkiG9w0BAQsFADAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC/jwYuhBVlqaiYWEMsrWFisgJ+PtM91eSrpI4TK7U53mwCIawSDHy8vUmk5N2KAj9abvT9NP5SMS1hQi3usxoYGonXQgfO6ZXyUA9a+KAkqdFnBnlyugSeCOep8EdZFfsaRFtMjkwz5Gcz2Py4vIYvCdMHPtwaz0bVuzneueIEz6TnQjE63Rdt2zbwnebwTG5ZybeWSwbzy+BJ34ZHcUhPAY89yJQXuE0IzMZFcEBbPNRbWECRKgjq//qT9nmDOFVlSRCt2wiqPSzluwn+v+suQEBsUjTGMEd25tKXXTkNW21wIWbxeSyUoTXwLvGS6xlwQSgNpk2qXYwf8iXg7VWZAgMBAAGjQjBAMB0GA1UdDgQWBBQgIvz0bNGJhjgpToksyKpP9xv9oDAPBgNVHRMECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAQEAjvjuOMDSa+JXFCLyBKsycXtBVZsJ4Ue3LbaEsPY4MYN/hIQ5ZM5p7EjfcnMG4CtYkNsfNHc0AhBLdq45rnT87q/6O3vUEtNMafbhU6kthX7Y+9XFN9NpmYxr+ekVY5xOxi8h9JDIgoMP4VB1uS0aunL1IGqrNooL9mmFnL2kLVVee6/VR6C5+KSTCMCWppMuJIZII2v9o4dkoZ8Y7QRjQlLfYzd3qGtKbw7xaF1UsG/5xUb/Btwb2X2g4InpiB/yt/3CpQXpiWX/K4mBvUKiGn05ZsqeY1gx4g0xLBqcU9psmyPzK+Vsgw2jeRQ5JlKDyqE0hebfC1tvFu0CCrJFcw==" ])
+			assert.deepEqual(entry.attestationRootCertificates, [ "MIIDHjCCAgagAwIBAgIEG0BT9zANBgkqhkiG9w0BAQsFADAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC/jwYuhBVlqaiYWEMsrWFisgJ+PtM91eSrpI4TK7U53mwCIawSDHy8vUmk5N2KAj9abvT9NP5SMS1hQi3usxoYGonXQgfO6ZXyUA9a+KAkqdFnBnlyugSeCOep8EdZFfsaRFtMjkwz5Gcz2Py4vIYvCdMHPtwaz0bVuzneueIEz6TnQjE63Rdt2zbwnebwTG5ZybeWSwbzy+BJ34ZHcUhPAY89yJQXuE0IzMZFcEBbPNRbWECRKgjq//qT9nmDOFVlSRCt2wiqPSzluwn+v+suQEBsUjTGMEd25tKXXTkNW21wIWbxeSyUoTXwLvGS6xlwQSgNpk2qXYwf8iXg7VWZAgMBAAGjQjBAMB0GA1UdDgQWBBQgIvz0bNGJhjgpToksyKpP9xv9oDAPBgNVHRMECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAQEAjvjuOMDSa+JXFCLyBKsycXtBVZsJ4Ue3LbaEsPY4MYN/hIQ5ZM5p7EjfcnMG4CtYkNsfNHc0AhBLdq45rnT87q/6O3vUEtNMafbhU6kthX7Y+9XFN9NpmYxr+ekVY5xOxi8h9JDIgoMP4VB1uS0aunL1IGqrNooL9mmFnL2kLVVee6/VR6C5+KSTCMCWppMuJIZII2v9o4dkoZ8Y7QRjQlLfYzd3qGtKbw7xaF1UsG/5xUb/Btwb2X2g4InpiB/yt/3CpQXpiWX/K4mBvUKiGn05ZsqeY1gx4g0xLBqcU9psmyPzK+Vsgw2jeRQ5JlKDyqE0hebfC1tvFu0CCrJFcw==" ]);
 			// icon
-			assert.isString(entry.icon)
+			assert.isString(entry.icon);
 			// authenticatorGetInfo
-			const { authenticatorGetInfo } = entry
-			assert.isDefined(authenticatorGetInfo)
+			const { authenticatorGetInfo } = entry;
+			assert.isDefined(authenticatorGetInfo);
 
 			// versions
-			assert.deepEqual(authenticatorGetInfo.versions, [ "U2F_V2", "FIDO_2_0", "FIDO_2_1_PRE" ])
+			assert.deepEqual(authenticatorGetInfo.versions, [ "U2F_V2", "FIDO_2_0", "FIDO_2_1_PRE" ]);
 			// extensions
-			assert.deepEqual(authenticatorGetInfo.extensions, [ "credProtect", "hmac-secret" ])
+			assert.deepEqual(authenticatorGetInfo.extensions, [ "credProtect", "hmac-secret" ]);
 			// aaguid
-			assert.strictEqual(authenticatorGetInfo.aaguid, "c5ef55ffad9a4b9fb580adebafe026d0")
+			assert.strictEqual(authenticatorGetInfo.aaguid, "c5ef55ffad9a4b9fb580adebafe026d0");
 			// options
 			assert.deepEqual(authenticatorGetInfo.options, {
 				plat: false,
@@ -684,30 +684,30 @@ describe("MdsCollection", function() {
 				clientPin: true,
 				up: true,
 				credentialMgmtPreview: true,
-			})
+			});
 			// maxMsgSize
-			assert.strictEqual(authenticatorGetInfo.maxMsgSize, 1200)
+			assert.strictEqual(authenticatorGetInfo.maxMsgSize, 1200);
 			// pinUvAuthProtocols
-			assert.deepEqual(authenticatorGetInfo.pinUvAuthProtocols, [ 2, 1 ])
+			assert.deepEqual(authenticatorGetInfo.pinUvAuthProtocols, [ 2, 1 ]);
 			// maxCredentialCountInList
-			assert.strictEqual(authenticatorGetInfo.maxCredentialCountInList, 8)
+			assert.strictEqual(authenticatorGetInfo.maxCredentialCountInList, 8);
 			// maxCredentialIdLength
-			assert.strictEqual(authenticatorGetInfo.maxCredentialIdLength, 128)
+			assert.strictEqual(authenticatorGetInfo.maxCredentialIdLength, 128);
 			// transports
-			assert.deepEqual(authenticatorGetInfo.transports, [ "usb", "lightning" ])
+			assert.deepEqual(authenticatorGetInfo.transports, [ "usb", "lightning" ]);
 			// algorithms
 			assert.deepEqual(authenticatorGetInfo.algorithms, [ 
 				{
 					type: "public-key",
 					alg: -7,
-			 	},
-			 	{
+				},
+				{
 					type: "public-key",
 					alg: -8,
-			 	} 
-			])
+				}, 
+			]);
 			// minPINLength
-			assert.strictEqual(authenticatorGetInfo.minPINLength, 4)
+			assert.strictEqual(authenticatorGetInfo.minPINLength, 4);
 			// raw
 			assert.isString(entry.raw);
 			// collection
@@ -744,11 +744,11 @@ describe("MdsCollection", function() {
 			assert.strictEqual(entry.statusReports.length, 1);
 			// attestationCertificateKeyIdentifiers
 			assert.isArray(entry.attestationCertificateKeyIdentifiers);
-			assert.isTrue(entry.attestationCertificateKeyIdentifiers.includes("bf7bcaa0d0c6187a8c6abbdd16a15640e7c7bde2"), "Identifier bf7bcaa0d0c6187a8c6abbdd16a15640e7c7bde2 found")
+			assert.isTrue(entry.attestationCertificateKeyIdentifiers.includes("bf7bcaa0d0c6187a8c6abbdd16a15640e7c7bde2"), "Identifier bf7bcaa0d0c6187a8c6abbdd16a15640e7c7bde2 found");
 
 			// check the entry data was copied to new entry:
 			// description
-			assert.strictEqual(entry.description, "YubiKey 5Ci")
+			assert.strictEqual(entry.description, "YubiKey 5Ci");
 			// authenticatorVersion
 			assert.strictEqual(entry.authenticatorVersion, 2);
 			// protocolFamily
@@ -757,7 +757,7 @@ describe("MdsCollection", function() {
 				{
 					major: 1,
 					minor: 1,
-				}
+				},
 			]);
 			// authenticationAlgorithms
 			assert.deepEqual(entry.authenticationAlgorithms, [ "secp256r1_ecdsa_sha256_raw" ]);
@@ -776,21 +776,21 @@ describe("MdsCollection", function() {
 				]
 			);
 			// keyProtection
-			assert.deepEqual(entry.keyProtection, [ "hardware", "secure_element", "remote_handle" ])
+			assert.deepEqual(entry.keyProtection, [ "hardware", "secure_element", "remote_handle" ]);
 			// matcherProtection
-			assert.deepEqual(entry.matcherProtection, [ "on_chip" ])
+			assert.deepEqual(entry.matcherProtection, [ "on_chip" ]);
 			// cryptoStrength
-			assert.strictEqual(entry.cryptoStrength, 128)
+			assert.strictEqual(entry.cryptoStrength, 128);
 			// attachmentHint
-			assert.deepEqual(entry.attachmentHint, [ "external", "wired" ])
+			assert.deepEqual(entry.attachmentHint, [ "external", "wired" ]);
 			// tcDisplay
-			assert.deepEqual(entry.tcDisplay, [ ])
+			assert.deepEqual(entry.tcDisplay, [ ]);
 			// tcDisplayContentType
-			assert.isUndefined(entry.tcDisplayContentType)
+			assert.isUndefined(entry.tcDisplayContentType);
 			// attestationRootCertificates
-			assert.deepEqual(entry.attestationRootCertificates, [ "MIIDHjCCAgagAwIBAgIEG0BT9zANBgkqhkiG9w0BAQsFADAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC/jwYuhBVlqaiYWEMsrWFisgJ+PtM91eSrpI4TK7U53mwCIawSDHy8vUmk5N2KAj9abvT9NP5SMS1hQi3usxoYGonXQgfO6ZXyUA9a+KAkqdFnBnlyugSeCOep8EdZFfsaRFtMjkwz5Gcz2Py4vIYvCdMHPtwaz0bVuzneueIEz6TnQjE63Rdt2zbwnebwTG5ZybeWSwbzy+BJ34ZHcUhPAY89yJQXuE0IzMZFcEBbPNRbWECRKgjq//qT9nmDOFVlSRCt2wiqPSzluwn+v+suQEBsUjTGMEd25tKXXTkNW21wIWbxeSyUoTXwLvGS6xlwQSgNpk2qXYwf8iXg7VWZAgMBAAGjQjBAMB0GA1UdDgQWBBQgIvz0bNGJhjgpToksyKpP9xv9oDAPBgNVHRMECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAQEAjvjuOMDSa+JXFCLyBKsycXtBVZsJ4Ue3LbaEsPY4MYN/hIQ5ZM5p7EjfcnMG4CtYkNsfNHc0AhBLdq45rnT87q/6O3vUEtNMafbhU6kthX7Y+9XFN9NpmYxr+ekVY5xOxi8h9JDIgoMP4VB1uS0aunL1IGqrNooL9mmFnL2kLVVee6/VR6C5+KSTCMCWppMuJIZII2v9o4dkoZ8Y7QRjQlLfYzd3qGtKbw7xaF1UsG/5xUb/Btwb2X2g4InpiB/yt/3CpQXpiWX/K4mBvUKiGn05ZsqeY1gx4g0xLBqcU9psmyPzK+Vsgw2jeRQ5JlKDyqE0hebfC1tvFu0CCrJFcw==" ])
+			assert.deepEqual(entry.attestationRootCertificates, [ "MIIDHjCCAgagAwIBAgIEG0BT9zANBgkqhkiG9w0BAQsFADAuMSwwKgYDVQQDEyNZdWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAwMDBaGA8yMDUwMDkwNDAwMDAwMFowLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290IENBIFNlcmlhbCA0NTcyMDA2MzEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC/jwYuhBVlqaiYWEMsrWFisgJ+PtM91eSrpI4TK7U53mwCIawSDHy8vUmk5N2KAj9abvT9NP5SMS1hQi3usxoYGonXQgfO6ZXyUA9a+KAkqdFnBnlyugSeCOep8EdZFfsaRFtMjkwz5Gcz2Py4vIYvCdMHPtwaz0bVuzneueIEz6TnQjE63Rdt2zbwnebwTG5ZybeWSwbzy+BJ34ZHcUhPAY89yJQXuE0IzMZFcEBbPNRbWECRKgjq//qT9nmDOFVlSRCt2wiqPSzluwn+v+suQEBsUjTGMEd25tKXXTkNW21wIWbxeSyUoTXwLvGS6xlwQSgNpk2qXYwf8iXg7VWZAgMBAAGjQjBAMB0GA1UdDgQWBBQgIvz0bNGJhjgpToksyKpP9xv9oDAPBgNVHRMECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjANBgkqhkiG9w0BAQsFAAOCAQEAjvjuOMDSa+JXFCLyBKsycXtBVZsJ4Ue3LbaEsPY4MYN/hIQ5ZM5p7EjfcnMG4CtYkNsfNHc0AhBLdq45rnT87q/6O3vUEtNMafbhU6kthX7Y+9XFN9NpmYxr+ekVY5xOxi8h9JDIgoMP4VB1uS0aunL1IGqrNooL9mmFnL2kLVVee6/VR6C5+KSTCMCWppMuJIZII2v9o4dkoZ8Y7QRjQlLfYzd3qGtKbw7xaF1UsG/5xUb/Btwb2X2g4InpiB/yt/3CpQXpiWX/K4mBvUKiGn05ZsqeY1gx4g0xLBqcU9psmyPzK+Vsgw2jeRQ5JlKDyqE0hebfC1tvFu0CCrJFcw==" ]);
 			// icon
-			assert.isString(entry.icon)
+			assert.isString(entry.icon);
 			// raw
 			assert.isString(entry.raw);
 			// collection
