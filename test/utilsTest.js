@@ -16,6 +16,7 @@ const {
 	pemToBase64,
 	printHex,
 	bufEqual,
+	jsObjectToB64,
 } = utils;
 var assert = require("chai").assert;
 const h = require("fido2-helpers");
@@ -267,7 +268,9 @@ describe("utils", function() {
 			assert.strictEqual(res, "AAECAwQFBgcJCgsMDQ4_-A");
 		});
 
-		it("coerce Buffer to base64url");
+		it("coerce Buffer to base64url", () => {
+			assert.strictEqual(coerceToBase64Url(Buffer.from("testing!"), "test"), "dGVzdGluZyE");
+		});
 
 		it("coerce Array to base64url", () => {
 			var arr = [
@@ -305,7 +308,9 @@ describe("utils", function() {
 			}, Error, "could not coerce 'test.number' to string");
 		});
 
-		it("throws if no name specified");
+		it("throws if no name specified", () => {
+			assert.throws(coerceToBase64Url, Error, "name not specified in coerceToBase64");
+		});
 	});
 
 	describe("coerceToBase64", () => {
@@ -333,7 +338,9 @@ describe("utils", function() {
 			assert.strictEqual(res, "AAECAwQFBgcJCgsMDQ4/+A==");
 		});
 
-		it("coerce Buffer to base64");
+		it("coerce Buffer to base64", () => {
+			assert.strictEqual(coerceToBase64(Buffer.from("testing!"), "test"), Buffer.from("testing!").toString("base64"));
+		});
 
 		it("coerce Array to base64", () => {
 			var arr = [
@@ -371,7 +378,9 @@ describe("utils", function() {
 			}, Error, "could not coerce 'test.number' to string");
 		});
 
-		it("throws if no name specified");
+		it("throws if no name specified", () => {
+			assert.throws(coerceToBase64, Error, "name not specified in coerceToBase64");
+		});
 	});
 
 	describe("coerceToArrayBuffer", () => {
@@ -463,7 +472,9 @@ describe("utils", function() {
 			}, Error, "could not coerce 'test.number' to ArrayBuffer");
 		});
 
-		it("throws if no name specified");
+		it("throws if no name specified", () => {
+			assert.throws(coerceToArrayBuffer, Error, "name not specified in coerceToArrayBuffer");
+		});
 	});
 
 	describe("ab2str", function() {
@@ -479,6 +490,16 @@ describe("utils", function() {
 			]).buffer;
 
 			assert.isTrue(abEqual(ab, expectedAb), "expected result from str2ab");
+		});
+	});
+
+	describe("jsObjectToB64", function() {
+		it("converts Object to base64 string", function() {
+			assert.strictEqual(jsObjectToB64({ test: true }), "eyJ0ZXN0Ijp0cnVlfQ==");
+		});
+
+		it("removes non UTF-8 characters", function() {
+			assert.strictEqual(jsObjectToB64({ alternativeDescriptions: { "ru-RU": "FIDO2 Key SDK - Ð¾Ñ\x82 Hideez" } }), jsObjectToB64({ alternativeDescriptions: { "ru-RU": "FIDO2 Key SDK -  Hideez" } }));
 		});
 	});
 
@@ -561,7 +582,10 @@ describe("utils", function() {
 	});
 
 	describe("isBase64Url", function() {
-		it("returns true for base64url string");
+		it("returns true for base64url string", () => {
+			assert.isTrue(isBase64Url("dGVzdGluZyE"), "true on base64url string");
+		});
+
 		it("returns false for base64 string");
 		it("returns false for arbitrary string");
 		it("returns false for undefined");
