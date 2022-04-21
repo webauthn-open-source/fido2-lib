@@ -2,12 +2,18 @@
 	"name": "fido2-lib",
 	"version": "2.8.2",
 	"description": "A library for performing FIDO 2.0 / WebAuthn functionality",
-	"main": "index.js",
+	"type": "module",
+	"main": "./dist/node/main.cjs",
 	"types": "./types/index.d.ts",
+	"module": "./lib/node/main.js",
 	"scripts": {
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"test": "nyc mocha",
+		"lint:deno": "deno fmt --check test/deno lib/deno",
+		"lint:deno:fix": "deno fmt test/deno lib/deno",
+		"build": "npm run test && npm run lint && rollup -c rollup.config.js",
+		"test": "nyc mocha test/node",
+		"test:deno": "deno test test/deno",
 		"report": "nyc report --reporter=text-lcov > coverage.lcov",
 		"codecov": "codecov -e TRAVIS_NODE_VERSION",
 		"docs": "jsdoc -c ./.jsdoc-conf.json",
@@ -32,32 +38,29 @@
 		"url": "https://github.com/webauthn-open-source/fido2-lib/issues"
 	},
 	"devDependencies": {
-		"@babel/eslint-parser": "^7.16.5",
-		"bytestreamjs": "^1.0.29",
+		"@babel/eslint-parser": "^7.17.0",
 		"chai": "^4.1.2",
 		"chai-as-promised": "^7.1.1",
 		"codecov": "^3.7.0",
 		"docdash": "^0.4.0",
-		"eslint": "^8.7.0",
+		"eslint": "8.13",
 		"eslint-plugin-vue": "^8.4.0",
 		"fido2-helpers": "^1.7.2",
 		"gh-pages": "^2.2.0",
 		"jsdoc": "^3.5.5",
 		"mocha": "^9.2.0",
-		"mockery": "^2.0.0",
 		"nyc": "^15.1.0",
-		"sinon": "^7.3.2"
+		"sinon": "^13.0.2"
 	},
 	"dependencies": {
-		"@peculiar/webcrypto": "^1.2.0",
+		"@peculiar/webcrypto": "1.3",
 		"asn1js": "^2.0.18",
-		"cbor": "^4.0.0",
-		"cose-to-jwk": "^1.1.0",
+		"cbor-x": "^1.2.1",
 		"jwk-to-pem": "^2.0.5",
 		"node-jose": "^2.1.0",
 		"pkijs": "=2.1.58",
-		"psl": "^1.1.24",
-		"pvutils": "^1.0.17"
+		"punycode": "^2.1.1",
+		"tldts": "^5.7.76"
 	},
 	"eslintConfig": {
 		"root": true,
@@ -66,6 +69,15 @@
 		},
 		"extends": [
 			"plugin:vue/recommended"
+		],
+		"ignorePatterns": [
+			"docs/*",
+			"dist/*",
+			"examples/*",
+			"lib/common/tools/*",
+			"test/deno/*",
+			"lib/deno/*",
+			"node_modules/*"
 		],
 		"rules": {
 			"space-before-function-paren": [
