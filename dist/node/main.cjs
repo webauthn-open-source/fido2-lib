@@ -1,5 +1,7 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 var crypto = require('crypto');
 var url = require('url');
 var jwkToPem = require('jwk-to-pem');
@@ -4967,7 +4969,9 @@ Fido2Lib.addAttestationFormat(
 	tpmAttestation.validateFn
 );
 
-// This is only to be used by bundler, to generate commonjs code
 ToolBoxRegistration.registerAsGlobal();
 
-module.exports = Fido2Lib;
+Fido2Lib.Fido2Lib = Fido2Lib;
+
+exports.Fido2Lib = Fido2Lib;
+exports["default"] = Fido2Lib;
