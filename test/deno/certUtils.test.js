@@ -9,7 +9,7 @@ import { abEqual } from "../../lib/common/utils.js";
 import * as h from "../helpers/fido2-helpers.js";
 
 // Test subject
-import { Fido2Lib } from "../../lib/deno/webauthn.js";
+import { Fido2Lib } from "../../lib/deno/main.js";
 
 import {
   Certificate,

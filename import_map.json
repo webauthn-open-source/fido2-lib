@@ -1,0 +1,18 @@
+{
+    "imports": {
+        "tldts": "https://cdn.jsdelivr.net/npm/tldts@5.7.76/dist/index.esm.min.js",
+        "punycode": "https://deno.land/x/punycode@v2.1.1/punycode.js",
+        "jose": "https://deno.land/x/jose@v4.7.0/index.ts?module",
+        "asn1js": "https://unpkg.com/asn1js@2.3.2/src/asn1.js?module",
+        "cbor-x": "https://deno.land/x/cbor@v1.2.1/index.js?module",
+        "std/": "https://deno.land/std@0.134.0/",
+        "klon": "https://esm.run/klon@0.11.0",
+        "b64": "https://deno.land/x/b64@1.0.18/dist/base64.min.mjs",
+
+        "pkijs": "https://unpkg.com/pkijs@2.1.58/src/index.js",
+
+        "pvutils": "https://unpkg.com/pvutils@1.1.3?module",
+        "bytestreamjs": "https://unpkg.com/bytestreamjs@1.0.29?module"
+        
+    }
+}
