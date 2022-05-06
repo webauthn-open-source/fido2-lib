@@ -51,7 +51,7 @@ declare module "fido2-lib" {
 
   interface PublicKeyCredentialCreationOptions {
     rp: { name: string; id: string; icon?: string };
-    user: {};
+    user: { id: string, name: string, displayName: string };
     challenge: ArrayBuffer;
     pubKeyCredParams: Array<{ type: "public-key"; alg: number }>;
     timeout?: number;
