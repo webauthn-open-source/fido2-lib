@@ -1,12 +1,10 @@
-"use strict";
+// Testing lib
+import * as chai from "chai";
 
-const { Fido2Lib } = require("../index");
-const chai = require("chai");
-const chaiAsPromised = require("chai-as-promised");
-chai.use(chaiAsPromised);
+// Helpers
+import * as sinon from "sinon";
+import { Fido2Lib } from "../lib/main.js";
 const assert = chai.assert;
-const sinon = require("sinon");
-const h = require("fido2-helpers");
 
 describe("Fido2Lib extensions", function() {
 	afterEach(function() {
@@ -18,12 +16,11 @@ describe("Fido2Lib extensions", function() {
 		assert.isFunction(Fido2Lib.deleteAllExtensions);
 		assert.isFunction(Fido2Lib.parseExtensionResult);
 		assert.isFunction(Fido2Lib.validateExtensionResult);
-		var mc = new Fido2Lib();
+		const mc = new Fido2Lib();
 		assert.isFunction(mc.generateExtensionOptions);
 		assert.isFunction(mc.enableExtension);
 		assert.isFunction(mc.disableExtension);
 		assert.isFunction(mc.setExtensionOptions);
-
 	});
 
 	describe("addExtension", function() {
@@ -67,28 +64,42 @@ describe("Fido2Lib extensions", function() {
 	});
 
 	describe("generateExtensionOptions", function() {
-		var mc;
+		let mc;
+
 		function fn() {}
+
 		beforeEach(function() {
 			mc = new Fido2Lib();
 		});
 
 		it("throws if extName isn't a string", function() {
-			assert.throws(function() {
-				mc.generateExtensionOptions(undefined, "attestation");
-			}, Error, "expected 'extName' to be String, got: undefined");
+			assert.throws(
+				function() {
+					mc.generateExtensionOptions(undefined, "attestation");
+				},
+				Error,
+				"expected 'extName' to be String, got: undefined",
+			);
 		});
 
 		it("throws if extName isn't found", function() {
-			assert.throws(function() {
-				mc.generateExtensionOptions("test", "attestation");
-			}, Error, "valid extension for 'test' not found");
+			assert.throws(
+				function() {
+					mc.generateExtensionOptions("test", "attestation");
+				},
+				Error,
+				"valid extension for 'test' not found",
+			);
 		});
 
 		it("throws if type isn't 'attestation' or 'assertion'", function() {
-			assert.throws(function() {
-				mc.generateExtensionOptions("test", "foo");
-			}, Error, "expected 'type' to be 'attestation' or 'assertion', got: foo");
+			assert.throws(
+				function() {
+					mc.generateExtensionOptions("test", "foo");
+				},
+				Error,
+				"expected 'type' to be 'attestation' or 'assertion', got: foo",
+			);
 		});
 
 		it("can generate for attestation", function(done) {
@@ -116,7 +127,7 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through options", function(done) {
-			var opts = {
+			const opts = {
 				foo: "bar",
 			};
 
@@ -147,22 +158,30 @@ describe("Fido2Lib extensions", function() {
 	});
 
 	describe("enableExtension", function() {
-		var mc;
+		let mc;
 		function fn() {}
 		beforeEach(function() {
 			mc = new Fido2Lib();
 		});
 
 		it("throws if extName isn't a string", function() {
-			assert.throws(function() {
-				mc.enableExtension(undefined);
-			}, Error, "expected 'extName' to be String, got: undefined");
+			assert.throws(
+				function() {
+					mc.enableExtension(undefined);
+				},
+				Error,
+				"expected 'extName' to be String, got: undefined",
+			);
 		});
 
 		it("throws if extName isn't found", function() {
-			assert.throws(function() {
-				mc.enableExtension("test");
-			}, Error, "valid extension for 'test' not found");
+			assert.throws(
+				function() {
+					mc.enableExtension("test");
+				},
+				Error,
+				"valid extension for 'test' not found",
+			);
 		});
 
 		it("is disabled by default", function() {
@@ -187,22 +206,30 @@ describe("Fido2Lib extensions", function() {
 	});
 
 	describe("disableExtension", function() {
-		var mc;
+		let mc;
 		function fn() {}
 		beforeEach(function() {
 			mc = new Fido2Lib();
 		});
 
 		it("throws if extName isn't a string", function() {
-			assert.throws(function() {
-				mc.disableExtension(undefined);
-			}, Error, "expected 'extName' to be String, got: undefined");
+			assert.throws(
+				function() {
+					mc.disableExtension(undefined);
+				},
+				Error,
+				"expected 'extName' to be String, got: undefined",
+			);
 		});
 
 		it("throws if extName isn't found", function() {
-			assert.throws(function() {
-				mc.disableExtension("test");
-			}, Error, "valid extension for 'test' not found");
+			assert.throws(
+				function() {
+					mc.disableExtension("test");
+				},
+				Error,
+				"valid extension for 'test' not found",
+			);
 		});
 
 		it("sets extension to false", function() {
@@ -217,26 +244,34 @@ describe("Fido2Lib extensions", function() {
 	});
 
 	describe("setExtensionOptions", function() {
-		var mc;
+		let mc;
 		function fn() {}
 		beforeEach(function() {
 			mc = new Fido2Lib();
 		});
 
 		it("throws if extName isn't a string", function() {
-			assert.throws(function() {
-				mc.setExtensionOptions(undefined);
-			}, Error, "expected 'extName' to be String, got: undefined");
+			assert.throws(
+				function() {
+					mc.setExtensionOptions(undefined);
+				},
+				Error,
+				"expected 'extName' to be String, got: undefined",
+			);
 		});
 
 		it("throws if extName isn't found", function() {
-			assert.throws(function() {
-				mc.setExtensionOptions("test");
-			}, Error, "valid extension for 'test' not found");
+			assert.throws(
+				function() {
+					mc.setExtensionOptions("test");
+				},
+				Error,
+				"valid extension for 'test' not found",
+			);
 		});
 
 		it("sets options", function() {
-			var opts = {
+			const opts = {
 				foo: "bar",
 			};
 
@@ -248,15 +283,15 @@ describe("Fido2Lib extensions", function() {
 	});
 
 	describe("attestationOptions", function() {
-		var mc;
+		let mc;
 		function fn() {}
 		beforeEach(function() {
 			mc = new Fido2Lib();
 		});
 
 		it("calls generator", function() {
-			var genSpy = sinon.stub();
-			var extVal = {
+			const genSpy = sinon.stub();
+			const extVal = {
 				beer: "good",
 			};
 			genSpy.returns(extVal);
@@ -272,13 +307,13 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls all generators", function() {
-			var genSpy1 = sinon.stub();
-			var extVal1 = {
+			const genSpy1 = sinon.stub();
+			const extVal1 = {
 				beer: "good",
 			};
 			genSpy1.returns(extVal1);
-			var genSpy2 = sinon.stub();
-			var extVal2 = false;
+			const genSpy2 = sinon.stub();
+			const extVal2 = false;
 			genSpy2.returns(extVal2);
 
 			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
@@ -295,13 +330,13 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls all enabled generators", function() {
-			var genSpy1 = sinon.stub();
-			var extVal1 = {
+			const genSpy1 = sinon.stub();
+			const extVal1 = {
 				beer: "good",
 			};
 			genSpy1.returns(extVal1);
-			var genSpy2 = sinon.stub();
-			var extVal2 = false;
+			const genSpy2 = sinon.stub();
+			const extVal2 = false;
 			genSpy2.returns(extVal2);
 
 			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
@@ -318,17 +353,17 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through default options", function() {
-			var genSpy1 = sinon.stub();
-			var extVal1 = {
+			const genSpy1 = sinon.stub();
+			const extVal1 = {
 				beer: "good",
 			};
-			var extOpt1 = {
+			const extOpt1 = {
 				foo: "bar",
 			};
 			genSpy1.returns(extVal1);
-			var genSpy2 = sinon.stub();
-			var extVal2 = false;
-			var extOpt2 = null;
+			const genSpy2 = sinon.stub();
+			const extVal2 = false;
+			const extOpt2 = null;
 			genSpy2.returns(extVal2);
 
 			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
@@ -349,17 +384,17 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through passed-in options", function() {
-			var genSpy1 = sinon.stub();
-			var extVal1 = {
+			const genSpy1 = sinon.stub();
+			const extVal1 = {
 				beer: "good",
 			};
-			var extOpt1 = {
+			const extOpt1 = {
 				foo: "bar",
 			};
 			genSpy1.returns(extVal1);
-			var genSpy2 = sinon.stub();
-			var extVal2 = false;
-			var extOpt2 = null;
+			const genSpy2 = sinon.stub();
+			const extVal2 = false;
+			const extOpt2 = null;
 			genSpy2.returns(extVal2);
 
 			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
@@ -384,15 +419,15 @@ describe("Fido2Lib extensions", function() {
 	});
 
 	describe("assertionOptions", function() {
-		var mc;
+		let mc;
 		function fn() {}
 		beforeEach(function() {
 			mc = new Fido2Lib();
 		});
 
 		it("calls generator", function() {
-			var genSpy = sinon.stub();
-			var extVal = {
+			const genSpy = sinon.stub();
+			const extVal = {
 				beer: "good",
 			};
 			genSpy.returns(extVal);
@@ -408,13 +443,13 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls all generators", function() {
-			var genSpy1 = sinon.stub();
-			var extVal1 = {
+			const genSpy1 = sinon.stub();
+			const extVal1 = {
 				beer: "good",
 			};
 			genSpy1.returns(extVal1);
-			var genSpy2 = sinon.stub();
-			var extVal2 = false;
+			const genSpy2 = sinon.stub();
+			const extVal2 = false;
 			genSpy2.returns(extVal2);
 
 			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
@@ -431,13 +466,13 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls all enabled generators", function() {
-			var genSpy1 = sinon.stub();
-			var extVal1 = {
+			const genSpy1 = sinon.stub();
+			const extVal1 = {
 				beer: "good",
 			};
 			genSpy1.returns(extVal1);
-			var genSpy2 = sinon.stub();
-			var extVal2 = false;
+			const genSpy2 = sinon.stub();
+			const extVal2 = false;
 			genSpy2.returns(extVal2);
 
 			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
@@ -454,17 +489,17 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through default options", function() {
-			var genSpy1 = sinon.stub();
-			var extVal1 = {
+			const genSpy1 = sinon.stub();
+			const extVal1 = {
 				beer: "good",
 			};
-			var extOpt1 = {
+			const extOpt1 = {
 				foo: "bar",
 			};
 			genSpy1.returns(extVal1);
-			var genSpy2 = sinon.stub();
-			var extVal2 = false;
-			var extOpt2 = null;
+			const genSpy2 = sinon.stub();
+			const extVal2 = false;
+			const extOpt2 = null;
 			genSpy2.returns(extVal2);
 
 			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
@@ -485,17 +520,17 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through passed-in options", function() {
-			var genSpy1 = sinon.stub();
-			var extVal1 = {
+			const genSpy1 = sinon.stub();
+			const extVal1 = {
 				beer: "good",
 			};
-			var extOpt1 = {
+			const extOpt1 = {
 				foo: "bar",
 			};
 			genSpy1.returns(extVal1);
-			var genSpy2 = sinon.stub();
-			var extVal2 = false;
-			var extOpt2 = null;
+			const genSpy2 = sinon.stub();
+			const extVal2 = false;
+			const extOpt2 = null;
 			genSpy2.returns(extVal2);
 
 			Fido2Lib.addExtension("test1", genSpy1, fn, fn);

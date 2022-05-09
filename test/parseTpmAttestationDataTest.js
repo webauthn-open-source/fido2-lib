@@ -1,29 +1,44 @@
-"use strict";
+// Testing lib
+import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 
-const parser = require("../lib/parser");
-var assert = require("chai").assert;
-const h = require("fido2-helpers");
-var {
-	coerceToBase64,
-	abEqual,
-	printHex,
-} = require("../lib/utils");
+// Helpers
+import * as h from "./helpers/fido2-helpers.js";
 
-var runs = [
+import { arrayBufferEquals, coerceToBase64 } from "../lib/main.js";
+
+// Test subject
+import { parseAttestationObject, parseAuthnrAttestationResponse } from "../lib/main.js";
+
+chai.use(chaiAsPromised.default);
+const { assert } = chai;
+
+const parser = {
+	parseAuthnrAttestationResponse,
+	parseAttestationObject,
+};
+
+const runs = [
 	{ functionName: "parseAuthnrAttestationResponse" },
 	{ functionName: "parseAttestationObject" },
 ];
 
 runs.forEach(function(run) {
-
 	describe(run.functionName + " (tpm)", function() {
 		it("parser is object", function() {
-			assert.isObject(parser);
+			assert.equal(typeof parser, "object");
 		});
 
-		var ret;
-		it("can parse", function() {
-			ret = run.functionName == "parseAuthnrAttestationResponse" ? parser[run.functionName](h.lib.makeCredentialAttestationTpmResponse) :  parser[run.functionName](h.lib.makeCredentialAttestationTpmResponse.response.attestationObject);
+		let ret;
+		it("can parse", async function() {
+			ret = run.functionName == "parseAuthnrAttestationResponse"
+				? await parser[run.functionName](
+					h.lib.makeCredentialAttestationTpmResponse,
+				)
+				: await parser[run.functionName](
+					h.lib.makeCredentialAttestationTpmResponse.response
+						.attestationObject,
+				);
 			// console.log("ret", ret);
 		});
 
@@ -33,16 +48,16 @@ runs.forEach(function(run) {
 		});
 
 		it("parses fmt", function() {
-			var fmt = ret.get("fmt");
+			const fmt = ret.get("fmt");
 			assert.strictEqual(fmt, "tpm");
 		});
 
 		it("parses sig", function() {
-			var sig = ret.get("sig");
+			const sig = ret.get("sig");
 			assert.instanceOf(sig, ArrayBuffer);
 			assert.strictEqual(sig.byteLength, 256);
 
-			var expectedSig = new Uint8Array([
+			let expectedSig = new Uint8Array([
 				0x71, 0x5D, 0x62, 0xCD, 0x61, 0x94, 0x58, 0x8B, 0x34, 0x0C, 0x43, 0x99, 0x35, 0x01, 0x9D, 0xAE,
 				0x23, 0x4D, 0x5E, 0x8E, 0xA7, 0x6E, 0xB1, 0x83, 0x2F, 0x31, 0x00, 0x7A, 0xCC, 0x02, 0x2B, 0xD9,
 				0xE3, 0x60, 0x60, 0x8B, 0x98, 0xE9, 0x07, 0x56, 0x04, 0xB2, 0x69, 0xF8, 0x6C, 0x8C, 0x21, 0x0C,
@@ -61,17 +76,17 @@ runs.forEach(function(run) {
 				0x38, 0x9F, 0x01, 0x91, 0xD3, 0x29, 0x94, 0xF7, 0xE5, 0xD2, 0x6C, 0xFA, 0xB2, 0xC5, 0x3F, 0x9F,
 			]).buffer;
 
-			assert.isTrue(abEqual(sig, expectedSig), "sig has correct value");
+			assert.isTrue(arrayBufferEquals(sig, expectedSig), "sig has correct value");
 		});
 
 		it("parses version", function() {
-			var ver = ret.get("ver");
+			const ver = ret.get("ver");
 			assert.isString(ver);
 			assert.strictEqual(ver, "2.0");
 		});
 
 		it("parses attestation certificate", function() {
-			var attCert = ret.get("attCert");
+			let attCert = ret.get("attCert");
 
 			assert.instanceOf(attCert, ArrayBuffer);
 			assert.strictEqual(attCert.byteLength, 1206);
@@ -80,11 +95,11 @@ runs.forEach(function(run) {
 		});
 
 		it("parses x5c", function() {
-			var x5c = ret.get("x5c");
+			const x5c = ret.get("x5c");
 
 			assert.isArray(x5c);
 			assert.strictEqual(x5c.length, 1);
-			var cert = x5c[0];
+			let cert = x5c[0];
 
 			assert.instanceOf(cert, ArrayBuffer);
 			assert.strictEqual(cert.byteLength, 1516);
@@ -93,16 +108,16 @@ runs.forEach(function(run) {
 		});
 
 		it("parses alg", function() {
-			var alg = ret.get("alg");
+			const alg = ret.get("alg");
 
 			assert.isObject(alg);
 			assert.strictEqual(Object.keys(alg).length, 2);
 			assert.strictEqual(alg.algName, "RSASSA-PKCS1-v1_5_w_SHA1");
-			assert.strictEqual(alg.hashAlg, "SHA1");
+			assert.strictEqual(alg.hashAlg, "SHA-1");
 		});
 
 		describe("certInfo", function() {
-			var certInfo;
+			let certInfo;
 			it("exists", function() {
 				certInfo = ret.get("certInfo");
 			});
@@ -116,11 +131,11 @@ runs.forEach(function(run) {
 			});
 
 			it("has raw data", function() {
-				var rawCertInfo = certInfo.get("rawCertInfo");
+				const rawCertInfo = certInfo.get("rawCertInfo");
 				assert.instanceOf(rawCertInfo, ArrayBuffer);
 				assert.strictEqual(rawCertInfo.byteLength, 161);
 
-				var expectedRawCertInfo = new Uint8Array([
+				let expectedRawCertInfo = new Uint8Array([
 					0xFF, 0x54, 0x43, 0x47, 0x80, 0x17, 0x00, 0x22, 0x00, 0x0B, 0xBC, 0x59, 0xF4, 0xDF, 0xD9, 0xA6,
 					0xA4, 0x2D, 0xC3, 0xB8, 0x66, 0xAF, 0xF2, 0xDF, 0x0D, 0x19, 0x82, 0x6B, 0xBF, 0x01, 0x4B, 0x67,
 					0xAB, 0x0A, 0xD6, 0xEB, 0xB1, 0x76, 0x30, 0x6B, 0x80, 0x07, 0x00, 0x14, 0xAC, 0x9F, 0x3F, 0x05,
@@ -134,27 +149,27 @@ runs.forEach(function(run) {
 					0xB4,
 				]).buffer;
 
-				assert.isTrue(abEqual(rawCertInfo, expectedRawCertInfo), "rawCertInfo has correct value");
+				assert.isTrue(arrayBufferEquals(rawCertInfo, expectedRawCertInfo), "rawCertInfo has correct value");
 			});
 
 			it("parses magic", function() {
-				var magic = certInfo.get("magic");
+				const magic = certInfo.get("magic");
 
 				assert.strictEqual(magic, 0xff544347);
 			});
 
 			it("parses type", function() {
-				var type = certInfo.get("type");
+				const type = certInfo.get("type");
 
 				assert.isString(type);
 				assert.strictEqual(type, "TPM_ST_ATTEST_CERTIFY");
 			});
 
 			it("parses qualifiedSigner", function() {
-				var qualifiedSignerHashType = certInfo.get("qualifiedSignerHashType");
+				let qualifiedSignerHashType = certInfo.get("qualifiedSignerHashType");
 				assert.strictEqual(qualifiedSignerHashType, "TPM_ALG_SHA256");
 
-				var qualifiedSigner = certInfo.get("qualifiedSigner");
+				let qualifiedSigner = certInfo.get("qualifiedSigner");
 				assert.instanceOf(qualifiedSigner, ArrayBuffer);
 				assert.strictEqual(qualifiedSigner.byteLength, 32);
 				qualifiedSigner = coerceToBase64(qualifiedSigner, "qualifiedSigner");
@@ -162,69 +177,69 @@ runs.forEach(function(run) {
 			});
 
 			it("parses extraData", function() {
-				var extraData = certInfo.get("extraData");
+				const extraData = certInfo.get("extraData");
 
 				assert.instanceOf(extraData, ArrayBuffer);
 				assert.strictEqual(extraData.byteLength, 20);
 			});
 
 			it("parses clock", function() {
-				var clock = certInfo.get("clock");
+				const clock = certInfo.get("clock");
 
 				assert.instanceOf(clock, ArrayBuffer);
 				assert.strictEqual(clock.byteLength, 8);
 			});
 
 			it("parses resetCount", function() {
-				var resetCount = certInfo.get("resetCount");
+				const resetCount = certInfo.get("resetCount");
 
 				assert.strictEqual(resetCount, 1749088739);
 			});
 
 			it("parses restartCount", function() {
-				var restartCount = certInfo.get("restartCount");
+				const restartCount = certInfo.get("restartCount");
 
 				assert.strictEqual(restartCount, 3639844613);
 			});
 
 			it("parses safe", function() {
-				var safe = certInfo.get("safe");
+				const safe = certInfo.get("safe");
 
 				assert.strictEqual(safe, true);
 			});
 
 			it("parses firmwareVersion", function() {
-				var firmwareVersion = certInfo.get("firmwareVersion");
+				const firmwareVersion = certInfo.get("firmwareVersion");
 
 				assert.instanceOf(firmwareVersion, ArrayBuffer);
 				assert.strictEqual(firmwareVersion.byteLength, 8);
 			});
 
 			it("parses nameHashType", function() {
-				var nameHashType = certInfo.get("nameHashType");
+				const nameHashType = certInfo.get("nameHashType");
 
 				assert.strictEqual(nameHashType, "TPM_ALG_SHA256");
 			});
 
 			it("parses name", function() {
-				var name = certInfo.get("name");
+				const name = certInfo.get("name");
 
 				assert.instanceOf(name, ArrayBuffer);
 				assert.strictEqual(name.byteLength, 32);
 			});
 
 			it("parses qualifiedNameHashType", function() {
-				var qualifiedNameHashType = certInfo.get("qualifiedNameHashType");
+				let qualifiedNameHashType = certInfo.get("qualifiedNameHashType");
 				assert.strictEqual(qualifiedNameHashType, "TPM_ALG_SHA256");
 
-				var qualifiedName = certInfo.get("qualifiedName");
+				const qualifiedName = certInfo.get("qualifiedName");
 				assert.instanceOf(qualifiedName, ArrayBuffer);
 				assert.strictEqual(qualifiedName.byteLength, 32);
 			});
 		});
 
 		describe("pubArea", function() {
-			var pubArea;
+			let pubArea;
 			it("exists", function() {
 				pubArea = ret.get("pubArea");
 			});
@@ -238,11 +253,11 @@ runs.forEach(function(run) {
 			});
 
 			it("has raw data", function() {
-				var rawPubArea = pubArea.get("rawPubArea");
+				const rawPubArea = pubArea.get("rawPubArea");
 				assert.instanceOf(rawPubArea, ArrayBuffer);
 				assert.strictEqual(rawPubArea.byteLength, 310);
 
-				var expectedRawPubArea = new Uint8Array([
+				let expectedRawPubArea = new Uint8Array([
 					0x00, 0x01, 0x00, 0x0B, 0x00, 0x06, 0x04, 0x72, 0x00, 0x20, 0x9D, 0xFF, 0xCB, 0xF3, 0x6C, 0x38,
 					0x3A, 0xE6, 0x99, 0xFB, 0x98, 0x68, 0xDC, 0x6D, 0xCB, 0x89, 0xD7, 0x15, 0x38, 0x84, 0xBE, 0x28,
 					0x03, 0x92, 0x2C, 0x12, 0x41, 0x58, 0xBF, 0xAD, 0x22, 0xAE, 0x00, 0x10, 0x00, 0x10, 0x08, 0x00,
@@ -265,23 +280,23 @@ runs.forEach(function(run) {
 					0x30, 0x4E, 0xAE, 0x18, 0x9D, 0x7F,
 				]).buffer;
 
-				assert.isTrue(abEqual(rawPubArea, expectedRawPubArea), "rawPubArea has correct value");
+				assert.isTrue(arrayBufferEquals(rawPubArea, expectedRawPubArea), "rawPubArea has correct value");
 			});
 
 			it("parses type", function() {
-				var type = pubArea.get("type");
+				const type = pubArea.get("type");
 
 				assert.strictEqual(type, "TPM_ALG_RSA");
 			});
 
 			it("parses nameAlg", function() {
-				var nameAlg = pubArea.get("nameAlg");
+				const nameAlg = pubArea.get("nameAlg");
 
 				assert.strictEqual(nameAlg, "TPM_ALG_SHA256");
 			});
 
 			it("parses objectAttributes", function() {
-				var objectAttributes = pubArea.get("objectAttributes");
+				const objectAttributes = pubArea.get("objectAttributes");
 
 				assert.instanceOf(objectAttributes, Set);
 				assert.strictEqual(objectAttributes.size, 7);
@@ -296,39 +311,39 @@ runs.forEach(function(run) {
 			});
 
 			it("parses authPolicy", function() {
-				var authPolicy = pubArea.get("authPolicy");
+				const authPolicy = pubArea.get("authPolicy");
 
 				assert.instanceOf(authPolicy, ArrayBuffer);
 				assert.strictEqual(authPolicy.byteLength, 32);
 			});
 
 			it("parses symmetric", function() {
-				var symmetric = pubArea.get("symmetric");
+				const symmetric = pubArea.get("symmetric");
 
 				assert.strictEqual(symmetric, "TPM_ALG_NULL");
 			});
 
 			it("parses scheme", function() {
-				var scheme = pubArea.get("scheme");
+				const scheme = pubArea.get("scheme");
 
 				assert.strictEqual(scheme, "TPM_ALG_NULL");
 			});
 
 			it("parses keyBits", function() {
-				var keyBits = pubArea.get("keyBits");
+				const keyBits = pubArea.get("keyBits");
 
 				assert.strictEqual(keyBits, 2048);
 			});
 
 			it("parses exponent", function() {
-				var exponent = pubArea.get("exponent");
+				const exponent = pubArea.get("exponent");
 
 				assert.isNumber(exponent);
 				assert.strictEqual(exponent, 65537);
 			});
 
 			it("parses unique", function() {
-				var unique = pubArea.get("unique");
+				const unique = pubArea.get("unique");
 
 				assert.instanceOf(unique, ArrayBuffer);
 				assert.strictEqual(unique.byteLength, 256);
@@ -336,21 +351,21 @@ runs.forEach(function(run) {
 		});
 
 		it("parses rawAuthnrData", function() {
-			var rawAuthnrData = ret.get("rawAuthnrData");
+			const rawAuthnrData = ret.get("rawAuthnrData");
 
 			assert.instanceOf(rawAuthnrData, ArrayBuffer);
 			assert.strictEqual(rawAuthnrData.byteLength, 359);
 		});
 
 		it("parses rpIdHash", function() {
-			var rpIdHash = ret.get("rpIdHash");
+			const rpIdHash = ret.get("rpIdHash");
 
 			assert.instanceOf(rpIdHash, ArrayBuffer);
 			assert.strictEqual(rpIdHash.byteLength, 32);
 		});
 
 		it("parses flags", function() {
-			var flags = ret.get("flags");
+			const flags = ret.get("flags");
 
 			assert.instanceOf(flags, Set);
 			assert.strictEqual(flags.size, 3);
@@ -360,47 +375,47 @@ runs.forEach(function(run) {
 		});
 
 		it("parses counter", function() {
-			var counter = ret.get("counter");
+			const counter = ret.get("counter");
 
 			assert.isNumber(counter);
 			assert.strictEqual(counter, 0);
 		});
 
 		it("parses aaguid", function() {
-			var aaguid = ret.get("aaguid");
+			const aaguid = ret.get("aaguid");
 
 			assert.instanceOf(aaguid, ArrayBuffer);
 			assert.strictEqual(aaguid.byteLength, 16);
 		});
 
 		it("parses credId", function() {
-			var credIdLen = ret.get("credIdLen");
+			const credIdLen = ret.get("credIdLen");
 			assert.strictEqual(credIdLen, 32);
-			var credId = ret.get("credId");
+			const credId = ret.get("credId");
 			assert.instanceOf(credId, ArrayBuffer);
 			assert.strictEqual(credId.byteLength, 32);
 		});
 
 		it("parses credentialPublicKeyCose", function() {
-			var credentialPublicKeyCose = ret.get("credentialPublicKeyCose");
+			const credentialPublicKeyCose = ret.get("credentialPublicKeyCose");
 
 			assert.instanceOf(credentialPublicKeyCose, ArrayBuffer);
 			assert.strictEqual(credentialPublicKeyCose.byteLength, 272);
 		});
 
 		it("parses credentialPublicKeyJwk", function() {
-			var credentialPublicKeyJwk = ret.get("credentialPublicKeyJwk");
+			const credentialPublicKeyJwk = ret.get("credentialPublicKeyJwk");
 
 			assert.isObject(credentialPublicKeyJwk);
 			assert.strictEqual(Object.keys(credentialPublicKeyJwk).length, 4);
 			assert.strictEqual(credentialPublicKeyJwk.kty, "RSA");
 			assert.strictEqual(credentialPublicKeyJwk.alg, "RSASSA-PKCS1-v1_5_w_SHA256");
-			assert.strictEqual(credentialPublicKeyJwk.n, "xdpvTZNXveIC9cVYzQoxVtJU8uCtmrV5MfmCa3R94axPKdYHCHTc5XkQ4ZhESZ2OQkcDObFw0CK1AauI6cL07TAuRxnHDevohCQD7ZvfwicwphobcPYWxfG3AMrPeEYTfcSy1Gmo4VqrT62GVwhAItKPRNkHUyMSa3AHyYGTn99yTK9PvkdQQEMaTqBkQwvLLPrX0Fvbn2S1sOCVLs+GeSc9bG36gWAfFFAzFqE9B4LDGj5r3e09e8Rrwfqb7w3/g7ferxRrWCxGRIIaPGLtuqa+QivwTkPtr1/TeDCGFT1zYaIDBhpimKsm4TN8ocntBnQaWQVHeYjnIDBOrhidfw==");
+			assert.strictEqual(credentialPublicKeyJwk.n, "xdpvTZNXveIC9cVYzQoxVtJU8uCtmrV5MfmCa3R94axPKdYHCHTc5XkQ4ZhESZ2OQkcDObFw0CK1AauI6cL07TAuRxnHDevohCQD7ZvfwicwphobcPYWxfG3AMrPeEYTfcSy1Gmo4VqrT62GVwhAItKPRNkHUyMSa3AHyYGTn99yTK9PvkdQQEMaTqBkQwvLLPrX0Fvbn2S1sOCVLs-GeSc9bG36gWAfFFAzFqE9B4LDGj5r3e09e8Rrwfqb7w3_g7ferxRrWCxGRIIaPGLtuqa-QivwTkPtr1_TeDCGFT1zYaIDBhpimKsm4TN8ocntBnQaWQVHeYjnIDBOrhidfw");
 			assert.strictEqual(credentialPublicKeyJwk.e, "AQAB");
 		});
 
 		it("parses credentialPublicKeyPem", function() {
-			var credentialPublicKeyPem = ret.get("credentialPublicKeyPem");
+			const credentialPublicKeyPem = ret.get("credentialPublicKeyPem");
 			assert.isString(credentialPublicKeyPem);
 			assert.strictEqual(credentialPublicKeyPem.length, 451);
 		});

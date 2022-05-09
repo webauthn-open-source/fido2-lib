@@ -1,28 +1,46 @@
-"use strict";
+// Testing lib
+import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 
-const parser = require("../lib/parser");
-var assert = require("chai").assert;
-const h = require("fido2-helpers");
-const abEqual = h.functions.abEqual;
-const printHex = h.functions.printHex;
+// Helpers
+import * as h from "./helpers/fido2-helpers.js";
 
-var runs = [
+import { arrayBufferEquals } from "../lib/main.js";
+
+// Test subject
+import { parseAttestationObject, parseAuthnrAttestationResponse } from "../lib/main.js";
+
+chai.use(chaiAsPromised.default);
+const { assert } = chai;
+
+const parser = {
+	parseAuthnrAttestationResponse,
+	parseAttestationObject,
+};
+
+const runs = [
 	{ functionName: "parseAuthnrAttestationResponse" },
 	{ functionName: "parseAttestationObject" },
 ];
 
 runs.forEach(function(run) {
-
-	describe(run.functionName + " (packed)", function() {
+	describe(run.functionName + " (packed)", async function() {
 		it("parser is object", function() {
-			assert.isObject(parser);
+			assert.equal(typeof parser, "object");
 		});
 
 		it("has correct helper", function() {
 			assert.isObject(h.lib.makeCredentialAttestationPackedResponse);
 		});
 
-		var ret = run.functionName == "parseAuthnrAttestationResponse" ? parser[run.functionName](h.lib.makeCredentialAttestationPackedResponse) :  parser[run.functionName](h.lib.makeCredentialAttestationPackedResponse.response.attestationObject);
+		const ret = run.functionName == "parseAuthnrAttestationResponse"
+			? await parser[run.functionName](
+				h.lib.makeCredentialAttestationPackedResponse,
+			)
+			: await parser[run.functionName](
+				h.lib.makeCredentialAttestationPackedResponse.response
+					.attestationObject,
+			);
 		it("parser returns Map with correct size", function() {
 			assert.instanceOf(ret, Map);
 			assert.strictEqual(ret.size, 16);
@@ -33,15 +51,15 @@ runs.forEach(function(run) {
 		});
 
 		it("has correct alg", function() {
-			var alg = ret.get("alg");
+			const alg = ret.get("alg");
 			assert.isObject(alg);
 			assert.strictEqual(Object.keys(alg).length, 2);
 			assert.strictEqual(alg.algName, "ECDSA_w_SHA256");
-			assert.strictEqual(alg.hashAlg, "SHA256");
+			assert.strictEqual(alg.hashAlg, "SHA-256");
 		});
 
 		it("has x5c", function() {
-			var x5c = ret.get("x5c");
+			const x5c = ret.get("x5c");
 			assert.isArray(x5c);
 			assert.strictEqual(x5c.length, 2);
 			assert.instanceOf(x5c[0], ArrayBuffer);
@@ -49,7 +67,7 @@ runs.forEach(function(run) {
 			assert.instanceOf(x5c[1], ArrayBuffer);
 			assert.strictEqual(x5c[1].byteLength, 476);
 
-			var expectedX5c0 = new Uint8Array([
+			const expectedX5c0 = new Uint8Array([
 				0x30, 0x82, 0x01, 0xFB, 0x30, 0x82, 0x01, 0xA0, 0xA0, 0x03, 0x02, 0x01, 0x02, 0x02, 0x10, 0x15,
 				0x9F, 0x7B, 0xC2, 0xCD, 0x89, 0x18, 0xF1, 0x28, 0x6B, 0x93, 0x48, 0xFA, 0x9F, 0x33, 0xE1, 0x30,
 				0x0A, 0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x04, 0x03, 0x02, 0x30, 0x4B, 0x31, 0x0B, 0x30,
@@ -84,7 +102,7 @@ runs.forEach(function(run) {
 				0x5B, 0x58, 0xA2, 0x74, 0x6F, 0x0B, 0x9F, 0x3C, 0xA9, 0x1C, 0x29, 0x2D, 0x2B, 0x59, 0xEC,
 			]).buffer;
 
-			var expectedX5c1 = new Uint8Array([
+			const expectedX5c1 = new Uint8Array([
 				0x30, 0x82, 0x01, 0xD8, 0x30, 0x82, 0x01, 0x7E, 0xA0, 0x03, 0x02, 0x01, 0x02, 0x02, 0x10, 0x15,
 				0x9F, 0x7B, 0xC2, 0xCD, 0x89, 0x18, 0xF1, 0x28, 0x6B, 0x93, 0x48, 0xFA, 0x9F, 0x33, 0xD6, 0x30,
 				0x0A, 0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x04, 0x03, 0x02, 0x30, 0x4B, 0x31, 0x0B, 0x30,
@@ -117,15 +135,15 @@ runs.forEach(function(run) {
 				0x76, 0x92, 0x0C, 0xBF, 0x79, 0x26, 0x77, 0x53, 0xD1, 0xA5, 0x6A, 0xAC,
 			]).buffer;
 
-			assert.isTrue(abEqual(x5c[0], expectedX5c0), "x5c[0] has correct value");
-			assert.isTrue(abEqual(x5c[1], expectedX5c1), "x5c[1] has correct value");
+			assert.isTrue(arrayBufferEquals(x5c[0], expectedX5c0), "x5c[0] has correct value");
+			assert.isTrue(arrayBufferEquals(x5c[1], expectedX5c1), "x5c[1] has correct value");
 		});
 
 		it("has attCert", function() {
-			var attCert = ret.get("attCert");
+			const attCert = ret.get("attCert");
 			assert.instanceOf(attCert, ArrayBuffer);
 
-			var expectedAttCert = new Uint8Array([
+			const expectedAttCert = new Uint8Array([
 				0x30, 0x82, 0x02, 0x41, 0x30, 0x82, 0x01, 0xE8, 0xA0, 0x03, 0x02, 0x01, 0x02, 0x02, 0x10, 0x15,
 				0x9F, 0x7B, 0xC2, 0xCD, 0x89, 0x18, 0xF1, 0x28, 0x6B, 0x93, 0x48, 0xFA, 0x9F, 0x33, 0xE2, 0x30,
 				0x0A, 0x06, 0x08, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x04, 0x03, 0x02, 0x30, 0x49, 0x31, 0x0B, 0x30,
@@ -165,14 +183,14 @@ runs.forEach(function(run) {
 				0xE0, 0xE7, 0xF8, 0x90, 0xC0,
 			]).buffer;
 
-			assert.isTrue(abEqual(attCert, expectedAttCert), "attCert has correct value");
+			assert.isTrue(arrayBufferEquals(attCert, expectedAttCert), "attCert has correct value");
 		});
 
 		it("has sig", function() {
-			var sig = ret.get("sig");
+			const sig = ret.get("sig");
 			assert.instanceOf(sig, ArrayBuffer);
 
-			var expectedSig = new Uint8Array([
+			const expectedSig = new Uint8Array([
 				0x30, 0x46, 0x02, 0x21, 0x00, 0x8B, 0x0A, 0xD1, 0x6A, 0xFD, 0xB6, 0x6B, 0x9D, 0xFB, 0x06, 0x88,
 				0x62, 0x84, 0x30, 0xDB, 0x45, 0x16, 0x8B, 0xB0, 0xCB, 0xFE, 0x00, 0xF1, 0xFC, 0xF3, 0x46, 0xDC,
 				0xF0, 0x79, 0xED, 0xE1, 0xCB, 0x02, 0x21, 0x00, 0xB5, 0x1C, 0x9D, 0xFB, 0x82, 0x48, 0xDA, 0x90,
@@ -180,16 +198,15 @@ runs.forEach(function(run) {
 				0x9C, 0x10, 0x5A, 0xDE, 0x7D, 0x88, 0xFE, 0x15,
 			]).buffer;
 
-			assert.isTrue(abEqual(sig, expectedSig), "sig has correct value");
-
+			assert.isTrue(arrayBufferEquals(sig, expectedSig), "sig has correct value");
 		});
 
 		it("has correct raw authnrData", function() {
-			var rawAuthnrData = ret.get("rawAuthnrData");
+			const rawAuthnrData = ret.get("rawAuthnrData");
 			assert.instanceOf(rawAuthnrData, ArrayBuffer);
 			assert.strictEqual(rawAuthnrData.byteLength, 228);
 
-			var expectedRawAuthnrData = new Uint8Array([
+			const expectedRawAuthnrData = new Uint8Array([
 				0x95, 0x69, 0x08, 0x8F, 0x1E, 0xCE, 0xE3, 0x23, 0x29, 0x54, 0x03, 0x5D, 0xBD, 0x10, 0xD7, 0xCA,
 				0xE3, 0x91, 0x30, 0x5A, 0x27, 0x51, 0xB5, 0x59, 0xBB, 0x8F, 0xD7, 0xCB, 0xB2, 0x29, 0xBD, 0xD4,
 				0x41, 0x00, 0x00, 0x00, 0x01, 0x42, 0x38, 0x32, 0x45, 0x44, 0x37, 0x33, 0x43, 0x38, 0x46, 0x42,
@@ -206,23 +223,23 @@ runs.forEach(function(run) {
 				0x8D, 0x82, 0x77, 0xE8, 0x22, 0xF5, 0x54, 0xCB, 0xF6, 0xA5, 0x94, 0xB3, 0xA9, 0x1F, 0xCD, 0x7E,
 				0xF1, 0xBC, 0xF1, 0xB0,
 			]).buffer;
-			assert.isTrue(abEqual(rawAuthnrData, expectedRawAuthnrData), "rawAuthnrData has correct value");
+			assert.isTrue(arrayBufferEquals(rawAuthnrData, expectedRawAuthnrData), "rawAuthnrData has correct value");
 		});
 
 		it("has correct rpIdHash", function() {
-			var rpIdHash = ret.get("rpIdHash");
+			const rpIdHash = ret.get("rpIdHash");
 			assert.instanceOf(rpIdHash, ArrayBuffer);
 			assert.strictEqual(rpIdHash.byteLength, 32);
 
-			var expectedRpIdHash = new Uint8Array([
+			let expectedRpIdHash = new Uint8Array([
 				0x95, 0x69, 0x08, 0x8F, 0x1E, 0xCE, 0xE3, 0x23, 0x29, 0x54, 0x03, 0x5D, 0xBD, 0x10, 0xD7, 0xCA,
 				0xE3, 0x91, 0x30, 0x5A, 0x27, 0x51, 0xB5, 0x59, 0xBB, 0x8F, 0xD7, 0xCB, 0xB2, 0x29, 0xBD, 0xD4,
 			]).buffer;
-			assert.isTrue(abEqual(rpIdHash, expectedRpIdHash), "rpIdHash has correct value");
+			assert.isTrue(arrayBufferEquals(rpIdHash, expectedRpIdHash), "rpIdHash has correct value");
 		});
 
 		it("has correct flags", function() {
-			var flags = ret.get("flags");
+			const flags = ret.get("flags");
 			assert.instanceOf(flags, Set);
 			assert.strictEqual(flags.size, 2);
 			assert.isTrue(flags.has("AT"));
@@ -230,41 +247,41 @@ runs.forEach(function(run) {
 		});
 
 		it("has correct counter", function() {
-			var counter = ret.get("counter");
+			const counter = ret.get("counter");
 			assert.isNumber(counter);
 			assert.strictEqual(counter, 1);
 		});
 
 		it("has correct aaguid", function() {
-			var aaguid = ret.get("aaguid");
+			const aaguid = ret.get("aaguid");
 			assert.instanceOf(aaguid, ArrayBuffer);
 			assert.strictEqual(aaguid.byteLength, 16);
 
-			var expectedAaguid = new Uint8Array([
+			let expectedAaguid = new Uint8Array([
 				0x42, 0x38, 0x32, 0x45, 0x44, 0x37, 0x33, 0x43, 0x38, 0x46, 0x42, 0x34, 0x45, 0x35, 0x41, 0x32,
 			]).buffer;
-			assert.isTrue(abEqual(aaguid, expectedAaguid), "aaguid has correct value");
+			assert.isTrue(arrayBufferEquals(aaguid, expectedAaguid), "aaguid has correct value");
 		});
 
 		it("has correct credIdLen", function() {
-			var credIdLen = ret.get("credIdLen");
+			const credIdLen = ret.get("credIdLen");
 			assert.isNumber(credIdLen);
 			assert.strictEqual(credIdLen, 96);
 		});
 
 		it("has correct credentialPublicKeyCose", function() {
-			var credentialPublicKeyCose = ret.get("credentialPublicKeyCose");
+			const credentialPublicKeyCose = ret.get("credentialPublicKeyCose");
 			assert.instanceOf(credentialPublicKeyCose, ArrayBuffer);
 			assert.strictEqual(credentialPublicKeyCose.byteLength, 77);
 
-			var expectedCredentialPublicKeyCose = new Uint8Array([
+			let expectedCredentialPublicKeyCose = new Uint8Array([
 				0xA5, 0x01, 0x02, 0x03, 0x26, 0x20, 0x01, 0x21, 0x58, 0x20, 0x59, 0x1D, 0xC1, 0xE1, 0x04, 0xEA,
 				0x65, 0xA2, 0x20, 0x06, 0x0F, 0x0E, 0x82, 0xB3, 0xDF, 0xCF, 0x35, 0x02, 0x86, 0xB8, 0xB2, 0x7F,
 				0x33, 0x91, 0x39, 0xB4, 0x68, 0xF2, 0x8A, 0x60, 0x1B, 0xDD, 0x22, 0x58, 0x20, 0xB6, 0x51, 0xB7,
 				0xDA, 0x5C, 0x6B, 0x6A, 0x78, 0x3C, 0x33, 0x4B, 0x68, 0x8D, 0x82, 0x77, 0xE8, 0x22, 0xF5, 0x54,
 				0xCB, 0xF6, 0xA5, 0x94, 0xB3, 0xA9, 0x1F, 0xCD, 0x7E, 0xF1, 0xBC, 0xF1, 0xB0,
 			]).buffer;
-			assert.isTrue(abEqual(credentialPublicKeyCose, expectedCredentialPublicKeyCose), "credentialPublicKeyCose has correct value");
+			assert.isTrue(arrayBufferEquals(credentialPublicKeyCose, expectedCredentialPublicKeyCose), "credentialPublicKeyCose has correct value");
 		});
 	});
 });

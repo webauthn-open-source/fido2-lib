@@ -8,3 +8,6 @@ coverage
 .nyc_output
 yarn.lock
 .vscode
+dist
+test/dist/*
+!test/dist/package.json

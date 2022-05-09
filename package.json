@@ -2,12 +2,16 @@
 	"name": "fido2-lib",
 	"version": "2.8.3",
 	"description": "A library for performing FIDO 2.0 / WebAuthn functionality",
-	"main": "index.js",
-	"types": "./types/index.d.ts",
+	"type": "module",
+	"main": "dist/main.cjs",
+	"module": "lib/main.js",
+	"types": "./types/main.d.ts",
 	"scripts": {
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
+		"build": "npx rollup -c rollup.config.js && npm run test:dist",
 		"test": "nyc mocha",
+		"test:dist": "npx mocha test/dist",
 		"report": "nyc report --reporter=text-lcov > coverage.lcov",
 		"codecov": "codecov -e TRAVIS_NODE_VERSION",
 		"docs": "jsdoc -c ./.jsdoc-conf.json",
@@ -32,41 +36,33 @@
 		"url": "https://github.com/webauthn-open-source/fido2-lib/issues"
 	},
 	"devDependencies": {
-		"@babel/eslint-parser": "^7.16.5",
-		"bytestreamjs": "^1.0.29",
-		"chai": "^4.1.2",
+		"@peculiar/webcrypto": "^1.3.3",
+		"chai": "^4.3.6",
 		"chai-as-promised": "^7.1.1",
 		"codecov": "^3.7.0",
 		"docdash": "^0.4.0",
-		"eslint": "^8.7.0",
-		"eslint-plugin-vue": "^8.4.0",
-		"fido2-helpers": "^1.7.2",
+		"eslint": "^8.14.0",
 		"gh-pages": "^2.2.0",
-		"jsdoc": "^3.5.5",
-		"mocha": "^9.2.0",
-		"mockery": "^2.0.0",
+		"jsdoc": "^3.6.7",
+		"jsdoc-chameleon-template": "^1.0.2",
+		"mocha": "^10.0.0",
 		"nyc": "^15.1.0",
-		"sinon": "^7.3.2"
+		"rollup": "^2.72.1",
+		"sinon": "^13.0.2"
 	},
 	"dependencies": {
-		"@peculiar/webcrypto": "^1.2.0",
-		"asn1js": "^2.0.18",
-		"cbor": "^4.0.0",
-		"cose-to-jwk": "^1.1.0",
-		"jwk-to-pem": "^2.0.5",
-		"node-jose": "^2.1.0",
-		"pkijs": "=2.1.58",
-		"psl": "^1.1.24",
-		"pvutils": "^1.0.17"
+		"@hexagon/base64": "^1.0.19",
+		"asn1js": "^2.3.2",
+		"cbor-x": "^1.2.1",
+		"jose": "^4.7.0",
+		"pkijs": "2.1.60",
+		"tldts": "^5.7.77"
 	},
 	"eslintConfig": {
 		"root": true,
 		"env": {
 			"node": true
 		},
-		"extends": [
-			"plugin:vue/recommended"
-		],
 		"rules": {
 			"space-before-function-paren": [
 				"error",
@@ -111,11 +107,15 @@
 					"max": 2,
 					"maxEOF": 1
 				}
+			],
+			"no-var": [
+				"error"
 			]
 		},
 		"parserOptions": {
-			"parser": "@babel/eslint-parser",
-			"requireConfigFile": false
+			"requireConfigFile": false,
+			"sourceType": "module",
+			"ecmaVersion": 13
 		},
 		"overrides": [
 			{

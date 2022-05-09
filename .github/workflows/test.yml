@@ -33,6 +33,7 @@ jobs:
         with:
           node-version: '16.x'
       - run: npm ci
+      - run: npm run build
       - run: npm run docs
       - run: git config --global user.name "JamesCullum (Pseudonym)"
       - run: git config --global user.email "https://mailhide.io/e/Wno7k"

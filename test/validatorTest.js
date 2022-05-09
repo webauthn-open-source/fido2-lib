@@ -1,32 +1,40 @@
-"use strict";
+// Testing lib
+import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 
-const validator = require("../lib/validator");
-const parser = require("../lib/parser");
-const chai = require("chai");
-var chaiAsPromised = require("chai-as-promised");
-chai.use(chaiAsPromised);
-var assert = chai.assert;
-const h = require("fido2-helpers");
-const { coerceToArrayBuffer } = require("../lib/utils");
-const {
-	printHex,
-	cloneObject,
-} = h.functions;
+// Helpers
+import * as h from "./helpers/fido2-helpers.js";
 
-var attResp;
+// Testing subject
+import {
+	attach,
+	coerceToArrayBuffer,
+	parseAttestationObject,
+	parseAuthnrAssertionResponse,
+	parseAuthnrAttestationResponse,
+	parseClientResponse
+} from "../lib/main.js";
 
-var runs = [
+chai.use(chaiAsPromised.default);
+const assert = chai.assert;
+
+const parser = {
+	parseAuthnrAttestationResponse,
+	parseAuthnrAssertionResponse,
+	parseAttestationObject,
+	parseClientResponse,
+};
+let attResp;
+
+const runs = [
 	{ functionName: "parseAuthnrAttestationResponse" },
 	{ functionName: "parseAttestationObject" },
 ];
 
 describe("attestation validation", function() {
-
 	runs.forEach(function(run) {
-
 		describe("parsing attestation with " + run.functionName, function() {
-
-			beforeEach(function() {
+			beforeEach(async function() {
 				attResp = {
 					request: {},
 					requiredExpectations: new Set([
@@ -40,34 +48,43 @@ describe("attestation validation", function() {
 					]),
 					expectations: new Map([
 						["origin", "https://localhost:8443"],
-						["challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w"],
+						[
+							"challenge",
+							"33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+						],
 						["flags", ["UP", "AT"]],
 					]),
-					clientData: parser.parseClientResponse(h.lib.makeCredentialAttestationNoneResponse),
-					authnrData: run.functionName == "parseAuthnrAttestationResponse" ? parser[run.functionName](h.lib.makeCredentialAttestationNoneResponse) :  parser[run.functionName](h.lib.makeCredentialAttestationNoneResponse.response.attestationObject),
+					clientData: parser.parseClientResponse(
+						h.lib.makeCredentialAttestationNoneResponse,
+					),
+					authnrData: run.functionName == "parseAuthnrAttestationResponse"
+						? await parser[run.functionName](
+							h.lib.makeCredentialAttestationNoneResponse,
+						)
+						: await parser[run.functionName](
+							h.lib.makeCredentialAttestationNoneResponse
+								.response
+								.attestationObject,
+						),
 				};
-				var testReq = cloneObject(h.lib.makeCredentialAttestationNoneResponse);
+				let testReq = h.functions.cloneObject(h.lib.makeCredentialAttestationNoneResponse);
 				testReq.rawId = h.lib.makeCredentialAttestationNoneResponse.rawId;
 				testReq.response.clientDataJSON = h.lib.makeCredentialAttestationNoneResponse.response.clientDataJSON.slice(0);
 				testReq.response.attestationObject = h.lib.makeCredentialAttestationNoneResponse.response.attestationObject.slice(0);
 				attResp.request = testReq;
 
-				validator.attach(attResp);
-			});
-
-			it("returns object", function() {
-				assert.isObject(validator);
+				attach(attResp);
 			});
 
 			it("is attached", function() {
-				assert.isFunction(validator.attach);
+				assert.isFunction(attach);
 				assert.isFunction(attResp.validateOrigin);
 				assert.isFunction(attResp.validateAttestation);
 			});
 
 			describe("validateExpectations", function() {
 				it("returns true on valid expectations", async function() {
-					var ret = await attResp.validateExpectations();
+					const ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validExpectations);
 				});
@@ -89,7 +106,7 @@ describe("attestation validation", function() {
 
 				it("should not throw if  optionalExpectations are array", async function() {
 					attResp.optionalExpectations = ["rpId"];
-					assert.isFulfilled(attResp.validateExpectations());
+					await attResp.validateExpectations();
 				});
 
 				it("throws if too many expectations", function() {
@@ -136,7 +153,7 @@ describe("attestation validation", function() {
 
 				it("returns true if flags is Set", async function() {
 					attResp.expectations.set("flags", new Set(["UP", "AT"]));
-					var ret = await attResp.validateExpectations();
+					const ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 				});
 
@@ -172,28 +189,28 @@ describe("attestation validation", function() {
 
 				it("works with valid rpId", async function() {
 					attResp.expectations.set("rpId", "google.com");
-					var ret = await attResp.validateExpectations();
+					const ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validExpectations);
 				});
 
 				it("works with localhost rpId", async function() {
 					attResp.expectations.set("rpId", "localhost");
-					var ret = await attResp.validateExpectations();
+					const ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validExpectations);
 				});
 
 				it("works with valid allowCredentials", async function() {
 					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["usb", "nfc"] }]);
-					var ret = await attResp.validateExpectations();
+					let ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validExpectations);
 				});
 
 				it("works with null allowCredentials", async function() {
 					attResp.expectations.set("allowCredentials", null);
-					var ret = await attResp.validateExpectations();
+					const ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validExpectations);
 				});
@@ -240,7 +257,7 @@ describe("attestation validation", function() {
 
 				it("works with null transports in allowCredentials element", async function() {
 					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key" }]);
-					var ret = await attResp.validateExpectations();
+					let ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validExpectations);
 				});
@@ -260,13 +277,13 @@ describe("attestation validation", function() {
 
 			describe("validateCreateRequest", function() {
 				it("returns true if request is valid", function() {
-					var ret = attResp.validateCreateRequest();
+					const ret = attResp.validateCreateRequest();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validRequest);
 				});
 
 				it("returns true for U2F request", function() {
-					var ret = attResp.validateCreateRequest();
+					const ret = attResp.validateCreateRequest();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validRequest);
 				});
@@ -324,14 +341,14 @@ describe("attestation validation", function() {
 
 				it("passes with response.attestationObject as ArrayBuffer", async function() {
 					attResp.request.response.attestationObject = new ArrayBuffer();
-					var ret = await attResp.validateCreateRequest();
+					const ret = await attResp.validateCreateRequest();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validRequest);
 				});
 
 				it("passes with response.attestationObject as String", async function() {
 					attResp.request.response.attestationObject = "";
-					var ret = await attResp.validateCreateRequest();
+					const ret = await attResp.validateCreateRequest();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validRequest);
 				});
@@ -352,14 +369,14 @@ describe("attestation validation", function() {
 
 				it("passes with response.clientDataJSON as ArrayBuffer", async function() {
 					attResp.request.response.clientDataJSON = new ArrayBuffer();
-					var ret = await attResp.validateCreateRequest();
+					const ret = await attResp.validateCreateRequest();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validRequest);
 				});
 
 				it("passes with response.clientDataJSON as String", async function() {
 					attResp.request.response.clientDataJSON = "";
-					var ret = await attResp.validateCreateRequest();
+					const ret = await attResp.validateCreateRequest();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validRequest);
 				});
@@ -367,7 +384,7 @@ describe("attestation validation", function() {
 
 			describe("validateRawClientDataJson", function() {
 				it("returns true if ArrayBuffer", async function() {
-					var ret = await attResp.validateRawClientDataJson();
+					const ret = await attResp.validateRawClientDataJson();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("rawClientDataJson"));
 				});
@@ -385,7 +402,7 @@ describe("attestation validation", function() {
 
 			describe("validateId", function() {
 				it("returns true on ArrayBuffer", async function() {
-					var ret = await attResp.validateId();
+					const ret = await attResp.validateId();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("rawId"));
 				});
@@ -405,13 +422,13 @@ describe("attestation validation", function() {
 
 			describe("validateTransports", function() {
 				it("returns true on array<string>", async function() {
-					var ret = await attResp.validateTransports();
+					const ret = await attResp.validateTransports();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("transports"));
 				});
 
 				it("returns true on null", async function() {
-					var ret = await attResp.validateTransports();
+					const ret = await attResp.validateTransports();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("transports"));
 				});
@@ -425,14 +442,13 @@ describe("attestation validation", function() {
 					attResp.authnrData.set("transports", [1]);
 					return assert.isRejected(attResp.validateTransports(), Error, "expected transports[0] to be 'string'");
 				});
-
 			});
 
 			describe("validateOrigin", function() {
 				it("accepts exact match", async function() {
 					attResp.expectations.set("origin", "https://webauthn.bin.coffee:8080");
 					attResp.clientData.set("origin", "https://webauthn.bin.coffee:8080");
-					var ret = await attResp.validateOrigin();
+					let ret = await attResp.validateOrigin();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("origin"));
 				});
@@ -462,7 +478,7 @@ describe("attestation validation", function() {
 
 			describe("validateCreateType", function() {
 				it("returns true when 'webauthn.create'", async function() {
-					var ret = await attResp.validateCreateType();
+					const ret = await attResp.validateCreateType();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("type"));
 				});
@@ -486,7 +502,7 @@ describe("attestation validation", function() {
 			describe("validateGetType", function() {
 				it("returns true when 'webauthn.get'", async function() {
 					attResp.clientData.set("type", "webauthn.get");
-					var ret = await attResp.validateGetType();
+					const ret = await attResp.validateGetType();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("type"));
 				});
@@ -510,7 +526,7 @@ describe("attestation validation", function() {
 			describe("validateChallenge", function() {
 				it("returns true if challenges match", async function() {
 					attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
-					var ret = await attResp.validateChallenge();
+					let ret = await attResp.validateChallenge();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("challenge"));
 				});
@@ -518,7 +534,7 @@ describe("attestation validation", function() {
 				it("accepts ending equal sign (1)", async function() {
 					attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
 					attResp.clientData.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w=");
-					var ret = await attResp.validateChallenge();
+					let ret = await attResp.validateChallenge();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("challenge"));
 				});
@@ -526,7 +542,7 @@ describe("attestation validation", function() {
 				it("accepts ending equal signs (2)", async function() {
 					attResp.expectations.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
 					attResp.clientData.set("challenge", "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w==");
-					var ret = await attResp.validateChallenge();
+					let ret = await attResp.validateChallenge();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("challenge"));
 				});
@@ -576,14 +592,18 @@ describe("attestation validation", function() {
 
 			describe("validateRawAuthnrData", function() {
 				it("returns true if ArrayBuffer", async function() {
-					var ret = await attResp.validateRawAuthnrData();
+					const ret = await attResp.validateRawAuthnrData();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("rawAuthnrData"));
 				});
 
 				it("throws if missing", function() {
 					attResp.authnrData.delete("rawAuthnrData");
-					return assert.isRejected(attResp.validateRawAuthnrData(), Error, "authnrData rawAuthnrData should be ArrayBuffer");
+					return assert.isRejected(
+						attResp.validateRawAuthnrData(),
+						Error,
+						"authnrData rawAuthnrData should be ArrayBuffer",
+					);
 				});
 
 				it("throws if not ArrayBuffer", function() {
@@ -594,7 +614,7 @@ describe("attestation validation", function() {
 
 			describe("validateAttestation", function() {
 				it("accepts none", async function() {
-					var ret = await attResp.validateAttestation();
+					const ret = await attResp.validateAttestation();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("fmt"));
 				});
@@ -611,12 +631,12 @@ describe("attestation validation", function() {
 			});
 
 			describe("validateRpIdHash", function() {
-				after(() => {
+				afterEach(() => {
 					attResp.expectations.delete("rpId");
 				});
 
 				it("returns true when matches", async function() {
-					var ret = await attResp.validateRpIdHash();
+					const ret = await attResp.validateRpIdHash();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("rpIdHash"));
 				});
@@ -640,7 +660,7 @@ describe("attestation validation", function() {
 
 			describe("validateAaguid", function() {
 				it("returns true on validation", async function() {
-					var ret = await attResp.validateAaguid();
+					const ret = await attResp.validateAaguid();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("aaguid"));
 				});
@@ -653,7 +673,7 @@ describe("attestation validation", function() {
 
 			describe("validateCredId", function() {
 				it("returns true when ArrayBuffer of correct length", async function() {
-					var ret = await attResp.validateCredId();
+					const ret = await attResp.validateCredId();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("credId"));
 					assert.isTrue(attResp.audit.journal.has("credIdLen"));
@@ -687,7 +707,7 @@ describe("attestation validation", function() {
 
 			describe("validatePublicKey", function() {
 				it("returns true on validation", async function() {
-					var ret = await attResp.validatePublicKey();
+					const ret = await attResp.validatePublicKey();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("credentialPublicKeyCose"));
 					assert.isTrue(attResp.audit.journal.has("credentialPublicKeyJwk"));
@@ -697,7 +717,7 @@ describe("attestation validation", function() {
 
 			describe("validateTokenBinding", function() {
 				it("returns true if tokenBinding is undefined", async function() {
-					var ret = await attResp.validateTokenBinding();
+					const ret = await attResp.validateTokenBinding();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("tokenBinding"));
 				});
@@ -710,7 +730,7 @@ describe("attestation validation", function() {
 
 			describe("validateFlags", function() {
 				it("returns true on valid expectations", async function() {
-					var ret = await attResp.validateFlags();
+					const ret = await attResp.validateFlags();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("flags"));
 				});
@@ -741,7 +761,7 @@ describe("attestation validation", function() {
 				it("returns true on UP with UP-or-UV", async function() {
 					attResp.expectations.set("flags", ["UP-or-UV"]);
 					attResp.authnrData.set("flags", new Set(["UP"]));
-					var ret = await attResp.validateFlags();
+					const ret = await attResp.validateFlags();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("flags"));
 				});
@@ -749,7 +769,7 @@ describe("attestation validation", function() {
 				it("returns true on UV with UP-or-UV", async function() {
 					attResp.expectations.set("flags", ["UP-or-UV"]);
 					attResp.authnrData.set("flags", new Set(["UV", "UP"]));
-					var ret = await attResp.validateFlags();
+					const ret = await attResp.validateFlags();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("flags"));
 				});
@@ -771,7 +791,7 @@ describe("attestation validation", function() {
 
 			describe("validateInitialCounter", function() {
 				it("returns true if valid", async function() {
-					var ret = await attResp.validateInitialCounter();
+					const ret = await attResp.validateInitialCounter();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.journal.has("counter"));
 				});
@@ -805,7 +825,7 @@ describe("attestation validation", function() {
 					await attResp.validateInitialCounter();
 
 					// audit
-					var ret = await attResp.validateAudit();
+					const ret = await attResp.validateAudit();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.complete);
 				});
@@ -828,8 +848,11 @@ describe("attestation validation", function() {
 });
 
 describe("assertion validation", function() {
-	var assnResp;
-	beforeEach(function() {
+	let assnResp;
+	beforeEach(async function() {
+		const assertionResponseCopy = h.functions.cloneObject(
+			h.lib.assertionResponse,
+		);
 		assnResp = {
 			request: {},
 			requiredExpectations: new Set([
@@ -850,29 +873,31 @@ describe("assertion validation", function() {
 				["counter", 300],
 				["publicKey", h.lib.assnPublicKey],
 				["allowCredentials", [{
-					id: h.lib.assertionResponse.rawId,
+					id: assertionResponseCopy.rawId,
 					type: "public-key",
 				}]],
 			]),
-			clientData: parser.parseClientResponse(h.lib.assertionResponse),
+			clientData: parser.parseClientResponse(assertionResponseCopy),
 			authnrData: new Map([
-				...parser.parseAuthnrAssertionResponse(h.lib.assertionResponse),
+				...await parser.parseAuthnrAssertionResponse(
+					assertionResponseCopy,
+				),
 			]),
 		};
-		var testReq = cloneObject(h.lib.assertionResponse);
-		testReq.rawId = h.lib.assertionResponse.rawId;
-		testReq.response.clientDataJSON = h.lib.assertionResponse.response.clientDataJSON.slice(0);
-		testReq.response.authenticatorData = h.lib.assertionResponse.response.authenticatorData.slice(0);
-		testReq.response.signature = h.lib.assertionResponse.response.signature.slice(0);
-		testReq.response.userHandle = h.lib.assertionResponse.response.userHandle.slice(0);
+		const testReq = assertionResponseCopy;
+		testReq.rawId = assertionResponseCopy.rawId;
+		testReq.response.clientDataJSON = assertionResponseCopy.response.clientDataJSON.slice(0);
+		testReq.response.authenticatorData = assertionResponseCopy.response.authenticatorData.slice(0);
+		testReq.response.signature = assertionResponseCopy.response.signature.slice(0);
+		testReq.response.userHandle = assertionResponseCopy.response.userHandle.slice(0);
 		assnResp.request = testReq;
 
-		validator.attach(assnResp);
+		attach(assnResp);
 	});
 
 	describe("validateUserHandle", function() {
 		it("returns true when undefined", async function() {
-			var ret = await assnResp.validateUserHandle();
+			const ret = await assnResp.validateUserHandle();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.journal.has("userHandle"));
 		});
@@ -887,7 +912,7 @@ describe("assertion validation", function() {
 		it("returns true if counter has advanced", async function() {
 			assert.strictEqual(assnResp.authnrData.get("counter"), 363);
 			assnResp.expectations.set("prevCounter", 362);
-			var ret = await assnResp.validateCounter();
+			const ret = await assnResp.validateCounter();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.journal.has("counter"));
 			assert.equal(assnResp.audit.info.get("counter-supported"), "true");
@@ -896,7 +921,7 @@ describe("assertion validation", function() {
 		it("returns true if counter is not supported but do not add it to journal", async function() {
 			assnResp.authnrData.set("counter", 0);
 			assnResp.expectations.set("prevCounter", 0);
-			var ret = await assnResp.validateCounter();
+			const ret = await assnResp.validateCounter();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.journal.has("counter"));
 			assert.equal(assnResp.audit.info.get("counter-supported"), "false");
@@ -917,7 +942,7 @@ describe("assertion validation", function() {
 
 	describe("validateExpectations", function() {
 		it("returns true on valid expectations", async function() {
-			var ret = await assnResp.validateExpectations();
+			const ret = await assnResp.validateExpectations();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validExpectations);
 		});
@@ -925,7 +950,7 @@ describe("assertion validation", function() {
 
 	describe("validateId", function() {
 		it("returns true on ArrayBuffer", async function() {
-			var ret = await assnResp.validateId();
+			const ret = await assnResp.validateId();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.journal.has("rawId"));
 		});
@@ -942,7 +967,6 @@ describe("assertion validation", function() {
 			return assert.isRejected(assnResp.validateId(), Error, "expected id to be of type ArrayBuffer");
 		});
 
-
 		it("throws on allowCredentials not includes rawId", function() {
 			assnResp.expectations.set("allowCredentials", [{ type: "public-key", id: coerceToArrayBuffer("dGVz", "tes") }]);
 			assnResp.clientData.set("rawId", coerceToArrayBuffer("Y2lhbw==", "ciao"));
@@ -950,20 +974,19 @@ describe("assertion validation", function() {
 		});
 	});
 
-
 	describe("validateAssertionSignature", function() {
 		it("returns true on valid signature");
 	});
 
 	describe("validateAssertionResponse", function() {
 		it("returns true if request is valid", async function() {
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
 
 		it("returns true for U2F request", async function() {
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
@@ -1021,14 +1044,14 @@ describe("assertion validation", function() {
 
 		it("passes with response.signature as ArrayBuffer", async function() {
 			assnResp.request.response.signature = new ArrayBuffer();
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
 
 		it("passes with response.signature as String", async function() {
 			assnResp.request.response.signature = "";
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
@@ -1049,21 +1072,21 @@ describe("assertion validation", function() {
 
 		it("passes with response.authenticatorData as ArrayBuffer", async function() {
 			assnResp.request.response.authenticatorData = new ArrayBuffer();
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
 
 		it("passes with response.authenticatorData as String", async function() {
 			assnResp.request.response.authenticatorData = "";
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
 
 		it("returns true if response.userHandle is undefined", async function() {
 			delete assnResp.request.response.userHandle;
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
@@ -1077,14 +1100,14 @@ describe("assertion validation", function() {
 
 		it("passes with response.userHandle as ArrayBuffer", async function() {
 			assnResp.request.response.userHandle = new ArrayBuffer();
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
 
 		it("passes with response.userHandle as String", async function() {
 			assnResp.request.response.userHandle = "";
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
@@ -1105,14 +1128,14 @@ describe("assertion validation", function() {
 
 		it("passes with response.clientDataJSON as ArrayBuffer", async function() {
 			assnResp.request.response.clientDataJSON = new ArrayBuffer();
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
 
 		it("passes with response.clientDataJSON as String", async function() {
 			assnResp.request.response.clientDataJSON = "";
-			var ret = await assnResp.validateAssertionResponse();
+			const ret = await assnResp.validateAssertionResponse();
 			assert.isTrue(ret);
 			assert.isTrue(assnResp.audit.validRequest);
 		});
