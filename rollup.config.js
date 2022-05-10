@@ -31,6 +31,7 @@ export default [
 		],
 		output: {
 			dir: "test/dist/",
+			entryFileName: "[name].js",
 			format: "cjs",
 		},
 	},

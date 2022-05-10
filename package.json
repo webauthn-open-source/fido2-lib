@@ -9,7 +9,7 @@
 	"scripts": {
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"build": "npx rollup -c rollup.config.js && npm run test:dist",
+		"build": "npm run test && npx rollup -c rollup.config.js && npm run test:dist",
 		"test": "nyc mocha",
 		"test:dist": "npx mocha test/dist",
 		"report": "nyc report --reporter=text-lcov > coverage.lcov",
