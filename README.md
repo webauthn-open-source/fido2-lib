@@ -129,6 +129,11 @@ const authnResult = await f2l.assertionResult(clientAssertionResponse, assertion
 
 For a real-life example, refer to [OWASP Single Sign-On](https://github.com/OWASP/SSO_Project).
 
+## Migration from v2 to v3
+
+Generally v3 is assumed to be completely compatible with v2 - compatibility should have increased.
+As many inner workings have been changed, please verify that your application still works with v3 and report issues, if you newly encounter bugs.
+
 ## Sponsor
 
 Work for this project was supported by [Adam Power](https://github.com/apowers313).
