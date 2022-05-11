@@ -1,16 +1,17 @@
-[![CI](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml/badge.svg)](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml)
+[![Node CI](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml/badge.svg)](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml)
 [![Code Coverage](https://codecov.io/gh/webauthn-open-source/fido2-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/webauthn-open-source/fido2-lib)
 [![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json)
 
 ## Install
 
 ``` bash
-npm install fido2-lib
+npm install fido2-lib --save
 ```
 
 [![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib)
 
 ## Overview
+
 A library for performing FIDO 2.0 / WebAuthn server functionality
 
 This library contains all the functionality necessary for implementing a full FIDO2 / WebAuthn server. It intentionally does not implement any kind of networking protocol (e.g. - REST endpoints) so that it can remain independent of any messaging protocols.
@@ -38,22 +39,31 @@ For working examples see [OWASP Single Sign-On](https://github.com/OWASP/SSO_Pro
 * Crypto families: ECDSA, RSA
 * x509 cert parsing, support for FIDO-related extensions, and NIST Public Key Interoperability Test Suite (PKITS) chain validation (from [pki.js](https://github.com/PeculiarVentures/PKI.js/))
 * Returns parsed and validated data, along with extra audit data for risk engines
+* Support both CommonJS (`require`) and ESM (`import`) natively
 
 ## Example
 
-**Instantiate Library (Simple):**
+**Import Library using CommonJS:**
 ``` js
 const { Fido2Lib } = require("fido2-lib");
 
 // create a new instance of the library
-var f2l = new Fido2Lib();
+const f2l = new Fido2Lib(/* ... */);
+```
+
+**Import Library using ESM-syntax:**
+``` js
+import { Fido2Lib } from "fido2-lib";
+
+// create a new instance of the library
+const f2l = new Fido2Lib(/* ... */);
 ```
 
 **Instantiate Library (Complex):**
 ``` js
 // could also use one or more of the options below,
 // which just makes the options calls easier later on:
-var f2l = new Fido2Lib({
+const f2l = new Fido2Lib({
     timeout: 42,
     rpId: "example.com",
     rpName: "ACME",
@@ -69,19 +79,19 @@ var f2l = new Fido2Lib({
 
 **Registration:**
 ``` js
-var registrationOptions = await f2l.attestationOptions();
+const registrationOptions = await f2l.attestationOptions();
 
 // make sure to add registrationOptions.user.id
 // save the challenge in the session information...
 // send registrationOptions to client and pass them in to `navigator.credentials.create()`...
 // get response back from client (clientAttestationResponse)
 
-var attestationExpectations = {
+const attestationExpectations = {
     challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
     origin: "https://localhost:8443",
     factor: "either"
 };
-var regResult = await f2l.attestationResult(clientAttestationResponse, attestationExpectations); // will throw on error
+const regResult = await f2l.attestationResult(clientAttestationResponse, attestationExpectations); // will throw on error
 
 // registration complete!
 // save publicKey and counter from regResult to user's info for future authentication calls
@@ -89,14 +99,14 @@ var regResult = await f2l.attestationResult(clientAttestationResponse, attestati
 
 **Authentication:**
 ``` js
-var authnOptions = await f2l.assertionOptions();
+const authnOptions = await f2l.assertionOptions();
 
 // add allowCredentials to limit the number of allowed credential for the authentication process. For further details refer to webauthn specs: (https://www.w3.org/TR/webauthn-2/#dom-publickeycredentialrequestoptions-allowcredentials).
 // save the challenge in the session information...
 // send authnOptions to client and pass them in to `navigator.credentials.get()`...
 // get response back from client (clientAssertionResponse)
 
-var assertionExpectations = {
+const assertionExpectations = {
     // Remove the following comment if allowCredentials has been added into authnOptions so the credential received will be validate against allowCredentials array.
     // allowCredentials: [{
     //     id: "lTqW8H/lHJ4yT0nLOvsvKgcyJCeO8LdUjG5vkXpgO2b0XfyjLMejRvW5oslZtA4B/GgkO/qhTgoBWSlDqCng4Q==",
@@ -112,7 +122,7 @@ var assertionExpectations = {
         "-----END PUBLIC KEY-----\n",
     prevCounter: 362
 };
-var authnResult = await f2l.assertionResult(clientAssertionResponse, assertionExpectations); // will throw on error
+const authnResult = await f2l.assertionResult(clientAssertionResponse, assertionExpectations); // will throw on error
 
 // authentication complete!
 ```

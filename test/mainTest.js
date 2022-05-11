@@ -1,49 +1,46 @@
-"use strict";
+// Testing lib
+import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 
-const { Fido2Lib } = require("../index");
-const {
-	Fido2AttestationResult,
+// Helpers
+import * as h from "./helpers/fido2-helpers.js";
+import * as sinon from "sinon";
+import { packedSelfAttestationResponse } from "./fixtures/packedSelfAttestationData.js";
+
+// Test subject
+import {
+	arrayBufferEquals,
+	abToBuf,
+	androidSafetyNetAttestation,
+	appendBuffer,
+	coerceToArrayBuffer,
 	Fido2AssertionResult,
-} = require("../lib/response");
-const chai = require("chai");
-const chaiAsPromised = require("chai-as-promised");
-chai.use(chaiAsPromised);
-const assert = chai.assert;
-const sinon = require("sinon");
-const h = require("fido2-helpers");
-const noneAttestation = require("../lib/attestations/none");
-const u2fAttestation = require("../lib/attestations/fidoU2F");
-const packedAttestation = require("../lib/attestations/packed");
-const tpmAttestation = require("../lib/attestations/tpm");
-const androidSafetyNetAttestation = require("../lib/attestations/androidSafetyNet");
-const packedSelfAttestationResponse = require("../fixtures/packedSelfAttestationData.json");
-
-const {
+	Fido2AttestationResult,
+	fidoU2fAttestation,
 	MdsCollection,
 	MdsEntry,
-} = require("../lib/mds");
+	noneAttestation,
+	packedAttestation,
+	tools,
+	tpmAttestation,
+	Fido2Lib
+} from "../lib/main.js";
+chai.use(chaiAsPromised.default);
+const { assert } = chai;
 
-const {
-	abToBuf,
-	abEqual,
-	printHex,
-	coerceToArrayBuffer,
-} = require("../lib/utils");
-
-const crypto = require("crypto");
-
+// Test subject
 function restoreAttestationFormats() {
 	// add 'none' attestation format
 	Fido2Lib.addAttestationFormat(
 		noneAttestation.name,
 		noneAttestation.parseFn,
-		noneAttestation.validateFn
+		noneAttestation.validateFn,
 	);
 	// add 'u2f' attestation format
 	Fido2Lib.addAttestationFormat(
-		u2fAttestation.name,
-		u2fAttestation.parseFn,
-		u2fAttestation.validateFn
+		fidoU2fAttestation.name,
+		fidoU2fAttestation.parseFn,
+		fidoU2fAttestation.validateFn,
 	);
 	// add 'packed' attestation format
 	Fido2Lib.addAttestationFormat(
@@ -67,8 +64,8 @@ function restoreAttestationFormats() {
 
 describe("Fido2Lib", function() {
 	it("can create FIDO server object", function() {
-		var fs = new Fido2Lib();
-		assert(fs);
+		const fs = new Fido2Lib();
+		assert.instanceOf(fs, Fido2Lib);
 		assert.isFunction(fs.attestationOptions);
 		assert.isFunction(fs.attestationResult);
 		assert.isFunction(fs.assertionOptions);
@@ -77,21 +74,21 @@ describe("Fido2Lib", function() {
 
 	describe("config", function() {
 		it("can config timeout", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				timeout: 42,
 			});
 			assert.strictEqual(fs.config.timeout, 42);
 		});
 
 		it("can config zero timeout", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				timeout: 0,
 			});
 			assert.strictEqual(fs.config.timeout, 0);
 		});
 
 		it("has default timeout", function() {
-			var fs = new Fido2Lib();
+			const fs = new Fido2Lib();
 			assert.strictEqual(fs.config.timeout, 60000);
 		});
 
@@ -128,7 +125,7 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config rpId", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				rpId: "example.com",
 			});
 			assert.strictEqual(fs.config.rpId, "example.com");
@@ -143,14 +140,14 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config rpName", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				rpName: "ACME",
 			});
 			assert.strictEqual(fs.config.rpName, "ACME");
 		});
 
 		it("has default rpName", function() {
-			var fs = new Fido2Lib();
+			const fs = new Fido2Lib();
 			assert.strictEqual(fs.config.rpName, "Anonymous Service");
 		});
 
@@ -163,7 +160,7 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config rpIcon", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				rpIcon: "https://example.com/foo.png",
 			});
 			assert.strictEqual(fs.config.rpIcon, "https://example.com/foo.png");
@@ -178,14 +175,14 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config challengeSize", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				challengeSize: 128,
 			});
 			assert.strictEqual(fs.config.challengeSize, 128);
 		});
 
 		it("has default challengeSize", function() {
-			var fs = new Fido2Lib();
+			const fs = new Fido2Lib();
 			assert.strictEqual(fs.config.challengeSize, 64);
 		});
 
@@ -206,28 +203,28 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config direct attestation", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				attestation: "direct",
 			});
 			assert.strictEqual(fs.config.attestation, "direct");
 		});
 
 		it("can config indirect attestation", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				attestation: "indirect",
 			});
 			assert.strictEqual(fs.config.attestation, "indirect");
 		});
 
 		it("can config none attestation", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				attestation: "none",
 			});
 			assert.strictEqual(fs.config.attestation, "none");
 		});
 
 		it("can config defautl attestation", function() {
-			var fs = new Fido2Lib();
+			const fs = new Fido2Lib();
 			assert.strictEqual(fs.config.attestation, "direct");
 		});
 
@@ -248,14 +245,14 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config authenticatorAttachment to platform", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				authenticatorAttachment: "platform",
 			});
 			assert.strictEqual(fs.config.authenticatorAttachment, "platform");
 		});
 
 		it("can config authenticatorAttachment to cross-platform", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				authenticatorAttachment: "cross-platform",
 			});
 			assert.strictEqual(fs.config.authenticatorAttachment, "cross-platform");
@@ -270,14 +267,14 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config authenticatorRequireResidentKey to false", function() {
-			var fs = new Fido2Lib({
+			let fs = new Fido2Lib({
 				authenticatorRequireResidentKey: false,
 			});
 			assert.strictEqual(fs.config.authenticatorRequireResidentKey, false);
 		});
 
 		it("can config authenticatorRequireResidentKey to true", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				authenticatorRequireResidentKey: true,
 			});
 			assert.strictEqual(fs.config.authenticatorRequireResidentKey, true);
@@ -292,21 +289,24 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config authenticatorUserVerification to discouraged", function() {
-			var fs = new Fido2Lib({
+			let fs = new Fido2Lib({
 				authenticatorUserVerification: "discouraged",
 			});
 			assert.strictEqual(fs.config.authenticatorUserVerification, "discouraged");
 		});
 
 		it("can config authenticatorUserVerification to preferred", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				authenticatorUserVerification: "preferred",
 			});
-			assert.strictEqual(fs.config.authenticatorUserVerification, "preferred");
+			assert.strictEqual(
+				fs.config.authenticatorUserVerification,
+				"preferred",
+			);
 		});
 
 		it("can config authenticatorUserVerification to required", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				authenticatorUserVerification: "required",
 			});
 			assert.strictEqual(fs.config.authenticatorUserVerification, "required");
@@ -321,21 +321,21 @@ describe("Fido2Lib", function() {
 		});
 
 		it("can config cryptoParams order", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				cryptoParams: [-257, -7],
 			});
 			assert.deepEqual(fs.config.cryptoParams, [-257, -7]);
 		});
 
 		it("can config cryptoParams value", function() {
-			var fs = new Fido2Lib({
+			const fs = new Fido2Lib({
 				cryptoParams: [-8],
 			});
 			assert.deepEqual(fs.config.cryptoParams, [-8]);
 		});
 
 		it("can config cryptoParams value", function() {
-			var fs = new Fido2Lib();
+			const fs = new Fido2Lib();
 			assert.deepEqual(fs.config.cryptoParams, [-7, -257]);
 		});
 
@@ -365,7 +365,7 @@ describe("Fido2Lib", function() {
 	});
 
 	describe("attestationOptions", function() {
-		var serv;
+		let serv;
 		beforeEach(function() {
 			serv = new Fido2Lib();
 		});
@@ -443,42 +443,44 @@ describe("Fido2Lib", function() {
 		});
 
 		it("accepts extraData and returns rawChallenge", async function() {
-			let extraData = new Uint8Array([0x1, 0x2, 0x3, 0x4]).buffer;
-			let opts = await serv.attestationOptions({
-				extraData: extraData,
+			const extraData = new Uint8Array([0x1, 0x2, 0x3, 0x4]).buffer;
+			const opts = await serv.attestationOptions({
+				extraData,
 			});
 
-			let challenge = opts.challenge;
-			let hash = crypto.createHash("sha256");
-			hash.update(abToBuf(opts.rawChallenge));
-			hash.update(abToBuf(extraData));
-			let calculatedChallenge = new Uint8Array(hash.digest()).buffer;
-			assert.isTrue(abEqual(challenge, calculatedChallenge), "extraData hashes match");
+			const challenge = opts.challenge;
+			const calculatedChallenge = await tools.hashDigest(
+				appendBuffer(opts.rawChallenge, extraData),
+			);
+			assert.isTrue(arrayBufferEquals(challenge, calculatedChallenge), "extraData hashes match");
 		});
 	});
 
 	describe("attestationResult", function() {
-		var serv;
+		let serv;
 		beforeEach(function() {
 			serv = new Fido2Lib();
 		});
 
-		it("validates a credential request with 'none' attestation", function() {
-			var expectations = {
+		it("validates a credential request with 'none' attestation", async function() {
+			const expectations = {
 				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
 				origin: "https://localhost:8443",
 				factor: "either",
 			};
 
-			return serv.attestationResult(h.lib.makeCredentialAttestationNoneResponse, expectations).then((res) => {
-				assert.instanceOf(res, Fido2AttestationResult);
-				return res;
-			});
+			const res = await serv.attestationResult(
+				h.lib.makeCredentialAttestationNoneResponse,
+				expectations,
+			);
+
+			assert.instanceOf(res, Fido2AttestationResult);
+			return res;
 		});
 
 		it("validates a credential request with 'u2f' attestation");
 
-		it("validates a packed credential that has self attestation", function() {
+		it("validates a packed credential that has self attestation", async function() {
 			const expectations = {
 				challenge: "zBNZ9XmBj4cu7xxYI_uSJauAj89yOTZX1xEqKxhQydhYCTdoKB0k8bzs3llRrBxQlNn3WyRovWvYAXmuIiswLQ",
 				origin: "http://localhost:3000",
@@ -487,29 +489,32 @@ describe("Fido2Lib", function() {
 
 			const parsedPackedSelfAttestationResponse = {
 				...packedSelfAttestationResponse,
-				id: h.functions.b64decode(packedSelfAttestationResponse.id),
-				rawId: h.functions.b64decode(packedSelfAttestationResponse.rawId),
+				id: tools.base64.toArrayBuffer(packedSelfAttestationResponse.id),
+				rawId: tools.base64.toArrayBuffer(packedSelfAttestationResponse.rawId),
 				response: {
-					attestationObject: h.functions.b64decode(packedSelfAttestationResponse.response.attestationObject),
-					clientDataJSON: h.functions.b64decode(packedSelfAttestationResponse.response.clientDataJSON),
+					attestationObject: tools.base64.toArrayBuffer(packedSelfAttestationResponse.response.attestationObject),
+					clientDataJSON: tools.base64.toArrayBuffer(packedSelfAttestationResponse.response.clientDataJSON),
 				},
 			};
 
-			return serv.attestationResult(parsedPackedSelfAttestationResponse, expectations).then((res) => {
-				assert.instanceOf(res, Fido2AttestationResult);
-				return res;
-			});
+			const res = await serv.attestationResult(
+				parsedPackedSelfAttestationResponse,
+				expectations,
+			);
+
+			assert.instanceOf(res, Fido2AttestationResult);
+			return res;
 		});
 
-		it("validates a credential request with 'android-safetynet' attestation", function(){
-			var serv = new Fido2Lib();
-			var expectations = {
+		it("validates a credential request with 'android-safetynet' attestation", function() {
+			const serv = new Fido2Lib();
+			const expectations = {
 				challenge: "NrRzgRhGy5Y0NlKNhEAqs4ZFVgNGtN49ZyCTOfLk8G1EPY3vnN3zasIZynlCAyUOLdB3-AALfy1XG2MiVps_Vw",
 				origin: "https://contubernio.tic.udc.es",
 				factor: "second",
 			};
 
-			var makeCredentialAttestationSafetyNetResponse = {
+			const makeCredentialAttestationSafetyNetResponse = {
 				rawId: coerceToArrayBuffer("AcaOtf577JrxNa9lHZ9g1Npx2YgKhU0w-F_fFkzbOZNZRmh4_S4NFXBBOH75Jf5NS76jK9vcuRiamDIn63Jxxw0","rawId"),
 				response: {
 					attestationObject: coerceToArrayBuffer(
@@ -532,7 +537,10 @@ describe("Fido2Lib", function() {
 				},
 			};
 
-			return serv.attestationResult(makeCredentialAttestationSafetyNetResponse, expectations).then(res => {
+			return serv.attestationResult(
+				makeCredentialAttestationSafetyNetResponse,
+				expectations,
+			).then((res) => {
 				assert.instanceOf(res, Fido2AttestationResult);
 				return res;
 			});
@@ -542,7 +550,7 @@ describe("Fido2Lib", function() {
 	});
 
 	describe("assertionOptions", function() {
-		var serv;
+		let serv;
 		beforeEach(function() {
 			serv = new Fido2Lib();
 		});
@@ -584,28 +592,27 @@ describe("Fido2Lib", function() {
 		});
 
 		it("accepts extraData and returns rawChallenge", async function() {
-			let extraData = new Uint8Array([0x1, 0x2, 0x3, 0x4]).buffer;
-			let opts = await serv.assertionOptions({
-				extraData: extraData,
+			const extraData = new Uint8Array([0x1, 0x2, 0x3, 0x4]).buffer;
+			const opts = await serv.assertionOptions({
+				extraData,
 			});
 
-			let challenge = opts.challenge;
-			let hash = crypto.createHash("sha256");
-			hash.update(abToBuf(opts.rawChallenge));
-			hash.update(abToBuf(extraData));
-			let calculatedChallenge = new Uint8Array(hash.digest()).buffer;
-			assert.isTrue(abEqual(challenge, calculatedChallenge), "extraData hashes match");
+			const challenge = opts.challenge;
+			const calculatedChallenge = await tools.hashDigest(
+				appendBuffer(opts.rawChallenge, extraData),
+			);
+			assert.isTrue(arrayBufferEquals(challenge, calculatedChallenge), "extraData hashes match");
 		});
 	});
 
 	describe("assertionResult", function() {
-		var serv;
+		let serv;
 		beforeEach(function() {
 			serv = new Fido2Lib();
 		});
 
 		it("valid an assertion", function() {
-			var expectations = {
+			const expectations = {
 				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
 				origin: "https://localhost:8443",
 				factor: "either",
@@ -614,14 +621,17 @@ describe("Fido2Lib", function() {
 				userHandle: null,
 			};
 
-			return serv.assertionResult(h.lib.assertionResponse, expectations).then((res) => {
-				assert.instanceOf(res, Fido2AssertionResult);
-				return res;
-			});
+			return serv.assertionResult(h.lib.assertionResponse, expectations)
+				.then(
+					(res) => {
+						assert.instanceOf(res, Fido2AssertionResult);
+						return res;
+					},
+				);
 		});
 
 		it("valid assertion without userHandle", function() {
-			var expectations = {
+			const expectations = {
 				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
 				origin: "https://localhost:8443",
 				factor: "either",
@@ -630,7 +640,7 @@ describe("Fido2Lib", function() {
 				userHandle: null,
 			};
 
-			var assertionResponse = {
+			const assertionResponse = {
 				rawId: h.lib.assertionResponse.rawId,
 				response: {
 					clientDataJSON: h.lib.assertionResponse.response.clientDataJSON,
@@ -640,26 +650,28 @@ describe("Fido2Lib", function() {
 				},
 			};
 
-			return serv.assertionResult(assertionResponse, expectations).then((res) => {
-				assert.instanceOf(res, Fido2AssertionResult);
-				return res;
-			});
+			return serv.assertionResult(assertionResponse, expectations).then(
+				(res) => {
+					assert.instanceOf(res, Fido2AssertionResult);
+					return res;
+				},
+			);
 		});
 
 		it("valid assertion without counter supported", function() {
-			var expectations = {
+			const expectations = {
 				challenge: "g_Pu32bpluktxugNNBLX-ZO5N9ub0D50bJERbKiU2GWON3md0rR9CaQYdPHdCgo-dpi1-9gbJJvmCuHDnh04Rg",
 				origin: "https://mighty-fireant-84.loca.lt",
 				factor: "first",
 				publicKey: "-----BEGIN PUBLIC KEY-----\n" +
-				"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0dBhdNNvh2NkaNstlFhrBhi9yrjP\n" +
-				"0qPqZvRRnf3zQiN9zDwJ9ZXoyO4dhKz3OIhMBJG6F+muH35fEsWBZI6dhg==\n" +
-				"-----END PUBLIC KEY-----\n",
+					"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0dBhdNNvh2NkaNstlFhrBhi9yrjP\n" +
+					"0qPqZvRRnf3zQiN9zDwJ9ZXoyO4dhKz3OIhMBJG6F+muH35fEsWBZI6dhg==\n" +
+					"-----END PUBLIC KEY-----\n",
 				prevCounter: 0,
 				userHandle: null,
 			};
 
-			var assertionResponse = {
+			let assertionResponse = {
 				rawId: coerceToArrayBuffer("7S8aQSSxqPkztahKbgw36Mr_-hE", "rawId"),
 				response: {
 					authenticatorData: coerceToArrayBuffer("YS67HU8UTNyqQ5f-EVzitWw5paVnpyhQli2ahN6PS6UFAAAAAA", "authenticatorData"),
@@ -680,19 +692,19 @@ describe("Fido2Lib", function() {
 			Fido2Lib.deleteAllAttestationFormats();
 		});
 
-		after(function() {
+		afterEach(function() {
 			restoreAttestationFormats();
 		});
 
 		it("adds to map on success", function() {
-			var serv = new Fido2Lib();
+			const serv = new Fido2Lib();
 			assert.instanceOf(serv.attestationMap, Map);
-			var prevSize = serv.attestationMap.size;
-			var ret = Fido2Lib.addAttestationFormat("foo", function() {}, function() {});
+			const prevSize = serv.attestationMap.size;
+			const ret = Fido2Lib.addAttestationFormat("foo", function() {}, function() {});
 			assert.isTrue(ret);
 			assert.strictEqual(serv.attestationMap.size, prevSize + 1);
 			assert.isTrue(serv.attestationMap.has("foo"));
-			var newFmt = serv.attestationMap.get("foo");
+			const newFmt = serv.attestationMap.get("foo");
 			assert.isObject(newFmt);
 			assert.strictEqual(Object.keys(newFmt).length, 2);
 			assert.isFunction(newFmt.parseFn);
@@ -726,8 +738,8 @@ describe("Fido2Lib", function() {
 	});
 
 	describe("parseAttestation", function() {
-		var parseStub;
-		var validateStub;
+		let parseStub;
+		let validateStub;
 		beforeEach(function() {
 			parseStub = sinon.stub();
 			validateStub = sinon.stub();
@@ -738,25 +750,25 @@ describe("Fido2Lib", function() {
 			Fido2Lib.deleteAllAttestationFormats();
 		});
 
-		after(function() {
+		afterEach(function() {
 			restoreAttestationFormats();
 		});
 
 		it("returns Map on success", function() {
-			var arg = new Map([
+			const arg = new Map([
 				["test", "yup"],
 			]);
 			parseStub.onCall(0).returns(arg);
-			var ret = Fido2Lib.parseAttestation("foo", arg);
+			const ret = Fido2Lib.parseAttestation("foo", arg);
 			assert.instanceOf(ret, Map);
 			assert.strictEqual(parseStub.callCount, 1);
 			assert.isTrue(parseStub.calledWith(arg));
 		});
 
 		it("success when returning empty map", function() {
-			var arg = new Map();
+			const arg = new Map();
 			parseStub.onCall(0).returns(arg);
-			var ret = Fido2Lib.parseAttestation("foo", arg);
+			const ret = Fido2Lib.parseAttestation("foo", arg);
 			assert.instanceOf(ret, Map);
 			assert.strictEqual(parseStub.callCount, 1);
 			assert.isTrue(parseStub.calledWith(arg));
@@ -788,9 +800,9 @@ describe("Fido2Lib", function() {
 	});
 
 	describe("validateAttestation", function() {
-		var parseStub;
-		var validateStub;
-		var fakeRequest;
+		let parseStub;
+		let validateStub;
+		let fakeRequest;
 		beforeEach(function() {
 			parseStub = sinon.stub();
 			validateStub = sinon.stub();
@@ -806,14 +818,14 @@ describe("Fido2Lib", function() {
 			Fido2Lib.deleteAllAttestationFormats();
 		});
 
-		after(function() {
+		afterEach(function() {
 			restoreAttestationFormats();
 		});
 
+		// ToDo: Where does this check for a map?
 		it("returns Map on success", async function() {
 			validateStub.onCall(0).returns(true);
-			var arg = new Map();
-			var ret = await Fido2Lib.validateAttestation.call(fakeRequest);
+			const ret = await Fido2Lib.validateAttestation.call(fakeRequest);
 			assert.isTrue(ret);
 			assert.strictEqual(validateStub.callCount, 1);
 		});
@@ -841,7 +853,7 @@ describe("Fido2Lib", function() {
 		});
 
 		it("returns a MdsCollection", function() {
-			var mc = Fido2Lib.createMdsCollection("test");
+			const mc = Fido2Lib.createMdsCollection("test");
 			assert.instanceOf(mc, MdsCollection);
 		});
 	});
@@ -852,33 +864,35 @@ describe("Fido2Lib", function() {
 		});
 
 		it("throws if argument isn't a MdsCollection", function() {
-			assert.throws(function() {
-				Fido2Lib.addMdsCollection();
-			}, Error, "expected 'mdsCollection' to be instance of MdsCollection, got: undefined");
+			assert.isRejected(
+				Fido2Lib.addMdsCollection(),
+				Error,
+				"expected 'mdsCollection' to be instance of MdsCollection, got: undefined",
+			);
 		});
 
 		it("sets the current global MDS collection", async function() {
-			var mc = Fido2Lib.createMdsCollection("test");
+			const mc = Fido2Lib.createMdsCollection("test");
 			await mc.addToc(h.mds.mds2TocJwt);
 			mc.addEntry(h.mds.mds2UafEntry);
 			assert.strictEqual(mc.entryList.size, 0);
-			Fido2Lib.addMdsCollection(mc);
+			await Fido2Lib.addMdsCollection(mc);
 			assert.strictEqual(mc.entryList.size, 1);
 		});
 
 		it("can add multiple collections", async function() {
-			var mc1 = Fido2Lib.createMdsCollection("fido-mds-1");
+			const mc1 = Fido2Lib.createMdsCollection("fido-mds-1");
 			await mc1.addToc(h.mds.mds1TocJwt);
 			mc1.addEntry(h.mds.mds1UafEntry);
 			assert.strictEqual(mc1.entryList.size, 0);
-			Fido2Lib.addMdsCollection(mc1);
+			await Fido2Lib.addMdsCollection(mc1);
 			assert.strictEqual(mc1.entryList.size, 1);
 
-			var mc2 = Fido2Lib.createMdsCollection("fido-mds-2");
+			const mc2 = Fido2Lib.createMdsCollection("fido-mds-2");
 			await mc2.addToc(h.mds.mds2TocJwt);
 			mc2.addEntry(h.mds.mds2UafEntry);
 			assert.strictEqual(mc2.entryList.size, 0);
-			Fido2Lib.addMdsCollection(mc2);
+			await Fido2Lib.addMdsCollection(mc2);
 			assert.strictEqual(mc2.entryList.size, 1);
 		});
 	});
@@ -895,39 +909,41 @@ describe("Fido2Lib", function() {
 		});
 
 		it("finds a UAF MDS entry in the global collection", async function() {
-			var mc = Fido2Lib.createMdsCollection("test");
+			const mc = Fido2Lib.createMdsCollection("test");
 			await mc.addToc(h.mds.mds2TocJwt);
 			mc.addEntry(h.mds.mds2UafEntry);
-			Fido2Lib.addMdsCollection(mc);
+			await Fido2Lib.addMdsCollection(mc);
 
-			var entryList = Fido2Lib.findMdsEntry("4e4e#4005");
+			const entryList = Fido2Lib.findMdsEntry("4e4e#4005");
 			assert.isArray(entryList);
 			assert.strictEqual(entryList.length, 1);
-			var entry = entryList[0];
+			const entry = entryList[0];
 			assert.instanceOf(entry, MdsEntry);
 			assert.strictEqual(entry.aaid, "4e4e#4005");
 		});
 
 		it("finds a UAF MDS entry in the global collection", async function() {
-			var mc = Fido2Lib.createMdsCollection("test");
+			const mc = Fido2Lib.createMdsCollection("test");
 			await mc.addToc(h.mds.mds1TocJwt);
 			mc.addEntry(h.mds.mds1U2fEntry);
-			Fido2Lib.addMdsCollection(mc);
+			await Fido2Lib.addMdsCollection(mc);
 
-			var entryList = Fido2Lib.findMdsEntry("923881fe2f214ee465484371aeb72e97f5a58e0a");
+			const entryList = Fido2Lib.findMdsEntry(
+				"923881fe2f214ee465484371aeb72e97f5a58e0a",
+			);
 			assert.isArray(entryList);
 			assert.strictEqual(entryList.length, 1);
-			var entry = entryList[0];
+			const entry = entryList[0];
 			assert.strictEqual(entry.protocolFamily, "u2f");
 			assert.deepEqual(entry.attestationCertificateKeyIdentifiers, ["923881fe2f214ee465484371aeb72e97f5a58e0a"]);
 			assert.strictEqual(entry.description, "Feitian BioPass FIDO Security Key");
 		});
 
 		it("throws if id isn't specified", async function() {
-			var mc = Fido2Lib.createMdsCollection("test");
+			const mc = Fido2Lib.createMdsCollection("test");
 			await mc.addToc(h.mds.mds2TocJwt);
 			mc.addEntry(h.mds.mds2UafEntry);
-			Fido2Lib.addMdsCollection(mc);
+			await Fido2Lib.addMdsCollection(mc);
 
 			assert.throws(function() {
 				Fido2Lib.findMdsEntry();
@@ -936,30 +952,30 @@ describe("Fido2Lib", function() {
 
 		it("can find multiple entries", async function() {
 			// Add UAF 4e4e#4005 from FIDO MDS 1
-			var mc1 = Fido2Lib.createMdsCollection("fido-mds1-toc");
+			const mc1 = Fido2Lib.createMdsCollection("fido-mds1-toc");
 			await mc1.addToc(h.mds.mds1TocJwt);
 			mc1.addEntry(h.mds.mds1UafEntry4e4e4005);
-			Fido2Lib.addMdsCollection(mc1);
+			await Fido2Lib.addMdsCollection(mc1);
 
 			// Add UAF 4e4e#4005 from FIDO MDS 2
-			var mc2 = Fido2Lib.createMdsCollection("fido-mds2-toc");
+			const mc2 = Fido2Lib.createMdsCollection("fido-mds2-toc");
 			await mc2.addToc(h.mds.mds2TocJwt);
 			mc2.addEntry(h.mds.mds2UafEntry);
-			Fido2Lib.addMdsCollection(mc2);
+			await Fido2Lib.addMdsCollection(mc2);
 
-			var entryList = Fido2Lib.findMdsEntry("4e4e#4005");
+			const entryList = Fido2Lib.findMdsEntry("4e4e#4005");
 			assert.isArray(entryList);
 			assert.strictEqual(entryList.length, 2);
 
 			// first entry from MDS1
-			var entry1 = entryList[0];
+			const entry1 = entryList[0];
 			assert.strictEqual(entry1.aaid, "4e4e#4005");
 			assert.isObject(entry1.collection);
 			assert.strictEqual(entry1.collection.name, "fido-mds1-toc");
 			assert.isUndefined(entry1.legalHeader);
 
 			// second entry from MDS2
-			var entry2 = entryList[1];
+			const entry2 = entryList[1];
 			assert.strictEqual(entry2.aaid, "4e4e#4005");
 			assert.isObject(entry2.collection);
 			assert.strictEqual(entry2.collection.name, "fido-mds2-toc");

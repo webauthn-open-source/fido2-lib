@@ -1,16 +1,17 @@
-"use strict";
+// Testing lib
+import * as chai from "chai";
 
-const parser = require("../lib/parser");
-var assert = require("chai").assert;
-const h = require("fido2-helpers");
+// Helpers
+
+import * as h from "./helpers/fido2-helpers.js";
+
+// Test subject
+import { parseClientResponse } from "../lib/main.js";
+const { assert } = chai;
 
 describe("parseClientData", function() {
-	it("parser is object", function() {
-		assert.isObject(parser);
-	});
-
 	it("correctly converts attestation JSON", function() {
-		var ret = parser.parseClientResponse(h.lib.makeCredentialAttestationNoneResponse);
+		const ret = parseClientResponse(h.lib.makeCredentialAttestationNoneResponse);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 6);
 		assert.strictEqual(ret.get("challenge"), "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w");
@@ -24,7 +25,7 @@ describe("parseClientData", function() {
 	});
 
 	it("correctly parses assertion JSON", function() {
-		var ret = parser.parseClientResponse(h.lib.assertionResponse);
+		const ret = parseClientResponse(h.lib.assertionResponse);
 		assert.instanceOf(ret, Map);
 		assert.strictEqual(ret.size, 6);
 		assert.strictEqual(ret.get("challenge"), "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ");
