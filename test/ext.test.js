@@ -282,14 +282,14 @@ describe("Fido2Lib extensions", function() {
 		});
 	});
 
-	describe("attestationOptions", async function() {
+	describe("attestationOptions", function() {
 		let mc;
 		function fn() {}
 		beforeEach(function() {
 			mc = new Fido2Lib();
 		});
 
-		it("calls generator", async function() {
+		it("calls generator", function() {
 			const genSpy = sinon.stub();
 			const extVal = {
 				beer: "good",
@@ -298,13 +298,15 @@ describe("Fido2Lib extensions", function() {
 
 			Fido2Lib.addExtension("test", genSpy, fn, fn);
 			mc.enableExtension("test");
-			const opts = await mc.attestationOptions();
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test);
-			assert.strictEqual(opts.extensions.test, extVal);
+			return mc.attestationOptions()
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test);
+					assert.strictEqual(opts.extensions.test, extVal);
+				});
 		});
 
-		it("calls all generators", async function() {
+		it("calls all generators", function() {
 			const genSpy1 = sinon.stub();
 			const extVal1 = {
 				beer: "good",
@@ -318,14 +320,16 @@ describe("Fido2Lib extensions", function() {
 			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
 			mc.enableExtension("test1");
 			mc.enableExtension("test2");
-			const opts = await mc.attestationOptions();
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test1);
-			assert.strictEqual(opts.extensions.test1, extVal1);
-			assert.isFalse(opts.extensions.test2);
+			return mc.attestationOptions()
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test1);
+					assert.strictEqual(opts.extensions.test1, extVal1);
+					assert.isFalse(opts.extensions.test2);
+				});
 		});
 
-		it("calls all enabled generators", async function() {
+		it("calls all enabled generators", function() {
 			const genSpy1 = sinon.stub();
 			const extVal1 = {
 				beer: "good",
@@ -339,14 +343,16 @@ describe("Fido2Lib extensions", function() {
 			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
 			mc.enableExtension("test1");
 			mc.disableExtension("test2");
-			const opts = await mc.attestationOptions();
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test1);
-			assert.strictEqual(opts.extensions.test1, extVal1);
-			assert.isUndefined(opts.extensions.test2);
+			return mc.attestationOptions()
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test1);
+					assert.strictEqual(opts.extensions.test1, extVal1);
+					assert.isUndefined(opts.extensions.test2);
+				});
 		});
 
-		it("passes through default options", async function() {
+		it("passes through default options", function() {
 			const genSpy1 = sinon.stub();
 			const extVal1 = {
 				beer: "good",
@@ -366,16 +372,18 @@ describe("Fido2Lib extensions", function() {
 			mc.setExtensionOptions("test1", extOpt1);
 			mc.enableExtension("test2");
 			mc.setExtensionOptions("test2", extOpt2);
-			const opts = await mc.attestationOptions();
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test1);
-			assert.strictEqual(opts.extensions.test1, extVal1);
-			assert.isFalse(opts.extensions.test2);
-			assert.isTrue(genSpy1.calledWithExactly("test1", "attestation", extOpt1));
-			assert.isTrue(genSpy2.calledWithExactly("test2", "attestation", extOpt2));
+			return mc.attestationOptions()
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test1);
+					assert.strictEqual(opts.extensions.test1, extVal1);
+					assert.isFalse(opts.extensions.test2);
+					assert.isTrue(genSpy1.calledWithExactly("test1", "attestation", extOpt1));
+					assert.isTrue(genSpy2.calledWithExactly("test2", "attestation", extOpt2));
+				});
 		});
 
-		it("passes through passed-in options", async function() {
+		it("passes through passed-in options", function() {
 			const genSpy1 = sinon.stub();
 			const extVal1 = {
 				beer: "good",
@@ -393,18 +401,20 @@ describe("Fido2Lib extensions", function() {
 			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
 			mc.enableExtension("test1");
 			mc.enableExtension("test2");
-			const opts = await mc.attestationOptions({
+			return mc.attestationOptions({
 				extensionOptions: {
 					test1: extOpt1,
 					test2: extOpt2,
 				},
-			});
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test1);
-			assert.strictEqual(opts.extensions.test1, extVal1);
-			assert.isFalse(opts.extensions.test2);
-			assert.isTrue(genSpy1.calledWithExactly("test1", "attestation", extOpt1));
-			assert.isTrue(genSpy2.calledWithExactly("test2", "attestation", extOpt2));
+			})
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test1);
+					assert.strictEqual(opts.extensions.test1, extVal1);
+					assert.isFalse(opts.extensions.test2);
+					assert.isTrue(genSpy1.calledWithExactly("test1", "attestation", extOpt1));
+					assert.isTrue(genSpy2.calledWithExactly("test2", "attestation", extOpt2));
+				});
 		});
 	});
 
@@ -415,7 +425,7 @@ describe("Fido2Lib extensions", function() {
 			mc = new Fido2Lib();
 		});
 
-		it("calls generator", async function() {
+		it("calls generator", function() {
 			const genSpy = sinon.stub();
 			const extVal = {
 				beer: "good",
@@ -424,14 +434,15 @@ describe("Fido2Lib extensions", function() {
 
 			Fido2Lib.addExtension("test", genSpy, fn, fn);
 			mc.enableExtension("test");
-			const opts = await mc.assertionOptions();
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test);
-			assert.strictEqual(opts.extensions.test, extVal);
-
+			return mc.assertionOptions()
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test);
+					assert.strictEqual(opts.extensions.test, extVal);
+				});
 		});
 
-		it("calls all generators", async function() {
+		it("calls all generators", function() {
 			const genSpy1 = sinon.stub();
 			const extVal1 = {
 				beer: "good",
@@ -445,14 +456,16 @@ describe("Fido2Lib extensions", function() {
 			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
 			mc.enableExtension("test1");
 			mc.enableExtension("test2");
-			const opts = await mc.assertionOptions();
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test1);
-			assert.strictEqual(opts.extensions.test1, extVal1);
-			assert.isFalse(opts.extensions.test2);
+			return mc.assertionOptions()
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test1);
+					assert.strictEqual(opts.extensions.test1, extVal1);
+					assert.isFalse(opts.extensions.test2);
+				});
 		});
 
-		it("calls all enabled generators", async function() {
+		it("calls all enabled generators", function() {
 			const genSpy1 = sinon.stub();
 			const extVal1 = {
 				beer: "good",
@@ -466,14 +479,16 @@ describe("Fido2Lib extensions", function() {
 			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
 			mc.enableExtension("test1");
 			mc.disableExtension("test2");
-			const opts = await mc.assertionOptions();
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test1);
-			assert.strictEqual(opts.extensions.test1, extVal1);
-			assert.isUndefined(opts.extensions.test2);
+			return mc.assertionOptions()
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test1);
+					assert.strictEqual(opts.extensions.test1, extVal1);
+					assert.isUndefined(opts.extensions.test2);
+				});
 		});
 
-		it("passes through default options", async function() {
+		it("passes through default options", function() {
 			const genSpy1 = sinon.stub();
 			const extVal1 = {
 				beer: "good",
@@ -493,16 +508,18 @@ describe("Fido2Lib extensions", function() {
 			mc.setExtensionOptions("test1", extOpt1);
 			mc.enableExtension("test2");
 			mc.setExtensionOptions("test2", extOpt2);
-			const opts = await mc.assertionOptions();
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test1);
-			assert.strictEqual(opts.extensions.test1, extVal1);
-			assert.isFalse(opts.extensions.test2);
-			assert.isTrue(genSpy1.calledWithExactly("test1", "assertion", extOpt1));
-			assert.isTrue(genSpy2.calledWithExactly("test2", "assertion", extOpt2));
+			return mc.assertionOptions()
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test1);
+					assert.strictEqual(opts.extensions.test1, extVal1);
+					assert.isFalse(opts.extensions.test2);
+					assert.isTrue(genSpy1.calledWithExactly("test1", "assertion", extOpt1));
+					assert.isTrue(genSpy2.calledWithExactly("test2", "assertion", extOpt2));
+				});
 		});
 
-		it("passes through passed-in options", async function() {
+		it("passes through passed-in options", function() {
 			const genSpy1 = sinon.stub();
 			const extVal1 = {
 				beer: "good",
@@ -520,18 +537,20 @@ describe("Fido2Lib extensions", function() {
 			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
 			mc.enableExtension("test1");
 			mc.enableExtension("test2");
-			const opts = await mc.assertionOptions({
+			return mc.assertionOptions({
 				extensionOptions: {
 					test1: extOpt1,
 					test2: extOpt2,
 				},
-			});
-			assert.isObject(opts.extensions);
-			assert.isObject(opts.extensions.test1);
-			assert.strictEqual(opts.extensions.test1, extVal1);
-			assert.isFalse(opts.extensions.test2);
-			assert.isTrue(genSpy1.calledWithExactly("test1", "assertion", extOpt1));
-			assert.isTrue(genSpy2.calledWithExactly("test2", "assertion", extOpt2));
+			})
+				.then((opts) => {
+					assert.isObject(opts.extensions);
+					assert.isObject(opts.extensions.test1);
+					assert.strictEqual(opts.extensions.test1, extVal1);
+					assert.isFalse(opts.extensions.test2);
+					assert.isTrue(genSpy1.calledWithExactly("test1", "assertion", extOpt1));
+					assert.isTrue(genSpy2.calledWithExactly("test2", "assertion", extOpt2));
+				});
 		});
 	});
 });

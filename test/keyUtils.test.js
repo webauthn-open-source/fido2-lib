@@ -21,8 +21,8 @@ describe("key utils", function() {
 				assert.instanceOf(key, Key);
 			});
 
-			it("throws if trying to export empty key", async () => {
-				await assert.isRejected(key.toPem(), Error, "Key data not available");
+			it("throws if trying to export empty key", () => {
+				assert.isRejected(key.toPem(), Error, "Key data not available");
 			});
 
 			it("throws if invalid argument is passed as key", function() {
@@ -46,10 +46,10 @@ describe("key utils", function() {
 				);
 			});
 
-			describe("rsa spki (base64 part only only)", async function() {
+			describe("rsa spki (base64 part only only)", function() {
 				const k = new Key();
-				it("throws", async () => {
-					await assert.isRejected(
+				it("throws", () => {
+					assert.isRejected(
 						k.fromPem(cosePublicKey.examplePemBase64Only),
 						Error,
 						"Supplied key is not in PEM format",
@@ -164,9 +164,9 @@ describe("key utils", function() {
 				});
 			});
 
-			describe("throws on invalid cose data 1", async function() {
+			describe("throws on invalid cose data 1", function() {
 				const k = new Key();
-				await assert.isRejected(
+				assert.isRejected(
 					k.fromCose(tools.base64.toArrayBuffer(cosePublicKey.exampleInvalidBase64)),
 					Error,
 					"couldn't parse authenticator.authData.attestationData CBOR: Error: No packed values available",

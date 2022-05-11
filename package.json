@@ -116,6 +116,7 @@
 			"sourceType": "module",
 			"ecmaVersion": 13
 		},
+		"ignorePatterns": ["dist/*","test/dist/*"],
 		"overrides": [
 			{
 				"files": [

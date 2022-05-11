@@ -1,14 +1,21 @@
-[![Node CI](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml/badge.svg)](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml)
+[![Node/Deno CI](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml/badge.svg)](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml)
 [![Code Coverage](https://codecov.io/gh/webauthn-open-source/fido2-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/webauthn-open-source/fido2-lib)
-[![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json)
+[![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json) 
+[![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib)
 
 ## Install
+
+### Node
 
 ``` bash
 npm install fido2-lib --save
 ```
 
-[![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib)
+### Deno
+
+```js
+import { Fido2Lib } from "https://cdn.jsdelivr.net/npm/fido2-lib@3.0.1/dist/main.js";
+```
 
 ## Overview
 
@@ -53,7 +60,12 @@ const f2l = new Fido2Lib(/* ... */);
 
 **Import Library using ESM-syntax:**
 ``` js
+// Node
 import { Fido2Lib } from "fido2-lib";
+
+// ... or Deno - Replace x.y.z with current version
+// import { Fido2Lib } from "https://cdn.jsdelivr.net/npm/fido2-lib@x.y.z/dist/main.js";
+
 
 // create a new instance of the library
 const f2l = new Fido2Lib(/* ... */);

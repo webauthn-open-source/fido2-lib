@@ -1,7 +1,8 @@
 {
   "lint": {
     "files": {
-      "include": ["lib/","test/"]
+      "include": ["lib/","test/"],
+      "exclude": ["dist/","test/dist/"]
     }
   },
   
@@ -14,8 +15,14 @@
 
   "importMap": "import_map.json",
 
-  /* Run deno tests with `deno task test` */
   "tasks": {
-    "test": "deno test --allow-env --allow-read --allow-net --fail-fast test"
+    
+    /* Run deno tests with `deno task test`, using default import map */
+    "test": "deno test --ignore=test/dist test",
+
+    /* import_map.dist.json redirects ./lib -> ./dist, to make tests use dist/main.js instead of lib/main.js */
+    "test:dist": "deno test --importmap=import_map.dist.json --ignore=test/dist test",
+
+    "build": "deno task test && (mkdir dist; deno bundle lib/main.js dist/main.js) && deno task test:dist"
   }
 }

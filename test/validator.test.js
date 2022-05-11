@@ -831,7 +831,7 @@ describe("attestation validation", function() {
 				});
 
 				it("throws on untested verifies", function() {
-					return assert.isRejected(attResp.validateAudit(), Error, "internal audit failed: challenge was not validated");
+					return assert.isRejected(attResp.validateAudit(), Error,  "internal audit failed: challenge was not validated");
 				});
 
 				it("throws on extra journal entries");

@@ -56,23 +56,23 @@ describe("MdsCollection", function() {
 			}
 		});
 
-		it("rejects if no jwk provided", async function() {
+		it("rejects if no jwk provided", function() {
 			return assert.isRejected(mc.addToc(undefined), Error, "expected MDS TOC to be non-empty string");
 		});
 
-		it("rejects if TOC is empty string", async function() {
+		it("rejects if TOC is empty string", function() {
 			// bad toc
 			const toc = "";
 			return assert.isRejected(mc.addToc(toc), Error, "expected MDS TOC to be non-empty string");
 		});
 
-		it("rejects if TOC is junk string", async function() {
+		it("rejects if TOC is junk string", function() {
 			// bad toc
 			const toc = "sL39APyTmisrjh11vghaqNfuruLQmCfR0c1ryKtaQ81jkEhNa5u9xLTnkibvXC9YpzBLFwWEZ3k9CR_sxzm_pWYbBOtKxeZu9z2GT8b6QW4iQvRlyumCT3oENx_8401r";
 			return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: Invalid Token or Protected Header formatting");
 		});
 
-		it("rejects if TOC header is missing alg", async function() {
+		it("rejects if TOC header is missing alg", function() {
 			let jwtHeader = {
 				// alg: "foo",
 				typ: "JWT",
@@ -88,7 +88,7 @@ describe("MdsCollection", function() {
 			return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: error parsing ASN.1");
 		});
 
-		it("rejects if TOC header is missing typ", async function() {
+		it("rejects if TOC header is missing typ", function() {
 			let jwtHeader = {
 				alg: "foo",
 				// typ: "JWT",
@@ -104,7 +104,7 @@ describe("MdsCollection", function() {
 			return assert.isRejected(mc.addToc(toc), Error, "ould not parse and validate MDS TOC: error parsing ASN.1");
 		});
 
-		it("rejects if TOC header x5c only has one entry", async function() {
+		it("rejects if TOC header x5c only has one entry", function() {
 			let jwtHeader = {
 				alg: "foo",
 				typ: "JWT",
@@ -120,7 +120,7 @@ describe("MdsCollection", function() {
 			return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: error parsing ASN.1");
 		});
 
-		it("rejects if TOC header x5c is missing", async function() {
+		it("rejects if TOC header x5c is missing", function() {
 			let jwtHeader = {
 				alg: "foo",
 				typ: "JWT",
@@ -208,14 +208,14 @@ describe("MdsCollection", function() {
 			return await mc.addToc(h.mds.mds2TocJwt);
 		});
 
-		it("throws on bad signature", async function() {
+		it("throws on bad signature", function() {
 			const tocParts = h.mds.mds2TocJwt.split(".");
 			tocParts[2] = tocParts[2].toUpperCase(); // mess up the signature
 			const toc = tocParts.join(".");
 			return assert.isRejected(mc.addToc(toc), Error, "could not parse and validate MDS TOC: signature verification failed");
 		});
 
-		it("throws on bad cert chain", async function() {
+		it("throws on bad cert chain", function() {
 			return assert.isRejected(mc.addToc(h.mds.mds2TocJwt, [h.certs.yubicoRoot]), Error, "No valid certificate paths found");
 		});
 	});
