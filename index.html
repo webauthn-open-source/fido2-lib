@@ -46,11 +46,11 @@
 
 
     <section class="readme">
-        <article><p><a href="https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml"><img src="https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml/badge.svg" alt="CI"></a>
+        <article><p><a href="https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml"><img src="https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml/badge.svg" alt="Node CI"></a>
 <a href="https://codecov.io/gh/webauthn-open-source/fido2-lib"><img src="https://codecov.io/gh/webauthn-open-source/fido2-lib/branch/master/graph/badge.svg" alt="Code Coverage"></a>
 <a href="https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json"><img src="https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a></p>
 <h2>Install</h2>
-<pre class="prettyprint source lang-bash"><code>npm install fido2-lib
+<pre class="prettyprint source lang-bash"><code>npm install fido2-lib --save
 </code></pre>
 <p><a href="https://badge.fury.io/js/fido2-lib"><img src="https://badge.fury.io/js/fido2-lib.svg" alt="npm version"></a></p>
 <h2>Overview</h2>
@@ -77,18 +77,25 @@
 <li>Crypto families: ECDSA, RSA</li>
 <li>x509 cert parsing, support for FIDO-related extensions, and NIST Public Key Interoperability Test Suite (PKITS) chain validation (from <a href="https://github.com/PeculiarVentures/PKI.js/">pki.js</a>)</li>
 <li>Returns parsed and validated data, along with extra audit data for risk engines</li>
+<li>Support both CommonJS (<code>require</code>) and ESM (<code>import</code>) natively</li>
 </ul>
 <h2>Example</h2>
-<p><strong>Instantiate Library (Simple):</strong></p>
+<p><strong>Import Library using CommonJS:</strong></p>
 <pre class="prettyprint source lang-js"><code>const { Fido2Lib } = require(&quot;fido2-lib&quot;);
 
 // create a new instance of the library
-var f2l = new Fido2Lib();
+const f2l = new Fido2Lib(/* ... */);
+</code></pre>
+<p><strong>Import Library using ESM-syntax:</strong></p>
+<pre class="prettyprint source lang-js"><code>import { Fido2Lib } from &quot;fido2-lib&quot;;
+
+// create a new instance of the library
+const f2l = new Fido2Lib(/* ... */);
 </code></pre>
 <p><strong>Instantiate Library (Complex):</strong></p>
 <pre class="prettyprint source lang-js"><code>// could also use one or more of the options below,
 // which just makes the options calls easier later on:
-var f2l = new Fido2Lib({
+const f2l = new Fido2Lib({
     timeout: 42,
     rpId: &quot;example.com&quot;,
     rpName: &quot;ACME&quot;,
@@ -102,32 +109,32 @@ var f2l = new Fido2Lib({
 });
 </code></pre>
 <p><strong>Registration:</strong></p>
-<pre class="prettyprint source lang-js"><code>var registrationOptions = await f2l.attestationOptions();
+<pre class="prettyprint source lang-js"><code>const registrationOptions = await f2l.attestationOptions();
 
 // make sure to add registrationOptions.user.id
 // save the challenge in the session information...
 // send registrationOptions to client and pass them in to `navigator.credentials.create()`...
 // get response back from client (clientAttestationResponse)
 
-var attestationExpectations = {
+const attestationExpectations = {
     challenge: &quot;33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w&quot;,
     origin: &quot;https://localhost:8443&quot;,
     factor: &quot;either&quot;
 };
-var regResult = await f2l.attestationResult(clientAttestationResponse, attestationExpectations); // will throw on error
+const regResult = await f2l.attestationResult(clientAttestationResponse, attestationExpectations); // will throw on error
 
 // registration complete!
 // save publicKey and counter from regResult to user's info for future authentication calls
 </code></pre>
 <p><strong>Authentication:</strong></p>
-<pre class="prettyprint source lang-js"><code>var authnOptions = await f2l.assertionOptions();
+<pre class="prettyprint source lang-js"><code>const authnOptions = await f2l.assertionOptions();
 
 // add allowCredentials to limit the number of allowed credential for the authentication process. For further details refer to webauthn specs: (https://www.w3.org/TR/webauthn-2/#dom-publickeycredentialrequestoptions-allowcredentials).
 // save the challenge in the session information...
 // send authnOptions to client and pass them in to `navigator.credentials.get()`...
 // get response back from client (clientAssertionResponse)
 
-var assertionExpectations = {
+const assertionExpectations = {
     // Remove the following comment if allowCredentials has been added into authnOptions so the credential received will be validate against allowCredentials array.
     // allowCredentials: [{
     //     id: &quot;lTqW8H/lHJ4yT0nLOvsvKgcyJCeO8LdUjG5vkXpgO2b0XfyjLMejRvW5oslZtA4B/GgkO/qhTgoBWSlDqCng4Q==&quot;,
@@ -143,7 +150,7 @@ var assertionExpectations = {
         &quot;-----END PUBLIC KEY-----\n&quot;,
     prevCounter: 362
 };
-var authnResult = await f2l.assertionResult(clientAssertionResponse, assertionExpectations); // will throw on error
+const authnResult = await f2l.assertionResult(clientAssertionResponse, assertionExpectations); // will throw on error
 
 // authentication complete!
 </code></pre>
@@ -162,7 +169,7 @@ var authnResult = await f2l.assertionResult(clientAssertionResponse, assertionEx
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Fri May 06 2022 15:40:37 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Wed May 11 2022 06:53:10 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

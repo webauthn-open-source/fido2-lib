@@ -37,30 +37,11 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>"use strict";
+            <pre class="prettyprint source linenums"><code>import { arrayBufferEquals, abToHex, b64ToJsObject, coerceToArrayBuffer, coerceToBase64Url, jsObjectToB64, tools } from "./utils.js";
 
-const {
-	coerceToBase64Url,
-	coerceToArrayBuffer,
-	abToBuf,
-	abToPem,
-	printHex,
-	abEqual,
-	ab2str,
-	b64ToJsObject,
-	jsObjectToB64,
-} = require("./utils");
+import { CertManager } from "./certUtils.js";
 
-const {
-	CertManager,
-} = require("./certUtils");
-
-const crypto = require("crypto");
-
-const jose = require("node-jose");
-
-const fidoMdsRootCert =
-	"-----BEGIN CERTIFICATE-----\n" +
+const fidoMdsRootCert = "-----BEGIN CERTIFICATE-----\n" +
 	"MIIDXzCCAkegAwIBAgILBAAAAAABIVhTCKIwDQYJKoZIhvcNAQELBQAwTDEgMB4G\n" +
 	"A1UECxMXR2xvYmFsU2lnbiBSb290IENBIC0gUjMxEzARBgNVBAoTCkdsb2JhbFNp\n" +
 	"Z24xEzARBgNVBAMTCkdsb2JhbFNpZ24wHhcNMDkwMzE4MTAwMDAwWhcNMjkwMzE4\n" +
@@ -103,31 +84,32 @@ const fidoMdsRootCert =
  */
 class MdsEntry {
 	/**
-     * Creates a new MDS entry. It is assumed that the entry has already been validated.
-     * The typical way of creating new MdsEntry objects is via the {@link MdsCollection#addEntry} and {@link MdsCollection#validate}
-     * methods, which will take care of parsing and validing the MDS entry for you.
-     * @param  {Object} mdsEntry The parsed and validated metadata statement Object for this entry
-     * @param  {Object} tocEntry The parsed and validated TOC information Object for this entry
-     * @return {mdsEntry}          The properly formatted MDS entry
-     */
+	 * Creates a new MDS entry. It is assumed that the entry has already been validated.
+	 * The typical way of creating new MdsEntry objects is via the {@link MdsCollection#addEntry} and {@link MdsCollection#validate}
+	 * methods, which will take care of parsing and validing the MDS entry for you.
+	 * @param  {Object} mdsEntry The parsed and validated metadata statement Object for this entry
+	 * @param  {Object} tocEntry The parsed and validated TOC information Object for this entry
+	 * @return {mdsEntry}          The properly formatted MDS entry
+	 */
 	constructor(mdsEntry, tocEntry) {
-		for (let key of Object.keys(tocEntry)) {
+		for (const key of Object.keys(tocEntry)) {
 			this[key] = tocEntry[key];
 		}
 
-		for (let key of Object.keys(mdsEntry)) {
+		for (const key of Object.keys(mdsEntry)) {
 			this[key] = mdsEntry[key];
 		}
 
-		if (this.metadataStatement)
+		if (this.metadataStatement) {
 			delete this.metadataStatement;
+		}
 
 		// make fields more useable:
 
 		// attachmentHint
 		this.attachmentHint = this.attachmentHint instanceof Array ? this.attachmentHint : attachmentHintToArr(this.attachmentHint);
 		function attachmentHintToArr(hint) {
-			var ret = [];
+			const ret = [];
 			if (hint &amp; 0x0001) ret.push("internal");
 			if (hint &amp; 0x0002) ret.push("external");
 			if (hint &amp; 0x0004) ret.push("wired");
@@ -154,8 +136,9 @@ class MdsEntry {
 		}
 
 		// authenticationAlgorithm
-		if (this.authenticationAlgorithms)
+		if (this.authenticationAlgorithms) {
 			this.authenticationAlgorithm = this.authenticationAlgorithms[0];
+		}
 
 		this.authenticationAlgorithm = typeof(this.authenticationAlgorithm) === "string" ? this.authenticationAlgorithm : algToStr(this.authenticationAlgorithm);
 		function algToStr(alg) {
@@ -175,16 +158,18 @@ class MdsEntry {
 		}
 
 		//certificates
-		if (this.attestationRootCertificates)
-			for (const certificate of this.attestationRootCertificates)
+		if (this.attestationRootCertificates) {
+			for (const certificate of this.attestationRootCertificates) {
 				CertManager.addCert(certificate);
+			}
+		}
 
 		// icon: TODO
 
 		// keyProtection
 		this.keyProtection = this.keyProtection instanceof Array ? this.keyProtection : keyProtToArr(this.keyProtection);
 		function keyProtToArr(kp) {
-			var ret = [];
+			const ret = [];
 			if (kp &amp; 0x0001) ret.push("software");
 			if (kp &amp; 0x0002) ret.push("hardware");
 			if (kp &amp; 0x0004) ret.push("tee");
@@ -197,7 +182,7 @@ class MdsEntry {
 		// matcherProtection
 		this.matcherProtection = this.matcherProtection instanceof Array ? this.matcherProtection : matcherProtToArr(this.matcherProtection);
 		function matcherProtToArr(mp) {
-			var ret = [];
+			const ret = [];
 			if (mp &amp; 0x0001) ret.push("software");
 			if (mp &amp; 0x0002) ret.push("hardware");
 			if (mp &amp; 0x0004) ret.push("tee");
@@ -225,39 +210,41 @@ class MdsEntry {
 		// tcDisplay
 		this.tcDisplay = this.tcDisplay instanceof Array ? this.tcDisplay : tcDisplayToArr(this.tcDisplay);
 		function tcDisplayToArr(tcd) {
-			var ret = [];
+			const ret = [];
 			if (tcd &amp; 0x0001) ret.push("any");
 			if (tcd &amp; 0x0002) ret.push("priviledged-software");
 			if (tcd &amp; 0x0004) ret.push("tee");
 			if (tcd &amp; 0x0008) ret.push("hardware");
 			if (tcd &amp; 0x0010) ret.push("remote");
 			if (tcd &amp; 0xFFE0) throw new Error("unknown transaction confirmation display flags: " + tcd &amp; 0xFFE0);
+
 			return ret;
 		}
 
 		// userVerificationDetails
 		this.userVerificationDetails = uvDetailsToSet(this.userVerificationDetails);
+
 		function uvDetailsToSet(uvList) {
-			var ret = [];
+			const ret = [];
 			if (!Array.isArray(uvList)) throw new Error("expected userVerificationDetails to be an Array, got: " + uvList);
 			uvList.forEach((uv) => {
 				if (!Array.isArray(uv)) throw new Error("expected userVerification to be Array, got " + uv);
-				let d = uv.map((desc) => {
+				const d = uv.map((desc) => {
 					/**
-                     * @typedef {Object} UserVerificationDesc
-                     * @description A description of a user verification method that an authenticator will peform.
-                     * The properties are as described below, plus the contents of `caDesc`, `baDesc` or `paDesc`
-                     * (depending on whether "code", "biometrics", or "pattern" are being described)
-                     * as described in the [FIDO Metadata specification]{@link https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-statement-v2.0-id-20180227.html}
-                     * @property {String} type The type of user verification that the authenticator performs.
-                     * Valid options are "code" (i.e. PIN), "biometric", or "pattern".
-                     * @property {String} userVerification The specific type of user verification performed,
-                     * such as "fingerprint", "presence", "passcode", etc.
+					 * @typedef {Object} UserVerificationDesc
+					 * @description A description of a user verification method that an authenticator will peform.
+					 * The properties are as described below, plus the contents of `caDesc`, `baDesc` or `paDesc`
+					 * (depending on whether "code", "biometrics", or "pattern" are being described)
+					 * as described in the [FIDO Metadata specification]{@link https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-statement-v2.0-id-20180227.html}
+					 * @property {String} type The type of user verification that the authenticator performs.
+					 * Valid options are "code" (i.e. PIN), "biometric", or "pattern".
+					 * @property {String} userVerification The specific type of user verification performed,
+					 * such as "fingerprint", "presence", "passcode", etc.
 					 * @property {String} userVerificationMethod The method of user verification performed,
 					 * such as "passcode_internal", "presence_internal", etc.
-                     */
-					let newDesc = {};
-					var descKey;
+					 */
+					const newDesc = {};
+					let descKey;
 
 					if ("caDesc" in desc) {
 						newDesc.type = "code";
@@ -279,7 +266,7 @@ class MdsEntry {
 					if (desc.userVerificationMethod)
 						newDesc.userVerification = (desc.userVerificationMethod.match(/(\w+)_internal/) || [ "none", "none" ])[1];
 
-					if (descKey) for (let key of Object.keys(desc[descKey])) {
+					if (descKey) for (const key of Object.keys(desc[descKey])) {
 						newDesc[key] = desc[descKey][key];
 					}
 
@@ -291,7 +278,7 @@ class MdsEntry {
 		}
 
 		function uvToArr(uv) {
-			var ret = [];
+			const ret = [];
 			if (uv &amp; 0x00000001) ret.push("presence");
 			if (uv &amp; 0x00000002) ret.push("fingerprint");
 			if (uv &amp; 0x00000004) ret.push("passcode");
@@ -341,10 +328,10 @@ class MdsEntry {
  */
 class MdsCollection {
 	/**
-     * Creates a new MdsCollection
-     * @return {MdsCollection} The MDS collection that was created. The freshly created MDS collection has
-     * no Table of Contents (TOC) or entries, which must be added through {@link addToc} and {@link addEntry}, respectively.
-     */
+	 * Creates a new MdsCollection
+	 * @return {MdsCollection} The MDS collection that was created. The freshly created MDS collection has
+	 * no Table of Contents (TOC) or entries, which must be added through {@link addToc} and {@link addEntry}, respectively.
+	 */
 	constructor(collectionName) {
 		if (typeof collectionName !== "string" ||
             collectionName.length &lt; 1) {
@@ -359,18 +346,18 @@ class MdsCollection {
 	}
 
 	/**
-     * Validates and stores the Table of Contents (TOC) for future reference. This method validates
-     * the TOC JSON Web Token (JWT) signature, as well as the certificate chain. The certiciate chain
-     * is validated using the `rootCert` and `crls` that are provided.
-     * @param {String} tocStr   The base64url encoded Table of Contents, as described in the [FIDO Metadata Service specification]{@link https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-service-v2.0-id-20180227.html}
-     * @param {Array.&lt;String>|Array.&lt;ArrayBuffer>|String|ArrayBuffer|undefined} rootCert One or more root certificates that serve as a trust anchor for the Metadata Service.
-     * Certificate format is flexible, and can be a PEM string, a base64 encoded string, or an ArrayBuffer, provieded that each of those formats can be decoded to valid ASN.1
-     * If the `rootCert` is `undefined`, then the default [FIDO MDS root certificate](https://mds.fidoalliance.org/Root.cer) will be used.
-     * @param {Array.&lt;String>|Array.&lt;ArrayBuffer>} crls     An array of Certificate Revocation Lists (CRLs) that should be used when validating
-     * the certificate chain. Like `rootCert` the format of the CRLs is flexible and can be PEM encoded, base64 encoded, or an ArrayBuffer
-     * provied that the CRL contains valid ASN.1 encoding.
-     * @returns {Promise.&lt;Object>} Returns a Promise that resolves to a TOC object, or that rejects with an error.
-     */
+	 * Validates and stores the Table of Contents (TOC) for future reference. This method validates
+	 * the TOC JSON Web Token (JWT) signature, as well as the certificate chain. The certiciate chain
+	 * is validated using the `rootCert` and `crls` that are provided.
+	 * @param {String} tocStr   The base64url encoded Table of Contents, as described in the [FIDO Metadata Service specification]{@link https://fidoalliance.org/specs/fido-v2.0-id-20180227/fido-metadata-service-v2.0-id-20180227.html}
+	 * @param {Array.&lt;String>|Array.&lt;ArrayBuffer>|String|ArrayBuffer|undefined} rootCert One or more root certificates that serve as a trust anchor for the Metadata Service.
+	 * Certificate format is flexible, and can be a PEM string, a base64 encoded string, or an ArrayBuffer, provieded that each of those formats can be decoded to valid ASN.1
+	 * If the `rootCert` is `undefined`, then the default [FIDO MDS root certificate](https://mds.fidoalliance.org/Root.cer) will be used.
+	 * @param {Array.&lt;String>|Array.&lt;ArrayBuffer>} crls     An array of Certificate Revocation Lists (CRLs) that should be used when validating
+	 * the certificate chain. Like `rootCert` the format of the CRLs is flexible and can be PEM encoded, base64 encoded, or an ArrayBuffer
+	 * provied that the CRL contains valid ASN.1 encoding.
+	 * @returns {Promise.&lt;Object>} Returns a Promise that resolves to a TOC object, or that rejects with an error.
+	 */
 	async addToc(tocStr, rootCert, crls) {
 		if (typeof tocStr !== "string" ||
             tocStr.length &lt; 1) {
@@ -389,10 +376,22 @@ class MdsCollection {
 		//    Write the verified object to a local cache as required.
 
 		// JWT verify
-		var parsedJws;
+		let parsedJws;
 		try {
-			parsedJws = await jose.JWS.createVerify().verify(tocStr, { allowEmbeddedKey: true });
-			this.toc = JSON.parse(ab2str(coerceToArrayBuffer(parsedJws.payload, "MDS TOC payload")));
+			// Read protected header
+			const protectedHeader = await tools.decodeProtectedHeader(tocStr);
+			const publicKey = await tools.getEmbeddedJwk(protectedHeader);
+			// Verify
+			parsedJws = await tools.jwtVerify(
+				tocStr,
+				await tools.importJWK(publicKey),
+			);
+
+			// Store verified header and key
+			parsedJws.header = protectedHeader;
+			parsedJws.key = publicKey;
+
+			this.toc = parsedJws.payload;
 		} catch (e) {
 			e.message = "could not parse and validate MDS TOC: " + e.message;
 			throw e;
@@ -422,10 +421,14 @@ class MdsCollection {
 		}
 
 		// verify cert chain
-		var rootCerts;
+		let rootCerts;
 		if (Array.isArray(rootCert)) rootCerts = rootCert;
 		else rootCerts = [rootCert];
-		var ret = await CertManager.verifyCertChain(parsedJws.header.x5c, rootCerts, crls);
+
+		// Extract cert chain from header
+		const certHeader = parsedJws.header ? parsedJws.header : parsedJws.protectedHeader;
+
+		await CertManager.verifyCertChain(certHeader.x5c, rootCerts, crls);
 
 		// save the raw TOC
 		this.toc.raw = tocStr;
@@ -437,27 +440,27 @@ class MdsCollection {
 	}
 
 	/**
-     * Returns the parsed and validated Table of Contents object from {@link getToc}
-     * @return {Object|null} Returns the TOC if one has been provided to {@link getToc}
-     * or `null` if no TOC has been provided yet.
-     */
+	 * Returns the parsed and validated Table of Contents object from {@link getToc}
+	 * @return {Object|null} Returns the TOC if one has been provided to {@link getToc}
+	 * or `null` if no TOC has been provided yet.
+	 */
 	getToc() {
 		return this.toc;
 	}
 
 	/**
-     * Parses and adds a new MDS entry to the collection. The entry will not be available
-     * through {@link findEntry} until {@link validate} has been called
-     * @param {String} entryStr The base64url encoded entry, most likely downloaded from
-     * the URL that was found in the Table of Contents (TOC)
-     */
+	 * Parses and adds a new MDS entry to the collection. The entry will not be available
+	 * through {@link findEntry} until {@link validate} has been called
+	 * @param {String} entryStr The base64url encoded entry, most likely downloaded from
+	 * the URL that was found in the Table of Contents (TOC)
+	 */
 	addEntry(entryStr) {
 		if (typeof entryStr !== "string" ||
             entryStr.length &lt; 1) {
 			throw new Error("expected MDS entry to be non-empty string");
 		}
 
-		var newEntry = b64ToJsObject(entryStr, "MDS entry");
+		let newEntry = b64ToJsObject(entryStr, "MDS entry");
 		if (newEntry.metadataStatement) {
 			newEntry = newEntry.metadataStatement;
 			//Get the base64 string with all non-ASCII characters removed
@@ -465,7 +468,7 @@ class MdsCollection {
 		}
 
 		newEntry.raw = entryStr;
-		var newEntryId = getMdsEntryId(newEntry);
+		const newEntryId = getMdsEntryId(newEntry);
 
 		if (Array.isArray(newEntryId)) {
 			// U2F array of IDs
@@ -479,11 +482,12 @@ class MdsCollection {
 	}
 
 	/**
-     * Validates all entries that have been added. Note that {@link MdsCollection#findEntry}
-     * will not find an {@link MdsEntry} until it has been validated.
-     * @throws {Error} If a validation error occurs
-     */
-	validate() {
+	 * Validates all entries that have been added. Note that {@link MdsCollection#findEntry}
+	 * will not find an {@link MdsEntry} until it has been validated.
+	 * @throws {Error} If a validation error occurs
+	 * @returns {Promise} Returns a Promise
+	 */
+	async validate() {
 		// throw if no TOC
 		if (typeof this.toc !== "object" || this.toc === null) {
 			throw new Error("add MDS TOC before attempting to validate MDS collection");
@@ -504,12 +508,14 @@ class MdsCollection {
 		//        Compute the hash value of the (base64url encoding without padding of the UTF-8 encoded) metadata statement downloaded from the URL and verify the hash value to the hash specified in the field hash of the metadata TOC object. Ignore the downloaded metadata statement if the hash value doesn't match.
 		//        Update the cached metadata statement according to the dowloaded one.
 
-		this.unvalidatedEntryList.forEach((entry) => {
+		let mapEntry;
+		for (mapEntry of this.unvalidatedEntryList) {
+			const entry = mapEntry[1];
 			// find matching TOC entry
-			let entryId = getMdsEntryId(entry);
+			const entryId = getMdsEntryId(entry);
 			let tocEntry = this.toc.entries.filter((te) => {
-				let teId = getMdsEntryId(te);
-				let eq = idEquals(teId, entryId);
+				const teId = getMdsEntryId(te);
+				const eq = idEquals(teId, entryId);
 				return eq;
 			});
 
@@ -519,23 +525,18 @@ class MdsCollection {
 			tocEntry = tocEntry[0];
 
 			// validate hash
-			const hash = crypto.createHash("sha256");
-			// coerceToArrayBuffer(entry.raw, "MDS entry")
-			hash.update(entry.raw);
-			var entryHash = hash.digest();
-			var tocEntryHash;
-
+			const entryHash = await tools.hashDigest(entry.raw);
+			let tocEntryHash;
 			if (tocEntry.hash) {
 				tocEntryHash = tocEntry.hash;
 			} else {
-				const tocHash = crypto.createHash("sha256");
-				//Get the base64 string with all non-ASCII characters removed, then update the hash with it
-				tocHash.update(jsObjectToB64(tocEntry.metadataStatement));
-				tocEntryHash = tocHash.digest();
+				tocEntryHash = await tools.hashDigest(
+					jsObjectToB64(tocEntry.metadataStatement),
+				);
 			}
 
 			tocEntryHash = coerceToArrayBuffer(tocEntryHash, "MDS TOC entry hash");
-			if (!(abEqual(entryHash, tocEntryHash))) {
+			if (!(arrayBufferEquals(entryHash, tocEntryHash))) {
 				throw new Error("MDS entry hash did not match corresponding hash in MDS TOC");
 			}
 
@@ -543,7 +544,7 @@ class MdsCollection {
 			// TODO: maybe setValidateEntryCallback(fn);
 
 			// add new entry to collection entryList
-			var newEntry = new MdsEntry(entry, tocEntry);
+			const newEntry = new MdsEntry(entry, tocEntry);
 			newEntry.collection = this;
 
 			if (Array.isArray(entryId)) {
@@ -555,15 +556,15 @@ class MdsCollection {
 				// UAF and FIDO2
 				this.entryList.set(tocEntry.metadataStatement ? entryId.replace(/-/g, "") : entryId, newEntry);
 			}
-		});
+		}
 	}
 
 	/**
-     * Looks up an entry by AAID, AAGUID, or attestationCertificateKeyIdentifiers.
-     * Only entries that have been validated will be found.
-     * @param  {String|ArrayBuffer} id The AAID, AAGUID, or attestationCertificateKeyIdentifiers of the entry to find
-     * @return {MdsEntry|null}    The MDS entry that was found, or null if no entry was found.
-     */
+	 * Looks up an entry by AAID, AAGUID, or attestationCertificateKeyIdentifiers.
+	 * Only entries that have been validated will be found.
+	 * @param  {String|ArrayBuffer} id The AAID, AAGUID, or attestationCertificateKeyIdentifiers of the entry to find
+	 * @return {MdsEntry|null}    The MDS entry that was found, or null if no entry was found.
+	 */
 	findEntry(id) {
 		if (id instanceof ArrayBuffer) {
 			id = coerceToBase64Url(id, "MDS entry id");
@@ -573,7 +574,10 @@ class MdsCollection {
 			throw new Error("expected 'id' to be String, got: " + id);
 		}
 
-		return this.entryList.get(id.replace(/-/g, "")) || this.entryList.get(Buffer.from(id, "base64").toString("hex").replace(/-/g, "")) || null;
+		return this.entryList.get(id.replace(/-/g, "")) ||
+			this.entryList.get(
+				abToHex(tools.base64.toArrayBuffer(id, true)).replace(/-/g, ""),
+			) || null;
 	}
 }
 
@@ -614,7 +618,7 @@ function idEquals(id1, id2) {
 	// U2F
 	if (Array.isArray(id1) &amp;&amp; Array.isArray(id2)) {
 		if (id1.length !== id2.length) return false;
-		var allSame = id1.reduce((acc, val) => acc &amp;&amp; id2.includes(val), true);
+		const allSame = id1.reduce((acc, val) => acc &amp;&amp; id2.includes(val), true);
 		if (!allSame) return false;
 		return true;
 	}
@@ -628,9 +632,9 @@ function realBoolean(obj, prop) {
 	if (obj[prop] === "false") obj[prop] = false;
 }
 
-module.exports = {
+export {
 	MdsEntry,
-	MdsCollection,
+	MdsCollection
 };
 </code></pre>
         </article>
@@ -644,7 +648,7 @@ module.exports = {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Fri May 06 2022 15:40:37 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Wed May 11 2022 06:53:10 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
