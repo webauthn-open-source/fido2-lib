@@ -520,7 +520,7 @@ describe("cert utils", function() {
 		});
 
 		describe("verifyCertChain", function() {
-			it("rejects on empty arguments", function() {
+			it("rejects on empty arguments", async function() {
 				return assert.isRejected(
 					CertManager.verifyCertChain(),
 					Error,

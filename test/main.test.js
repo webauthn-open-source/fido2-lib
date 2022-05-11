@@ -834,12 +834,12 @@ describe("Fido2Lib", function() {
 			return assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), Error, "foo validateFn did not return 'true'");
 		});
 
-		it("throws on non-string format", function() {
+		it("throws on non-string format", async function() {
 			fakeRequest.authnrData.set("fmt", {});
 			return assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: object");
 		});
 
-		it("throws on missing format", function() {
+		it("throws on missing format", async function() {
 			fakeRequest.authnrData.clear();
 			return assert.isRejected(Fido2Lib.validateAttestation.call(fakeRequest), TypeError, "expected 'fmt' to be string, got: undefined");
 		});
@@ -863,8 +863,8 @@ describe("Fido2Lib", function() {
 			Fido2Lib.clearMdsCollections();
 		});
 
-		it("throws if argument isn't a MdsCollection", function() {
-			assert.isRejected(
+		it("throws if argument isn't a MdsCollection", async function() {
+			await assert.isRejected(
 				Fido2Lib.addMdsCollection(),
 				Error,
 				"expected 'mdsCollection' to be instance of MdsCollection, got: undefined",

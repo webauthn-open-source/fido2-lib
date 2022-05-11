@@ -1,0 +1,21 @@
+{
+  "lint": {
+    "files": {
+      "include": ["lib/","test/"]
+    }
+  },
+  
+  /* Never run deno fmt, unless you want to change formatting of all files */
+  "fmt": {
+    "files": {
+      "include": ["lib/","test/"]
+    }
+  },
+
+  "importMap": "import_map.json",
+
+  /* Run deno tests with `deno task test` */
+  "tasks": {
+    "test": "deno test --allow-env --allow-read --allow-net --fail-fast test"
+  }
+}

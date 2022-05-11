@@ -6,7 +6,24 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
+  test_deno:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        deno-version: [1.20.1, "v1.x"]
+
+    steps:
+      - name: Git Checkout Deno Module
+        uses: actions/checkout@v2
+      - name: Use Deno Version ${{ matrix.deno-version }}
+        uses: denolib/setup-deno@v2
+        with:
+          deno-version: ${{ matrix.deno-version }}
+      - name: Test Module
+        run: deno task test
+
+  test_node:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -23,9 +40,10 @@ jobs:
       - run: npm run build
       - run: npm run report
       - run: npm run codecov
+
   release:
-    if: github.ref == 'refs/heads/master' && needs.test.result == 'success'
-    needs: test
+    if: github.ref == 'refs/heads/master' && needs.test_node.result == 'success' && needs.test_deno.resolt == 'success'
+    needs: [test_node,test_deno]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

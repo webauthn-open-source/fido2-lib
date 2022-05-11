@@ -272,10 +272,19 @@ describe("utils", function() {
 	});
 
 	describe("arrayBufferEquals", function() {
+
+		it("compare ArrayBuffer with equal ArrayBuffer", function() {
+			const ab = new Uint8Array([1, 2, 3, 4]).buffer;
+
+			let expectedAb = new Uint8Array([1,2,3,4]);
+
+			assert.isFalse(arrayBufferEquals(ab, expectedAb), "expected result from arrayBufferEquals");
+		});
+
 		it("compare ArrayBuffer with non equal ArrayBuffer", function() {
 			const ab = new Uint8Array([1, 2, 3, 4]).buffer;
 
-			let expectedAb = Buffer.from("ciao");
+			let expectedAb = new Uint8Array([1,2,3,5]);
 
 			assert.isFalse(arrayBufferEquals(ab, expectedAb), "expected result from arrayBufferEquals");
 		});
