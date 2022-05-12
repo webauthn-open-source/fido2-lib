@@ -1,7 +1,7 @@
 const devExternals = [
 	"chai",
 	"chai-as-promised",
-	"sinon"
+	"sinon",
 ];
 const externals = [
 	"@hexagon/base64",
@@ -13,7 +13,7 @@ const externals = [
 	"asn1js",
 	"cbor-x",
 	"crypto",
-	"@peculiar/webcrypto"
+	"@peculiar/webcrypto",
 ];
 const tests = [
 	"test/certUtils.test.js",
@@ -35,12 +35,12 @@ const tests = [
 	"test/response.test.js",
 	"test/toolbox.test.js",
 	"test/utils.test.js",
-	"test/validator.test.js"
+	"test/validator.test.js",
 ];
 
-function surpressWarnings (message, warn) {
-	if (message.code === 'CIRCULAR_DEPENDENCY') return
-	warn(message)
+function surpressWarnings(message, warn) {
+	if (message.code === "CIRCULAR_DEPENDENCY") return;
+	warn(message);
 }
 
 export default [
@@ -51,7 +51,7 @@ export default [
 			file: "dist/main.cjs",
 			format: "cjs",
 		},
-		onwarn: surpressWarnings
+		onwarn: surpressWarnings,
 	},
 	{
 		input: [...tests],
@@ -60,6 +60,6 @@ export default [
 			dir: "test/dist/",
 			format: "cjs",
 		},
-		onwarn: surpressWarnings
+		onwarn: surpressWarnings,
 	},
 ];
