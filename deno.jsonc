@@ -18,11 +18,14 @@
   "tasks": {
     
     /* Run deno tests with `deno task test`, using default import map */
-    "test": "deno test --ignore=test/dist test",
+    "test": "deno test --lock=deno-lock.json --ignore=test/dist test",
 
     /* import_map.dist.json redirects ./lib -> ./dist, to make tests use dist/main.js instead of lib/main.js */
-    "test:dist": "deno test --importmap=import_map.dist.json --ignore=test/dist test",
+    "test:dist": "deno test --lock=deno-lock.json --importmap=import_map.dist.json --ignore=test/dist test",
 
-    "build": "deno task test && (mkdir dist; deno bundle lib/main.js dist/main.js) && deno task test:dist"
+    /* Run after changing dependencies */
+    "update-deps": "deno cache --lock=deno-lock.json --lock-write --importmap=import_map.json test/main.test.js lib/main.js",
+
+    "build": "deno task test && (mkdir dist; deno bundle --lock=deno-lock.json lib/main.js dist/main.js) && deno task test:dist"
   }
 }
