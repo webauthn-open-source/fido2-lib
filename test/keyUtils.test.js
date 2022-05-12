@@ -22,7 +22,7 @@ describe("key utils", function() {
 			});
 
 			it("throws if trying to export empty key", () => {
-				assert.isRejected(key.toPem(), Error, "No key information available");
+				assert.isRejected(key.toPem(), Error, "Key data not available");
 			});
 
 			it("throws if invalid argument is passed as key", function() {
