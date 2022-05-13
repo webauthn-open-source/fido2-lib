@@ -12,6 +12,7 @@ import {
 	arrayBufferEquals,
 	abToBuf,
 	androidSafetyNetAttestation,
+	appleAttestation,
 	appendBuffer,
 	coerceToArrayBuffer,
 	Fido2AssertionResult,
@@ -60,6 +61,12 @@ function restoreAttestationFormats() {
 		androidSafetyNetAttestation.parseFn,
 		androidSafetyNetAttestation.validateFn
 	);
+	// add 'apple' attestation format
+	Fido2Lib.addAttestationFormat(
+		appleAttestation.name,
+		appleAttestation.parseFn,
+		appleAttestation.validateFn
+	)
 }
 
 describe("Fido2Lib", function() {
