@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        deno-version: [1.20.1, "v1.x"]
+        deno-version: ["v1.x"]
 
     steps:
       - name: Git Checkout Deno Module
@@ -55,17 +55,24 @@ jobs:
       - uses: denolib/setup-deno@v2
         with:
           deno-version: 1.20.1
+      - name: Get current package version
+        id: package_version
+        uses: martinbeentjes/npm-get-version-action@v1.2.3
       - run: deno task build
       - run: npm ci
       - run: npm run build
-      - run: npm run docs
       - run: git config --global user.name "JamesCullum (Pseudonym)"
       - run: git config --global user.email "https://mailhide.io/e/Wno7k"
+      - name: Git Auto Commit Deno Artifacts
+        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        with:
+          commit_message: "[skip_ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
+          tagging_message: "${{ steps.package_version.outputs.current-version}}"
+          file_pattern: dist/*.js dist/*.cjs
+      - run: npm run docs
       - run: npm run publish-docs
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
-      - name: Automatic GitHub Release
-        uses: justincy/github-action-npm-release@2.0.2
