@@ -65,3 +65,5 @@ jobs:
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Automatic GitHub Release
+        uses: justincy/github-action-npm-release@2.0.2
