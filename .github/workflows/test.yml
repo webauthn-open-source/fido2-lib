@@ -65,8 +65,13 @@ jobs:
       - run: npm run build
       - run: git config --global user.name "JamesCullum (Pseudonym)"
       - run: git config --global user.email "https://mailhide.io/e/Wno7k"
+      - name: tag-exists-action
+        id: tag_exists
+        uses: mukunku/tag-exists-action@v1.0.0
+        with: 
+            tag: "${{ steps.package_version.outputs.current-version}}"
       - name: Git Auto Commit Deno Artifacts
-        continue-on-error: true
+        if: steps.tag_exists.outputs.exists == 'false'
         uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
           commit_message: "[skip_ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
