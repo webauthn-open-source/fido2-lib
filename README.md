@@ -16,10 +16,10 @@ npm install fido2-lib --save
 Import `dist/main.js` from a trusted source. Below is only an example, using jsdelivr.
 
 ```js
-import { Fido2Lib } from "https://cdn.jsdelivr.net/npm/fido2-lib@3.1.0/dist/main.js";
+import { Fido2Lib } from "https://cdn.jsdelivr.net/npm/fido2-lib@latest/dist/main.js";
 ```
 
-It is highly recommended that you read [deno.land/manual/linking_to_external_code/integrity_checking](https://deno.land/manual/linking_to_external_code/integrity_checking) to make sure your dependencies, including fido2-lib, is integrity checked. 
+It is highly recommended that you read [this guide](https://deno.land/manual/linking_to_external_code/integrity_checking) to make sure your dependencies, including fido2-lib, are integrity checked. 
 
 A short example on how to generate a lock file in Deno 1.x
 
