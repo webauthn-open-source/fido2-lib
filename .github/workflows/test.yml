@@ -27,8 +27,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        node-version: [16.x, 18.x]
+        #os: [windows-latest, ubuntu-latest, macos-latest]
+        #node-version: [16.x, 18.x]
+        os: [ubuntu-latest]
+        node-version: [18.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -64,6 +66,7 @@ jobs:
       - run: git config --global user.name "JamesCullum (Pseudonym)"
       - run: git config --global user.email "https://mailhide.io/e/Wno7k"
       - name: Git Auto Commit Deno Artifacts
+        continue-on-error: true
         uses: stefanzweifel/git-auto-commit-action@v4.14.1
         with:
           commit_message: "[skip_ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
