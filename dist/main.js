@@ -581,13 +581,12 @@ const MIN_BUF_SIZE = 16;
 const CR = "\r".charCodeAt(0);
 const LF = "\n".charCodeAt(0);
 class BufferFullError extends Error {
-    name;
+    partial;
+    name = "BufferFullError";
     constructor(partial){
         super("Buffer full");
         this.partial = partial;
-        this.name = "BufferFullError";
     }
-    partial;
 }
 class PartialReadError extends Error {
     name = "PartialReadError";
@@ -1001,7 +1000,7 @@ function isArrayIndex(value) {
                 let i8 = 0;
                 for(; i8 < length; ++i8){
                     ch = value.charCodeAt(i8);
-                    if (i8 === 0 && ch === 0x30 && length > 1 || ch < 0x30 || ch > 0x39) {
+                    if (i8 === 0 && ch === 48 && length > 1 || ch < 48 || ch > 57) {
                         return isNumericLookup[value] = false;
                     }
                 }
@@ -2626,10 +2625,10 @@ function getStringWidth(str, removeControlChars = true) {
     return width;
 }
 const isFullWidthCodePoint = (code)=>{
-    return code >= 0x1100 && (code <= 0x115f || code === 0x2329 || code === 0x232a || code >= 0x2e80 && code <= 0x3247 && code !== 0x303f || code >= 0x3250 && code <= 0x4dbf || code >= 0x4e00 && code <= 0xa4c6 || code >= 0xa960 && code <= 0xa97c || code >= 0xac00 && code <= 0xd7a3 || code >= 0xf900 && code <= 0xfaff || code >= 0xfe10 && code <= 0xfe19 || code >= 0xfe30 && code <= 0xfe6b || code >= 0xff01 && code <= 0xff60 || code >= 0xffe0 && code <= 0xffe6 || code >= 0x1b000 && code <= 0x1b001 || code >= 0x1f200 && code <= 0x1f251 || code >= 0x1f300 && code <= 0x1f64f || code >= 0x20000 && code <= 0x3fffd);
+    return code >= 4352 && (code <= 4447 || code === 9001 || code === 9002 || code >= 11904 && code <= 12871 && code !== 12351 || code >= 12880 && code <= 19903 || code >= 19968 && code <= 42182 || code >= 43360 && code <= 43388 || code >= 44032 && code <= 55203 || code >= 63744 && code <= 64255 || code >= 65040 && code <= 65049 || code >= 65072 && code <= 65131 || code >= 65281 && code <= 65376 || code >= 65504 && code <= 65510 || code >= 110592 && code <= 110593 || code >= 127488 && code <= 127569 || code >= 127744 && code <= 128591 || code >= 131072 && code <= 262141);
 };
 const isZeroWidthCodePoint = (code)=>{
-    return code <= 0x1F || code >= 0x7F && code <= 0x9F || code >= 0x300 && code <= 0x36F || code >= 0x200B && code <= 0x200F || code >= 0x20D0 && code <= 0x20FF || code >= 0xFE00 && code <= 0xFE0F || code >= 0xFE20 && code <= 0xFE2F || code >= 0xE0100 && code <= 0xE01EF;
+    return code <= 31 || code >= 127 && code <= 159 || code >= 768 && code <= 879 || code >= 8203 && code <= 8207 || code >= 8400 && code <= 8447 || code >= 65024 && code <= 65039 || code >= 65056 && code <= 65071 || code >= 917760 && code <= 917999;
 };
 function stripVTControlCharacters(str) {
     validateString(str, "str");
@@ -4665,19 +4664,19 @@ function encode(data) {
     const l = uint8.length;
     for(i23 = 2; i23 < l; i23 += 3){
         result += base64abc[uint8[i23 - 2] >> 2];
-        result += base64abc[(uint8[i23 - 2] & 0x03) << 4 | uint8[i23 - 1] >> 4];
-        result += base64abc[(uint8[i23 - 1] & 0x0f) << 2 | uint8[i23] >> 6];
-        result += base64abc[uint8[i23] & 0x3f];
+        result += base64abc[(uint8[i23 - 2] & 3) << 4 | uint8[i23 - 1] >> 4];
+        result += base64abc[(uint8[i23 - 1] & 15) << 2 | uint8[i23] >> 6];
+        result += base64abc[uint8[i23] & 63];
     }
     if (i23 === l + 1) {
         result += base64abc[uint8[i23 - 2] >> 2];
-        result += base64abc[(uint8[i23 - 2] & 0x03) << 4];
+        result += base64abc[(uint8[i23 - 2] & 3) << 4];
         result += "==";
     }
     if (i23 === l) {
         result += base64abc[uint8[i23 - 2] >> 2];
-        result += base64abc[(uint8[i23 - 2] & 0x03) << 4 | uint8[i23 - 1] >> 4];
-        result += base64abc[(uint8[i23 - 1] & 0x0f) << 2];
+        result += base64abc[(uint8[i23 - 2] & 3) << 4 | uint8[i23 - 1] >> 4];
+        result += base64abc[(uint8[i23 - 1] & 15) << 2];
         result += "=";
     }
     return result;
@@ -4978,7 +4977,7 @@ function readInt24LE(buf, offset = 0) {
         boundsError(offset, buf.length - 3);
     }
     const val = first + buf[++offset] * 2 ** 8 + last * 2 ** 16;
-    return val | (val & 2 ** 23) * 0x1fe;
+    return val | (val & 2 ** 23) * 510;
 }
 function readInt40LE(buf, offset = 0) {
     validateNumber(offset, "offset");
@@ -4987,7 +4986,7 @@ function readInt40LE(buf, offset = 0) {
     if (first === undefined || last === undefined) {
         boundsError(offset, buf.length - 5);
     }
-    return (last | (last & 2 ** 7) * 0x1fffffe) * 2 ** 32 + first + buf[++offset] * 2 ** 8 + buf[++offset] * 2 ** 16 + buf[++offset] * 2 ** 24;
+    return (last | (last & 2 ** 7) * 33554430) * 2 ** 32 + first + buf[++offset] * 2 ** 8 + buf[++offset] * 2 ** 16 + buf[++offset] * 2 ** 24;
 }
 function readInt48LE(buf, offset = 0) {
     validateNumber(offset, "offset");
@@ -4997,7 +4996,7 @@ function readInt48LE(buf, offset = 0) {
         boundsError(offset, buf.length - 6);
     }
     const val = buf[offset + 4] + last * 2 ** 8;
-    return (val | (val & 2 ** 15) * 0x1fffe) * 2 ** 32 + first + buf[++offset] * 2 ** 8 + buf[++offset] * 2 ** 16 + buf[++offset] * 2 ** 24;
+    return (val | (val & 2 ** 15) * 131070) * 2 ** 32 + first + buf[++offset] * 2 ** 8 + buf[++offset] * 2 ** 16 + buf[++offset] * 2 ** 24;
 }
 function readInt24BE(buf, offset = 0) {
     validateNumber(offset, "offset");
@@ -5007,7 +5006,7 @@ function readInt24BE(buf, offset = 0) {
         boundsError(offset, buf.length - 3);
     }
     const val = first * 2 ** 16 + buf[++offset] * 2 ** 8 + last;
-    return val | (val & 2 ** 23) * 0x1fe;
+    return val | (val & 2 ** 23) * 510;
 }
 function readInt48BE(buf, offset = 0) {
     validateNumber(offset, "offset");
@@ -5017,7 +5016,7 @@ function readInt48BE(buf, offset = 0) {
         boundsError(offset, buf.length - 6);
     }
     const val = buf[++offset] + first * 2 ** 8;
-    return (val | (val & 2 ** 15) * 0x1fffe) * 2 ** 32 + buf[++offset] * 2 ** 24 + buf[++offset] * 2 ** 16 + buf[++offset] * 2 ** 8 + last;
+    return (val | (val & 2 ** 15) * 131070) * 2 ** 32 + buf[++offset] * 2 ** 24 + buf[++offset] * 2 ** 16 + buf[++offset] * 2 ** 8 + last;
 }
 function readInt40BE(buf, offset = 0) {
     validateNumber(offset, "offset");
@@ -5026,16 +5025,16 @@ function readInt40BE(buf, offset = 0) {
     if (first === undefined || last === undefined) {
         boundsError(offset, buf.length - 5);
     }
-    return (first | (first & 2 ** 7) * 0x1fffffe) * 2 ** 32 + buf[++offset] * 2 ** 24 + buf[++offset] * 2 ** 16 + buf[++offset] * 2 ** 8 + last;
+    return (first | (first & 2 ** 7) * 33554430) * 2 ** 32 + buf[++offset] * 2 ** 24 + buf[++offset] * 2 ** 16 + buf[++offset] * 2 ** 8 + last;
 }
 function byteLengthUtf8(str) {
     return utf8Encoder.encode(str).length;
 }
 function base64ByteLength(str, bytes) {
-    if (str.charCodeAt(bytes - 1) === 0x3D) {
+    if (str.charCodeAt(bytes - 1) === 61) {
         bytes--;
     }
-    if (bytes > 1 && str.charCodeAt(bytes - 1) === 0x3D) {
+    if (bytes > 1 && str.charCodeAt(bytes - 1) === 61) {
         bytes--;
     }
     return bytes * 3 >>> 2;
@@ -5810,10 +5809,10 @@ function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
     if (typeof byteOffset === "string") {
         encoding = byteOffset;
         byteOffset = undefined;
-    } else if (byteOffset > 0x7fffffff) {
-        byteOffset = 0x7fffffff;
-    } else if (byteOffset < -0x80000000) {
-        byteOffset = -0x80000000;
+    } else if (byteOffset > 2147483647) {
+        byteOffset = 2147483647;
+    } else if (byteOffset < -2147483648) {
+        byteOffset = -2147483648;
     }
     byteOffset = +byteOffset;
     if (Number.isNaN(byteOffset)) {
@@ -6256,7 +6255,7 @@ Buffer1.prototype.readInt8 = function readInt8(offset = 0) {
     if (val === undefined) {
         boundsError(offset, this.length - 1);
     }
-    return val | (val & 2 ** 7) * 0x1fffffe;
+    return val | (val & 2 ** 7) * 33554430;
 };
 Buffer1.prototype.readInt16LE = function readInt16LE(offset = 0) {
     validateNumber(offset, "offset");
@@ -6266,7 +6265,7 @@ Buffer1.prototype.readInt16LE = function readInt16LE(offset = 0) {
         boundsError(offset, this.length - 2);
     }
     const val = first + last * 2 ** 8;
-    return val | (val & 2 ** 15) * 0x1fffe;
+    return val | (val & 2 ** 15) * 131070;
 };
 Buffer1.prototype.readInt16BE = function readInt16BE(offset = 0) {
     validateNumber(offset, "offset");
@@ -6276,7 +6275,7 @@ Buffer1.prototype.readInt16BE = function readInt16BE(offset = 0) {
         boundsError(offset, this.length - 2);
     }
     const val = first * 2 ** 8 + last;
-    return val | (val & 2 ** 15) * 0x1fffe;
+    return val | (val & 2 ** 15) * 131070;
 };
 Buffer1.prototype.readInt32LE = function readInt32LE(offset = 0) {
     validateNumber(offset, "offset");
@@ -6332,60 +6331,60 @@ Buffer1.prototype.readDoubleBE = function readDoubleBE(offset) {
 };
 Buffer1.prototype.writeUintLE = Buffer1.prototype.writeUIntLE = function writeUIntLE(value, offset, byteLength5) {
     if (byteLength5 === 6) {
-        return writeU_Int48LE(this, value, offset, 0, 0xffffffffffff);
+        return writeU_Int48LE(this, value, offset, 0, 281474976710655);
     }
     if (byteLength5 === 5) {
-        return writeU_Int40LE(this, value, offset, 0, 0xffffffffff);
+        return writeU_Int40LE(this, value, offset, 0, 1099511627775);
     }
     if (byteLength5 === 3) {
-        return writeU_Int24LE(this, value, offset, 0, 0xffffff);
+        return writeU_Int24LE(this, value, offset, 0, 16777215);
     }
     if (byteLength5 === 4) {
-        return writeU_Int32LE(this, value, offset, 0, 0xffffffff);
+        return writeU_Int32LE(this, value, offset, 0, 4294967295);
     }
     if (byteLength5 === 2) {
-        return writeU_Int16LE(this, value, offset, 0, 0xffff);
+        return writeU_Int16LE(this, value, offset, 0, 65535);
     }
     if (byteLength5 === 1) {
-        return writeU_Int8(this, value, offset, 0, 0xff);
+        return writeU_Int8(this, value, offset, 0, 255);
     }
     boundsError(byteLength5, 6, "byteLength");
 };
 Buffer1.prototype.writeUintBE = Buffer1.prototype.writeUIntBE = function writeUIntBE(value, offset, byteLength6) {
     if (byteLength6 === 6) {
-        return writeU_Int48BE(this, value, offset, 0, 0xffffffffffff);
+        return writeU_Int48BE(this, value, offset, 0, 281474976710655);
     }
     if (byteLength6 === 5) {
-        return writeU_Int40BE(this, value, offset, 0, 0xffffffffff);
+        return writeU_Int40BE(this, value, offset, 0, 1099511627775);
     }
     if (byteLength6 === 3) {
-        return writeU_Int24BE(this, value, offset, 0, 0xffffff);
+        return writeU_Int24BE(this, value, offset, 0, 16777215);
     }
     if (byteLength6 === 4) {
-        return writeU_Int32BE(this, value, offset, 0, 0xffffffff);
+        return writeU_Int32BE(this, value, offset, 0, 4294967295);
     }
     if (byteLength6 === 2) {
-        return writeU_Int16BE(this, value, offset, 0, 0xffff);
+        return writeU_Int16BE(this, value, offset, 0, 65535);
     }
     if (byteLength6 === 1) {
-        return writeU_Int8(this, value, offset, 0, 0xff);
+        return writeU_Int8(this, value, offset, 0, 255);
     }
     boundsError(byteLength6, 6, "byteLength");
 };
 Buffer1.prototype.writeUint8 = Buffer1.prototype.writeUInt8 = function writeUInt8(value, offset = 0) {
-    return writeU_Int8(this, value, offset, 0, 0xff);
+    return writeU_Int8(this, value, offset, 0, 255);
 };
 Buffer1.prototype.writeUint16LE = Buffer1.prototype.writeUInt16LE = function writeUInt16LE(value, offset = 0) {
-    return writeU_Int16LE(this, value, offset, 0, 0xffff);
+    return writeU_Int16LE(this, value, offset, 0, 65535);
 };
 Buffer1.prototype.writeUint16BE = Buffer1.prototype.writeUInt16BE = function writeUInt16BE(value, offset = 0) {
-    return writeU_Int16BE(this, value, offset, 0, 0xffff);
+    return writeU_Int16BE(this, value, offset, 0, 65535);
 };
 Buffer1.prototype.writeUint32LE = Buffer1.prototype.writeUInt32LE = function writeUInt32LE(value, offset = 0) {
-    return _writeUInt32LE(this, value, offset, 0, 0xffffffff);
+    return _writeUInt32LE(this, value, offset, 0, 4294967295);
 };
 Buffer1.prototype.writeUint32BE = Buffer1.prototype.writeUInt32BE = function writeUInt32BE(value, offset = 0) {
-    return _writeUInt32BE(this, value, offset, 0, 0xffffffff);
+    return _writeUInt32BE(this, value, offset, 0, 4294967295);
 };
 function wrtBigUInt64LE(buf, value, offset, min, max) {
     checkIntBI(value, min, max, buf, offset, 7);
@@ -6435,60 +6434,60 @@ Buffer1.prototype.writeBigUint64BE = Buffer1.prototype.writeBigUInt64BE = define
 });
 Buffer1.prototype.writeIntLE = function writeIntLE(value, offset, byteLength7) {
     if (byteLength7 === 6) {
-        return writeU_Int48LE(this, value, offset, -0x800000000000, 0x7fffffffffff);
+        return writeU_Int48LE(this, value, offset, -140737488355328, 140737488355327);
     }
     if (byteLength7 === 5) {
-        return writeU_Int40LE(this, value, offset, -0x8000000000, 0x7fffffffff);
+        return writeU_Int40LE(this, value, offset, -549755813888, 549755813887);
     }
     if (byteLength7 === 3) {
-        return writeU_Int24LE(this, value, offset, -0x800000, 0x7fffff);
+        return writeU_Int24LE(this, value, offset, -8388608, 8388607);
     }
     if (byteLength7 === 4) {
-        return writeU_Int32LE(this, value, offset, -0x80000000, 0x7fffffff);
+        return writeU_Int32LE(this, value, offset, -2147483648, 2147483647);
     }
     if (byteLength7 === 2) {
-        return writeU_Int16LE(this, value, offset, -0x8000, 0x7fff);
+        return writeU_Int16LE(this, value, offset, -32768, 32767);
     }
     if (byteLength7 === 1) {
-        return writeU_Int8(this, value, offset, -0x80, 0x7f);
+        return writeU_Int8(this, value, offset, -128, 127);
     }
     boundsError(byteLength7, 6, "byteLength");
 };
 Buffer1.prototype.writeIntBE = function writeIntBE(value, offset, byteLength8) {
     if (byteLength8 === 6) {
-        return writeU_Int48BE(this, value, offset, -0x800000000000, 0x7fffffffffff);
+        return writeU_Int48BE(this, value, offset, -140737488355328, 140737488355327);
     }
     if (byteLength8 === 5) {
-        return writeU_Int40BE(this, value, offset, -0x8000000000, 0x7fffffffff);
+        return writeU_Int40BE(this, value, offset, -549755813888, 549755813887);
     }
     if (byteLength8 === 3) {
-        return writeU_Int24BE(this, value, offset, -0x800000, 0x7fffff);
+        return writeU_Int24BE(this, value, offset, -8388608, 8388607);
     }
     if (byteLength8 === 4) {
-        return writeU_Int32BE(this, value, offset, -0x80000000, 0x7fffffff);
+        return writeU_Int32BE(this, value, offset, -2147483648, 2147483647);
     }
     if (byteLength8 === 2) {
-        return writeU_Int16BE(this, value, offset, -0x8000, 0x7fff);
+        return writeU_Int16BE(this, value, offset, -32768, 32767);
     }
     if (byteLength8 === 1) {
-        return writeU_Int8(this, value, offset, -0x80, 0x7f);
+        return writeU_Int8(this, value, offset, -128, 127);
     }
     boundsError(byteLength8, 6, "byteLength");
 };
 Buffer1.prototype.writeInt8 = function writeInt8(value, offset = 0) {
-    return writeU_Int8(this, value, offset, -0x80, 0x7f);
+    return writeU_Int8(this, value, offset, -128, 127);
 };
 Buffer1.prototype.writeInt16LE = function writeInt16LE(value, offset = 0) {
-    return writeU_Int16LE(this, value, offset, -0x8000, 0x7fff);
+    return writeU_Int16LE(this, value, offset, -32768, 32767);
 };
 Buffer1.prototype.writeInt16BE = function writeInt16BE(value, offset = 0) {
-    return writeU_Int16BE(this, value, offset, -0x8000, 0x7fff);
+    return writeU_Int16BE(this, value, offset, -32768, 32767);
 };
 Buffer1.prototype.writeInt32LE = function writeInt32LE(value, offset = 0) {
-    return writeU_Int32LE(this, value, offset, -0x80000000, 0x7fffffff);
+    return writeU_Int32LE(this, value, offset, -2147483648, 2147483647);
 };
 Buffer1.prototype.writeInt32BE = function writeInt32BE(value, offset = 0) {
-    return writeU_Int32BE(this, value, offset, -0x80000000, 0x7fffffff);
+    return writeU_Int32BE(this, value, offset, -2147483648, 2147483647);
 };
 Buffer1.prototype.writeBigInt64LE = defineBigIntMethod(function writeBigInt64LE(value, offset = 0) {
     return wrtBigUInt64LE(this, value, offset, -BigInt("0x8000000000000000"), BigInt("0x7fffffffffffffff"));
@@ -7131,9 +7130,9 @@ function mapEquiv(map1, map2, strict, memos) {
     }
     return true;
 }
-function mapHasEqualEntry(set, map3, key1, item1, strict, memos) {
+function mapHasEqualEntry(set, map1, key1, item1, strict, memos) {
     for (const key2 of set){
-        if (innerDeepEqual(key1, key2, strict, memos) && innerDeepEqual(item1, map3.get(key2), strict, memos)) {
+        if (innerDeepEqual(key1, key2, strict, memos) && innerDeepEqual(item1, map1.get(key2), strict, memos)) {
             set.delete(key2);
             return true;
         }
@@ -8737,10 +8736,10 @@ function ucs2decode(str) {
     const length = str.length;
     while(counter < length){
         const value = str.charCodeAt(counter++);
-        if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+        if (value >= 55296 && value <= 56319 && counter < length) {
             const extra = str.charCodeAt(counter++);
-            if ((extra & 0xFC00) == 0xDC00) {
-                output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+            if ((extra & 64512) == 56320) {
+                output.push(((value & 1023) << 10) + (extra & 1023) + 65536);
             } else {
                 output.push(value);
                 counter--;
@@ -8767,11 +8766,11 @@ function encode2(str) {
     const output = [];
     const input = ucs2decode(str);
     const inputLength = input.length;
-    let n7 = 128;
+    let n6 = 128;
     let delta = 0;
     let bias = 72;
     for (const currentValue of input){
-        if (currentValue < 0x80) {
+        if (currentValue < 128) {
             output.push(String.fromCharCode(currentValue));
         }
     }
@@ -8783,21 +8782,21 @@ function encode2(str) {
     while(handledCPCount < inputLength){
         let m = 2147483647;
         for (const currentValue of input){
-            if (currentValue >= n7 && currentValue < m) {
+            if (currentValue >= n6 && currentValue < m) {
                 m = currentValue;
             }
         }
         const handledCPCountPlusOne = handledCPCount + 1;
-        if (m - n7 > Math.floor((2147483647 - delta) / handledCPCountPlusOne)) {
+        if (m - n6 > Math.floor((2147483647 - delta) / handledCPCountPlusOne)) {
             error("overflow");
         }
-        delta += (m - n7) * handledCPCountPlusOne;
-        n7 = m;
+        delta += (m - n6) * handledCPCountPlusOne;
+        n6 = m;
         for (const currentValue1 of input){
-            if (currentValue1 < n7 && ++delta > 2147483647) {
+            if (currentValue1 < n6 && ++delta > 2147483647) {
                 error("overflow");
             }
-            if (currentValue1 == n7) {
+            if (currentValue1 == n6) {
                 let q = delta;
                 for(let k = 36;; k += base){
                     const t1 = k <= bias ? 1 : k >= bias + 26 ? 26 : k - bias;
@@ -8816,7 +8815,7 @@ function encode2(str) {
             }
         }
         ++delta;
-        ++n7;
+        ++n6;
     }
     return output.join("");
 }
@@ -9094,7 +9093,7 @@ function encodeStr(str, noEscapeTable, hexTable1) {
     let lastPos = 0;
     for(let i1 = 0; i1 < len; i1++){
         let c = str.charCodeAt(i1);
-        if (c < 0x80) {
+        if (c < 128) {
             if (noEscapeTable[c] === 1) continue;
             if (lastPos < i1) out += str.slice(lastPos, i1);
             lastPos = i1 + 1;
@@ -9102,22 +9101,22 @@ function encodeStr(str, noEscapeTable, hexTable1) {
             continue;
         }
         if (lastPos < i1) out += str.slice(lastPos, i1);
-        if (c < 0x800) {
+        if (c < 2048) {
             lastPos = i1 + 1;
-            out += hexTable1[0xc0 | c >> 6] + hexTable1[0x80 | c & 0x3f];
+            out += hexTable1[192 | c >> 6] + hexTable1[128 | c & 63];
             continue;
         }
-        if (c < 0xd800 || c >= 0xe000) {
+        if (c < 55296 || c >= 57344) {
             lastPos = i1 + 1;
-            out += hexTable1[0xe0 | c >> 12] + hexTable1[0x80 | c >> 6 & 0x3f] + hexTable1[0x80 | c & 0x3f];
+            out += hexTable1[224 | c >> 12] + hexTable1[128 | c >> 6 & 63] + hexTable1[128 | c & 63];
             continue;
         }
         ++i1;
         if (i1 >= len) throw new ERR_INVALID_URI();
-        const c2 = str.charCodeAt(i1) & 0x3ff;
+        const c2 = str.charCodeAt(i1) & 1023;
         lastPos = i1 + 1;
-        c = 0x10000 + ((c & 0x3ff) << 10 | c2);
-        out += hexTable1[0xf0 | c >> 18] + hexTable1[0x80 | c >> 12 & 0x3f] + hexTable1[0x80 | c >> 6 & 0x3f] + hexTable1[0x80 | c & 0x3f];
+        c = 65536 + ((c & 1023) << 10 | c2);
+        out += hexTable1[240 | c >> 18] + hexTable1[128 | c >> 12 & 63] + hexTable1[128 | c >> 6 & 63] + hexTable1[128 | c & 63];
     }
     if (lastPos === 0) return str;
     if (lastPos < len) return out + str.slice(lastPos);
@@ -9707,7 +9706,7 @@ function encodeStringified(v, encode21) {
         return v.length ? encode21(v) : "";
     }
     if (typeof v === "number" && isFinite(v)) {
-        return Math.abs(v) < 1e21 ? "" + v : encode21("" + v);
+        return Math.abs(v) < 1000000000000000000000 ? "" + v : encode21("" + v);
     }
     if (typeof v === "bigint") {
         return "" + v;
@@ -10964,9 +10963,9 @@ function o(a2) {
         if (46 === s4) {
             if (o5 - i3 > 64 || 46 === e4 || 45 === e4 || 95 === e4) return !1;
             i3 = o5;
-        } else if (!1 === (function(a3) {
+        } else if (!1 === ((function(a3) {
             return a3 >= 97 && a3 <= 122 || a3 >= 48 && a3 <= 57 || a3 > 127;
-        }(s4) || 45 === s4 || 95 === s4)) return !1;
+        })(s4) || 45 === s4 || 95 === s4)) return !1;
         e4 = s4;
     }
     return s3 - i3 - 1 <= 63 && 45 !== e4;
@@ -10984,7 +10983,7 @@ const i2 = function({ allowIcannDomains: a4 = !0 , allowPrivateDomains: o7 = !1 
 }({});
 function e(e6, s6, n5, r4, t3) {
     const c2 = function(a5) {
-        return void 0 === a5 ? i2 : function({ allowIcannDomains: a6 = !0 , allowPrivateDomains: o8 = !1 , detectIp: i5 = !0 , extractHostname: e7 = !0 , mixedInputs: s7 = !0 , validHosts: n6 = null , validateHostname: r5 = !0  }) {
+        return void 0 === a5 ? i2 : (function({ allowIcannDomains: a6 = !0 , allowPrivateDomains: o8 = !1 , detectIp: i5 = !0 , extractHostname: e7 = !0 , mixedInputs: s7 = !0 , validHosts: n6 = null , validateHostname: r5 = !0  }) {
             return {
                 allowIcannDomains: a6,
                 allowPrivateDomains: o8,
@@ -10994,9 +10993,9 @@ function e(e6, s6, n5, r4, t3) {
                 validHosts: n6,
                 validateHostname: r5
             };
-        }(a5);
+        })(a5);
     }(r4);
-    return "string" != typeof e6 ? t3 : (!1 === c2.extractHostname ? t3.hostname = e6 : !0 === c2.mixedInputs ? t3.hostname = a(e6, o(e6)) : t3.hostname = a(e6, !1), 0 === s6 || null === t3.hostname || !0 === c2.detectIp && (t3.isIp = function(a7) {
+    return "string" != typeof e6 ? t3 : (!1 === c2.extractHostname ? t3.hostname = e6 : !0 === c2.mixedInputs ? t3.hostname = a(e6, o(e6)) : t3.hostname = a(e6, !1), 0 === s6 || null === t3.hostname || !0 === c2.detectIp && (t3.isIp = (function(a7) {
         if (a7.length < 3) return !1;
         let o9 = "[" === a7[0] ? 1 : 0, i6 = a7.length;
         if ("]" === a7[i6 - 1] && (i6 -= 1), i6 - o9 > 39) return !1;
@@ -11007,7 +11006,7 @@ function e(e6, s6, n5, r4, t3) {
             else if (0 == (i7 >= 48 && i7 <= 57 || i7 >= 97 && i7 <= 102 || i7 >= 65 && i7 <= 90)) return !1;
         }
         return e8;
-    }(u1 = t3.hostname) || function(a8) {
+    })(u1 = t3.hostname) || (function(a8) {
         if (a8.length < 7) return !1;
         if (a8.length > 15) return !1;
         let o10 = 0;
@@ -11017,23 +11016,23 @@ function e(e6, s6, n5, r4, t3) {
             else if (e9 < 48 || e9 > 57) return !1;
         }
         return 3 === o10 && 46 !== a8.charCodeAt(0) && 46 !== a8.charCodeAt(a8.length - 1);
-    }(u1), !0 === t3.isIp) ? t3 : !0 === c2.validateHostname && !0 === c2.extractHostname && !1 === o(t3.hostname) ? (t3.hostname = null, t3) : (n5(t3.hostname, c2, t3), 2 === s6 || null === t3.publicSuffix ? t3 : (t3.domain = function(a10, o11, i9) {
+    })(u1), !0 === t3.isIp) ? t3 : !0 === c2.validateHostname && !0 === c2.extractHostname && !1 === o(t3.hostname) ? (t3.hostname = null, t3) : (n5(t3.hostname, c2, t3), 2 === s6 || null === t3.publicSuffix ? t3 : (t3.domain = (function(a10, o11, i9) {
         if (null !== i9.validHosts) {
             const a9 = i9.validHosts;
             for(let i10 = 0; i10 < a9.length; i10 += 1){
                 const e10 = a9[i10];
-                if (!0 === function(a11, o12) {
+                if (!0 === (function(a11, o12) {
                     return !!a11.endsWith(o12) && (a11.length === o12.length || "." === a11[a11.length - o12.length - 1]);
-                }(o11, e10)) return e10;
+                })(o11, e10)) return e10;
             }
         }
-        return a10.length === o11.length ? null : function(a12, o13) {
+        return a10.length === o11.length ? null : (function(a12, o13) {
             const i11 = a12.length - o13.length - 2, e11 = a12.lastIndexOf(".", i11);
             return -1 === e11 ? a12 : a12.slice(e11 + 1);
-        }(o11, a10);
-    }(t3.publicSuffix, t3.hostname, c2), 3 === s6 || null === t3.domain ? t3 : (t3.subdomain = function(a13, o14) {
+        })(o11, a10);
+    })(t3.publicSuffix, t3.hostname, c2), 3 === s6 || null === t3.domain ? t3 : (t3.subdomain = (function(a13, o14) {
         return o14.length === a13.length ? "" : a13.slice(0, -o14.length - 1);
-    }(t3.hostname, t3.domain), 4 === s6 || (t3.domainWithoutSuffix = (l1 = t3.domain, m1 = t3.publicSuffix, l1.slice(0, -m1.length - 1))), t3))));
+    })(t3.hostname, t3.domain), 4 === s6 || (t3.domainWithoutSuffix = (l1 = t3.domain, m1 = t3.publicSuffix, l1.slice(0, -m1.length - 1))), t3))));
     var u1, l1, m1;
 }
 const s = function() {
@@ -13590,7 +13589,7 @@ const s = function() {
             hu: {
                 $: 1,
                 succ: {
-                    2e3: a15,
+                    2000: a15,
                     co: a15,
                     info: a15,
                     org: a15,
@@ -22820,7 +22819,7 @@ function r(a16, o17, i13, e13) {
     return s9;
 }
 function t(a17, o19, i14) {
-    if (!0 === function(a18, o20, i15) {
+    if (!0 === (function(a18, o20, i15) {
         if (!1 === o20.allowPrivateDomains && a18.length > 3) {
             const o21 = a18.length - 1, e15 = a18.charCodeAt(o21), s10 = a18.charCodeAt(o21 - 1), n9 = a18.charCodeAt(o21 - 2), r7 = a18.charCodeAt(o21 - 3);
             if (109 === e15 && 111 === s10 && 99 === n9 && 46 === r7) return i15.isIcann = !0, i15.isPrivate = !1, i15.publicSuffix = "com", !0;
@@ -22831,7 +22830,7 @@ function t(a17, o19, i14) {
             if (101 === e15 && 100 === s10 && 46 === n9) return i15.isIcann = !0, i15.isPrivate = !1, i15.publicSuffix = "de", !0;
         }
         return !1;
-    }(a17, o19, i14)) return;
+    })(a17, o19, i14)) return;
     const e14 = a17.split("."), t5 = (!0 === o19.allowPrivateDomains ? 2 : 0) | (!0 === o19.allowIcannDomains ? 1 : 0), c4 = r(e14, s, e14.length - 1, t5);
     if (null !== c4) return i14.isIcann = c4.isIcann, i14.isPrivate = c4.isPrivate, void (i14.publicSuffix = e14.slice(c4.index + 1).join("."));
     const u3 = r(e14, n, e14.length - 1, t5);
@@ -22893,10 +22892,10 @@ function ucs2decode1(string) {
     const length = string.length;
     while(counter < length){
         const value = string.charCodeAt(counter++);
-        if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
+        if (value >= 55296 && value <= 56319 && counter < length) {
             const extra = string.charCodeAt(counter++);
-            if ((extra & 0xFC00) == 0xDC00) {
-                output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
+            if ((extra & 64512) == 56320) {
+                output.push(((value & 1023) << 10) + (extra & 1023) + 65536);
             } else {
                 output.push(value);
                 counter--;
@@ -22910,14 +22909,14 @@ function ucs2decode1(string) {
 const ucs2encode = (array)=>String.fromCodePoint(...array)
 ;
 const basicToDigit = function(codePoint) {
-    if (codePoint - 0x30 < 0x0A) {
-        return codePoint - 0x16;
+    if (codePoint - 48 < 10) {
+        return codePoint - 22;
     }
-    if (codePoint - 0x41 < 0x1A) {
-        return codePoint - 0x41;
+    if (codePoint - 65 < 26) {
+        return codePoint - 65;
     }
-    if (codePoint - 0x61 < 0x1A) {
-        return codePoint - 0x61;
+    if (codePoint - 97 < 26) {
+        return codePoint - 97;
     }
     return 36;
 };
@@ -22937,14 +22936,14 @@ const decode3 = function(input) {
     const output = [];
     const inputLength = input.length;
     let i75 = 0;
-    let n10 = 128;
+    let n7 = 128;
     let bias = 72;
     let basic = input.lastIndexOf(delimiter4);
     if (basic < 0) {
         basic = 0;
     }
     for(let j = 0; j < basic; ++j){
-        if (input.charCodeAt(j) >= 0x80) {
+        if (input.charCodeAt(j) >= 128) {
             error1('not-basic');
         }
         output.push(input.charCodeAt(j));
@@ -22960,11 +22959,11 @@ const decode3 = function(input) {
                 error1('overflow');
             }
             i75 += digit * w;
-            const t6 = k <= bias ? 1 : k >= bias + 26 ? 26 : k - bias;
-            if (digit < t6) {
+            const t2 = k <= bias ? 1 : k >= bias + 26 ? 26 : k - bias;
+            if (digit < t2) {
                 break;
             }
-            const baseMinusT = 36 - t6;
+            const baseMinusT = 36 - t2;
             if (w > floor(2147483647 / baseMinusT)) {
                 error1('overflow');
             }
@@ -22972,12 +22971,12 @@ const decode3 = function(input) {
         }
         const out = output.length + 1;
         bias = adapt1(i75 - oldi, out, oldi == 0);
-        if (floor(i75 / out) > 2147483647 - n10) {
+        if (floor(i75 / out) > 2147483647 - n7) {
             error1('overflow');
         }
-        n10 += floor(i75 / out);
+        n7 += floor(i75 / out);
         i75 %= out;
-        output.splice(i75++, 0, n10);
+        output.splice(i75++, 0, n7);
     }
     return String.fromCodePoint(...output);
 };
@@ -22985,11 +22984,11 @@ const encode4 = function(input) {
     const output = [];
     input = ucs2decode1(input);
     let inputLength = input.length;
-    let n11 = 128;
+    let n8 = 128;
     let delta = 0;
     let bias = 72;
     for (const currentValue of input){
-        if (currentValue < 0x80) {
+        if (currentValue < 128) {
             output.push(stringFromCharCode(currentValue));
         }
     }
@@ -23001,30 +23000,30 @@ const encode4 = function(input) {
     while(handledCPCount < inputLength){
         let m = 2147483647;
         for (const currentValue of input){
-            if (currentValue >= n11 && currentValue < m) {
+            if (currentValue >= n8 && currentValue < m) {
                 m = currentValue;
             }
         }
         const handledCPCountPlusOne = handledCPCount + 1;
-        if (m - n11 > floor((2147483647 - delta) / handledCPCountPlusOne)) {
+        if (m - n8 > floor((2147483647 - delta) / handledCPCountPlusOne)) {
             error1('overflow');
         }
-        delta += (m - n11) * handledCPCountPlusOne;
-        n11 = m;
+        delta += (m - n8) * handledCPCountPlusOne;
+        n8 = m;
         for (const currentValue1 of input){
-            if (currentValue1 < n11 && ++delta > 2147483647) {
+            if (currentValue1 < n8 && ++delta > 2147483647) {
                 error1('overflow');
             }
-            if (currentValue1 == n11) {
+            if (currentValue1 == n8) {
                 let q = delta;
                 for(let k = 36;; k += base1){
-                    const t7 = k <= bias ? 1 : k >= bias + 26 ? 26 : k - bias;
-                    if (q < t7) {
+                    const t3 = k <= bias ? 1 : k >= bias + 26 ? 26 : k - bias;
+                    if (q < t3) {
                         break;
                     }
-                    const qMinusT = q - t7;
-                    const baseMinusT = 36 - t7;
-                    output.push(stringFromCharCode(digitToBasic1(t7 + qMinusT % baseMinusT, 0)));
+                    const qMinusT = q - t3;
+                    const baseMinusT = 36 - t3;
+                    output.push(stringFromCharCode(digitToBasic1(t3 + qMinusT % baseMinusT, 0)));
                     q = floor(qMinusT / baseMinusT);
                 }
                 output.push(stringFromCharCode(digitToBasic1(q, 0)));
@@ -23034,7 +23033,7 @@ const encode4 = function(input) {
             }
         }
         ++delta;
-        ++n11;
+        ++n8;
     }
     return output.join('');
 };
@@ -23084,10 +23083,10 @@ const encodeBase64 = (input)=>{
     if (typeof unencoded === 'string') {
         unencoded = encoder.encode(unencoded);
     }
-    const CHUNK_SIZE = 0x8000;
+    const CHUNK_SIZE = 32768;
     const arr = [];
     for(let i77 = 0; i77 < unencoded.length; i77 += CHUNK_SIZE){
-        arr.push(String.fromCharCode.apply(null, unencoded.subarray(i77, i77 + 0x8000)));
+        arr.push(String.fromCharCode.apply(null, unencoded.subarray(i77, i77 + 32768)));
     }
     return btoa(arr.join(''));
 };
@@ -23377,7 +23376,7 @@ const toSPKI = (key)=>{
 const findOid = (keyData, oid, from = 0)=>{
     if (from === 0) {
         oid.unshift(oid.length);
-        oid.unshift(0x06);
+        oid.unshift(6);
     }
     let i79 = keyData.indexOf(oid[0], from);
     if (i79 === -1) return false;
@@ -23389,42 +23388,42 @@ const findOid = (keyData, oid, from = 0)=>{
 const getNamedCurve1 = (keyData)=>{
     switch(true){
         case findOid(keyData, [
-            0x2a,
-            0x86,
-            0x48,
-            0xce,
-            0x3d,
-            0x03,
-            0x01,
-            0x07
+            42,
+            134,
+            72,
+            206,
+            61,
+            3,
+            1,
+            7
         ]):
             return 'P-256';
         case findOid(keyData, [
-            0x2b,
-            0x81,
-            0x04,
-            0x00,
-            0x22
+            43,
+            129,
+            4,
+            0,
+            34
         ]):
             return 'P-384';
         case findOid(keyData, [
-            0x2b,
-            0x81,
-            0x04,
-            0x00,
-            0x23
+            43,
+            129,
+            4,
+            0,
+            35
         ]):
             return 'P-521';
         case (isCloudflareWorkers() || isNodeJs()) && findOid(keyData, [
-            0x2b,
-            0x65,
-            0x70
+            43,
+            101,
+            112
         ]):
             return 'Ed25519';
         case isNodeJs() && findOid(keyData, [
-            0x2b,
-            0x65,
-            0x71
+            43,
+            101,
+            113
         ]):
             return 'Ed448';
         default:
@@ -23878,7 +23877,7 @@ function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader,
     return new Set(protectedHeader.crit);
 }
 const validateAlgorithms = (option, algorithms)=>{
-    if (algorithms !== undefined && (!Array.isArray(algorithms) || algorithms.some((s11)=>typeof s11 !== 'string'
+    if (algorithms !== undefined && (!Array.isArray(algorithms) || algorithms.some((s8)=>typeof s8 !== 'string'
     ))) {
         throw new TypeError(`"${option}" option must be an array of strings`);
     }
@@ -24301,8 +24300,8 @@ class BufferSourceConverter {
     static isArrayBufferView(data) {
         return ArrayBuffer.isView(data) || data && this.isArrayBuffer(data.buffer);
     }
-    static isEqual(a20, b) {
-        const aView = BufferSourceConverter.toUint8Array(a20);
+    static isEqual(a5, b) {
+        const aView = BufferSourceConverter.toUint8Array(a5);
         const bView = BufferSourceConverter.toUint8Array(b);
         if (aView.length !== bView.byteLength) {
             return false;
@@ -24339,10 +24338,10 @@ class BufferSourceConverter {
 }
 class Utf8Converter {
     static fromString(text) {
-        const s12 = unescape(encodeURIComponent(text));
-        const uintArray = new Uint8Array(s12.length);
-        for(let i81 = 0; i81 < s12.length; i81++){
-            uintArray[i81] = s12.charCodeAt(i81);
+        const s9 = unescape(encodeURIComponent(text));
+        const uintArray = new Uint8Array(s9.length);
+        for(let i81 = 0; i81 < s9.length; i81++){
+            uintArray[i81] = s9.charCodeAt(i81);
         }
         return uintArray.buffer;
     }
@@ -24657,8 +24656,8 @@ function utilConcatView(...views) {
 function utilDecodeTC() {
     const buf = new Uint8Array(this.valueHex);
     if (this.valueHex.byteLength >= 2) {
-        const condition1 = buf[0] === 0xFF && buf[1] & 0x80;
-        const condition2 = buf[0] === 0x00 && (buf[1] & 0x80) === 0x00;
+        const condition1 = buf[0] === 255 && buf[1] & 128;
+        const condition2 = buf[0] === 0 && (buf[1] & 128) === 0;
         if (condition1 || condition2) {
             this.warnings.push("Needlessly long format");
         }
@@ -24668,14 +24667,14 @@ function utilDecodeTC() {
     for(let i92 = 0; i92 < this.valueHex.byteLength; i92++){
         bigIntView[i92] = 0;
     }
-    bigIntView[0] = buf[0] & 0x80;
+    bigIntView[0] = buf[0] & 128;
     const bigInt = utilFromBase(bigIntView, 8);
     const smallIntBuffer = new ArrayBuffer(this.valueHex.byteLength);
     const smallIntView = new Uint8Array(smallIntBuffer);
     for(let j = 0; j < this.valueHex.byteLength; j++){
         smallIntView[j] = buf[j];
     }
-    smallIntView[0] &= 0x7F;
+    smallIntView[0] &= 127;
     const smallInt = utilFromBase(smallIntView, 8);
     return smallInt - bigInt;
 }
@@ -24688,12 +24687,12 @@ function utilEncodeTC(value) {
                 const smallInt = bigInt - modValue;
                 const retBuf = utilToBase(smallInt, 8, i93);
                 const retView = new Uint8Array(retBuf);
-                retView[0] |= 0x80;
+                retView[0] |= 128;
                 return retBuf;
             }
             let retBuf = utilToBase(modValue, 8, i93);
             let retView = new Uint8Array(retBuf);
-            if (retView[0] & 0x80) {
+            if (retView[0] & 128) {
                 const tempBuf = retBuf.slice(0);
                 const tempView = new Uint8Array(tempBuf);
                 retBuf = new ArrayBuffer(retBuf.byteLength + 1);
@@ -24701,7 +24700,7 @@ function utilEncodeTC(value) {
                 for(let k = 0; k < tempBuf.byteLength; k++){
                     retView[k + 1] = tempView[k];
                 }
-                retView[0] = 0x00;
+                retView[0] = 0;
             }
             return retBuf;
         }
@@ -24764,9 +24763,9 @@ function toBase64(input, useUrlTemplate = false, skipPadding = false, skipLeadin
         }
         const chr3 = input.charCodeAt(i97++);
         const enc1 = chr1 >> 2;
-        const enc2 = (chr1 & 0x03) << 4 | chr2 >> 4;
-        let enc3 = (chr2 & 0x0F) << 2 | chr3 >> 6;
-        let enc4 = chr3 & 0x3F;
+        const enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+        let enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+        let enc4 = chr3 & 63;
         if (flag1 === 1) {
             enc3 = enc4 = 64;
         } else {
@@ -24799,18 +24798,18 @@ function fromBase64(input, useUrlTemplate = false, cutTailZeros = false) {
         return 64;
     }
     function test(incoming) {
-        return incoming === 64 ? 0x00 : incoming;
+        return incoming === 64 ? 0 : incoming;
     }
     let i1 = 0;
     let output = "";
     while(i1 < input.length){
         const enc1 = indexOf(input.charAt(i1++));
-        const enc2 = i1 >= input.length ? 0x00 : indexOf(input.charAt(i1++));
-        const enc3 = i1 >= input.length ? 0x00 : indexOf(input.charAt(i1++));
-        const enc4 = i1 >= input.length ? 0x00 : indexOf(input.charAt(i1++));
+        const enc2 = i1 >= input.length ? 0 : indexOf(input.charAt(i1++));
+        const enc3 = i1 >= input.length ? 0 : indexOf(input.charAt(i1++));
+        const enc4 = i1 >= input.length ? 0 : indexOf(input.charAt(i1++));
         const chr1 = test(enc1) << 2 | test(enc2) >> 4;
-        const chr2 = (test(enc2) & 0x0F) << 4 | test(enc3) >> 2;
-        const chr3 = (test(enc3) & 0x03) << 6 | test(enc4);
+        const chr2 = (test(enc2) & 15) << 4 | test(enc3) >> 2;
+        const chr3 = (test(enc3) & 3) << 6 | test(enc4);
         output += String.fromCharCode(chr1);
         if (enc3 !== 64) {
             output += String.fromCharCode(chr2);
@@ -25046,27 +25045,27 @@ class LocalIdentificationBlock extends HexBlock(LocalBaseBlock) {
         let firstOctet = 0;
         switch(this.tagClass){
             case 1:
-                firstOctet |= 0x00;
+                firstOctet |= 0;
                 break;
             case 2:
-                firstOctet |= 0x40;
+                firstOctet |= 64;
                 break;
             case 3:
-                firstOctet |= 0x80;
+                firstOctet |= 128;
                 break;
             case 4:
-                firstOctet |= 0xC0;
+                firstOctet |= 192;
                 break;
             default:
                 this.error = "Unknown tag class";
                 return EMPTY_BUFFER;
         }
-        if (this.isConstructed) firstOctet |= 0x20;
+        if (this.isConstructed) firstOctet |= 32;
         if (this.tagNumber < 31 && !this.isHexOnly) {
             const retView = new Uint8Array(1);
             if (!sizeOnly) {
                 let number = this.tagNumber;
-                number &= 0x1F;
+                number &= 31;
                 firstOctet |= number;
                 retView[0] = firstOctet;
             }
@@ -25077,18 +25076,18 @@ class LocalIdentificationBlock extends HexBlock(LocalBaseBlock) {
             const encodedView = new Uint8Array(encodedBuf);
             const size = encodedBuf.byteLength;
             const retView = new Uint8Array(size + 1);
-            retView[0] = firstOctet | 0x1F;
+            retView[0] = firstOctet | 31;
             if (!sizeOnly) {
-                for(let i102 = 0; i102 < size - 1; i102++)retView[i102 + 1] = encodedView[i102] | 0x80;
+                for(let i102 = 0; i102 < size - 1; i102++)retView[i102 + 1] = encodedView[i102] | 128;
                 retView[size] = encodedView[size - 1];
             }
             return retView.buffer;
         }
         const retView = new Uint8Array(this.valueHexView.byteLength + 1);
-        retView[0] = firstOctet | 0x1F;
+        retView[0] = firstOctet | 31;
         if (!sizeOnly) {
             const curView = this.valueHexView;
-            for(let i103 = 0; i103 < curView.length - 1; i103++)retView[i103 + 1] = curView[i103] | 0x80;
+            for(let i103 = 0; i103 < curView.length - 1; i103++)retView[i103 + 1] = curView[i103] | 128;
             retView[this.valueHexView.byteLength] = curView[curView.length - 1];
         }
         return retView.buffer;
@@ -25103,36 +25102,36 @@ class LocalIdentificationBlock extends HexBlock(LocalBaseBlock) {
             this.error = "Zero buffer length";
             return -1;
         }
-        const tagClassMask = intBuffer[0] & 0xC0;
+        const tagClassMask = intBuffer[0] & 192;
         switch(tagClassMask){
-            case 0x00:
+            case 0:
                 this.tagClass = 1;
                 break;
-            case 0x40:
+            case 64:
                 this.tagClass = 2;
                 break;
-            case 0x80:
+            case 128:
                 this.tagClass = 3;
                 break;
-            case 0xC0:
+            case 192:
                 this.tagClass = 4;
                 break;
             default:
                 this.error = "Unknown tag class";
                 return -1;
         }
-        this.isConstructed = (intBuffer[0] & 0x20) === 0x20;
+        this.isConstructed = (intBuffer[0] & 32) === 32;
         this.isHexOnly = false;
-        const tagNumberMask = intBuffer[0] & 0x1F;
-        if (tagNumberMask !== 0x1F) {
+        const tagNumberMask = intBuffer[0] & 31;
+        if (tagNumberMask !== 31) {
             this.tagNumber = tagNumberMask;
             this.blockLength = 1;
         } else {
             let count = 1;
             let intTagNumberBuffer = this.valueHexView = new Uint8Array(255);
             let tagNumberBufferMaxLength = 255;
-            while(intBuffer[count] & 0x80){
-                intTagNumberBuffer[count - 1] = intBuffer[count] & 0x7F;
+            while(intBuffer[count] & 128){
+                intTagNumberBuffer[count - 1] = intBuffer[count] & 127;
                 count++;
                 if (count >= intBuffer.length) {
                     this.error = "End of input reached before message was fully decoded";
@@ -25146,7 +25145,7 @@ class LocalIdentificationBlock extends HexBlock(LocalBaseBlock) {
                 }
             }
             this.blockLength = count + 1;
-            intTagNumberBuffer[count - 1] = intBuffer[count] & 0x7F;
+            intTagNumberBuffer[count - 1] = intBuffer[count] & 127;
             const tempBufferView = new Uint8Array(count);
             for(let i105 = 0; i105 < count; i105++)tempBufferView[i105] = intTagNumberBuffer[i105];
             intTagNumberBuffer = this.valueHexView = new Uint8Array(count);
@@ -25206,22 +25205,22 @@ class LocalLengthBlock extends LocalBaseBlock {
             this.error = "Zero buffer length";
             return -1;
         }
-        if (intBuffer[0] === 0xFF) {
+        if (intBuffer[0] === 255) {
             this.error = "Length block 0xFF is reserved by standard";
             return -1;
         }
-        this.isIndefiniteForm = intBuffer[0] === 0x80;
+        this.isIndefiniteForm = intBuffer[0] === 128;
         if (this.isIndefiniteForm) {
             this.blockLength = 1;
             return inputOffset + this.blockLength;
         }
-        this.longFormUsed = !!(intBuffer[0] & 0x80);
+        this.longFormUsed = !!(intBuffer[0] & 128);
         if (this.longFormUsed === false) {
             this.length = intBuffer[0];
             this.blockLength = 1;
             return inputOffset + this.blockLength;
         }
-        const count = intBuffer[0] & 0x7F;
+        const count = intBuffer[0] & 127;
         if (count > 8) {
             this.error = "Too big integer";
             return -1;
@@ -25232,7 +25231,7 @@ class LocalLengthBlock extends LocalBaseBlock {
         }
         const lenOffset = inputOffset + 1;
         const lengthBufferView = view.subarray(lenOffset, lenOffset + count);
-        if (lengthBufferView[count - 1] === 0x00) this.warnings.push("Needlessly long encoded length");
+        if (lengthBufferView[count - 1] === 0) this.warnings.push("Needlessly long encoded length");
         this.length = utilFromBase(lengthBufferView, 8);
         if (this.longFormUsed && this.length <= 127) this.warnings.push("Unnecessary usage of long length form");
         this.blockLength = count + 1;
@@ -25246,7 +25245,7 @@ class LocalLengthBlock extends LocalBaseBlock {
             retBuf = new ArrayBuffer(1);
             if (sizeOnly === false) {
                 retView = new Uint8Array(retBuf);
-                retView[0] = 0x80;
+                retView[0] = 128;
             }
             return retBuf;
         }
@@ -25260,7 +25259,7 @@ class LocalLengthBlock extends LocalBaseBlock {
             if (sizeOnly) return retBuf;
             const encodedView = new Uint8Array(encodedBuf);
             retView = new Uint8Array(retBuf);
-            retView[0] = encodedBuf.byteLength | 0x80;
+            retView[0] = encodedBuf.byteLength | 128;
             for(let i106 = 0; i106 < encodedBuf.byteLength; i106++)retView[i106 + 1] = encodedView[i106];
             return retBuf;
         }
@@ -25314,7 +25313,7 @@ class BaseBlock extends LocalBaseBlock {
         _writer.write(idBlockBuf);
         if (this.lenBlock.isIndefiniteForm) {
             _writer.write(new Uint8Array([
-                0x80
+                128
             ]).buffer);
             this.valueBlock.toBER(sizeOnly, _writer);
             _writer.write(new ArrayBuffer(2));
@@ -25728,7 +25727,7 @@ class Constructed extends BaseBlock {
     onAsciiEncoding() {
         const values = [];
         for (const value of this.valueBlock.value){
-            values.push(value.toString("ascii").split("\n").map((o23)=>`  ${o23}`
+            values.push(value.toString("ascii").split("\n").map((o1)=>`  ${o1}`
             ).join("\n"));
         }
         const blockName = this.idBlock.tagClass === 3 ? `[${this.idBlock.tagNumber}]` : this.constructor.NAME;
@@ -25784,8 +25783,8 @@ class Null extends BaseBlock {
         const retBuf = new ArrayBuffer(2);
         if (!sizeOnly) {
             const retView = new Uint8Array(retBuf);
-            retView[0] = 0x05;
-            retView[1] = 0x00;
+            retView[0] = 5;
+            retView[1] = 0;
         }
         if (writer) {
             writer.write(retBuf);
@@ -25822,7 +25821,7 @@ class LocalBooleanValueBlock extends HexBlock(ValueBlock) {
         return false;
     }
     set value(value) {
-        this.valueHexView[0] = value ? 0xFF : 0x00;
+        this.valueHexView[0] = value ? 255 : 0;
     }
     fromBER(inputBuffer, inputOffset, inputLength) {
         const inputView = BufferSourceConverter.toUint8Array(inputBuffer);
@@ -26147,9 +26146,9 @@ function viewAdd(first, second) {
     if (c[0] > 0) firstViewCopy = utilConcatView(c, firstViewCopy);
     return firstViewCopy;
 }
-function power2(n12) {
-    if (n12 >= powers2.length) {
-        for(let p = powers2.length; p <= n12; p++){
+function power2(n9) {
+    if (n9 >= powers2.length) {
+        for(let p = powers2.length; p <= n9; p++){
             const c = new Uint8Array([
                 0
             ]);
@@ -26165,7 +26164,7 @@ function power2(n12) {
             powers2.push(digits);
         }
     }
-    return powers2[n12];
+    return powers2[n9];
 }
 function viewSub(first, second) {
     let b = 0;
@@ -26236,7 +26235,7 @@ class LocalIntegerValueBlock extends HexBlock(ValueBlock) {
         const offset = this.fromBER(inputBuffer, inputOffset, inputLength);
         if (offset === -1) return offset;
         const view = this.valueHexView;
-        if (view[0] === 0x00 && (view[1] & 0x80) !== 0) {
+        if (view[0] === 0 && (view[1] & 128) !== 0) {
             this.valueHexView = view.subarray(1);
         } else {
             if (expectedLength !== 0) {
@@ -26251,15 +26250,15 @@ class LocalIntegerValueBlock extends HexBlock(ValueBlock) {
     toDER(sizeOnly = false) {
         const view = this.valueHexView;
         switch(true){
-            case (view[0] & 0x80) !== 0:
+            case (view[0] & 128) !== 0:
                 {
                     const updatedView = new Uint8Array(this.valueHexView.length + 1);
-                    updatedView[0] = 0x00;
+                    updatedView[0] = 0;
                     updatedView.set(view, 1);
                     this.valueHexView = updatedView;
                 }
                 break;
-            case view[0] === 0x00 && (view[1] & 0x80) === 0:
+            case view[0] === 0 && (view[1] & 128) === 0:
                 {
                     this.valueHexView = this.valueHexView.subarray(1);
                 }
@@ -26348,15 +26347,15 @@ class Integer extends BaseBlock {
         const hex = bigIntValue.toString(16).replace(/^-/, "");
         const view = new Uint8Array(Convert.FromHex(hex));
         if (bigIntValue < 0) {
-            const first = new Uint8Array(view.length + (view[0] & 0x80 ? 1 : 0));
-            first[0] |= 0x80;
+            const first = new Uint8Array(view.length + (view[0] & 128 ? 1 : 0));
+            first[0] |= 128;
             const firstInt = BigInt(`0x${Convert.ToHex(first)}`);
             const secondInt = firstInt + bigIntValue;
             const second = BufferSourceConverter.toUint8Array(Convert.FromHex(secondInt.toString(16)));
-            second[0] |= 0x80;
+            second[0] |= 128;
             writer.write(second);
         } else {
-            if (view[0] & 0x80) {
+            if (view[0] & 128) {
                 writer.write(new Uint8Array([
                     0
                 ]));
@@ -26419,20 +26418,20 @@ class LocalSidValueBlock extends HexBlock(ValueBlock) {
         const intBuffer = inputView.subarray(inputOffset, inputOffset + inputLength);
         this.valueHexView = new Uint8Array(inputLength);
         for(let i118 = 0; i118 < inputLength; i118++){
-            this.valueHexView[i118] = intBuffer[i118] & 0x7F;
+            this.valueHexView[i118] = intBuffer[i118] & 127;
             this.blockLength++;
-            if ((intBuffer[i118] & 0x80) === 0x00) break;
+            if ((intBuffer[i118] & 128) === 0) break;
         }
         const tempView = new Uint8Array(this.blockLength);
         for(let i210 = 0; i210 < this.blockLength; i210++){
             tempView[i210] = this.valueHexView[i210];
         }
         this.valueHexView = tempView;
-        if ((intBuffer[this.blockLength - 1] & 0x80) !== 0x00) {
+        if ((intBuffer[this.blockLength - 1] & 128) !== 0) {
             this.error = "End of input reached before message was fully decoded";
             return -1;
         }
-        if (this.valueHexView[0] === 0x00) this.warnings.push("Needlessly long format of SID encoding");
+        if (this.valueHexView[0] === 0) this.warnings.push("Needlessly long format of SID encoding");
         if (this.blockLength <= 8) this.valueDec = utilFromBase(this.valueHexView, 7);
         else {
             this.isHexOnly = true;
@@ -26448,7 +26447,7 @@ class LocalSidValueBlock extends HexBlock(ValueBlock) {
         }
         const bytes = new Uint8Array(bits.length / 7);
         for(let i119 = 0; i119 < bytes.length; i119++){
-            bytes[i119] = parseInt(bits.slice(i119 * 7, i119 * 7 + 7), 2) + (i119 + 1 < bytes.length ? 0x80 : 0);
+            bytes[i119] = parseInt(bits.slice(i119 * 7, i119 * 7 + 7), 2) + (i119 + 1 < bytes.length ? 128 : 0);
         }
         this.fromBER(bytes.buffer, 0, bytes.length);
     }
@@ -26457,7 +26456,7 @@ class LocalSidValueBlock extends HexBlock(ValueBlock) {
             if (sizeOnly) return new ArrayBuffer(this.valueHexView.byteLength);
             const curView = this.valueHexView;
             const retView = new Uint8Array(this.blockLength);
-            for(let i120 = 0; i120 < this.blockLength - 1; i120++)retView[i120] = curView[i120] | 0x80;
+            for(let i120 = 0; i120 < this.blockLength - 1; i120++)retView[i120] = curView[i120] | 128;
             retView[this.blockLength - 1] = curView[this.blockLength - 1];
             return retView.buffer;
         }
@@ -26470,7 +26469,7 @@ class LocalSidValueBlock extends HexBlock(ValueBlock) {
         if (!sizeOnly) {
             const encodedView = new Uint8Array(encodedBuf);
             const len = encodedBuf.byteLength - 1;
-            for(let i121 = 0; i121 < len; i121++)retView[i121] = encodedView[i121] | 0x80;
+            for(let i121 = 0; i121 < len; i121++)retView[i121] = encodedView[i121] | 128;
             retView[len] = encodedView[len];
         }
         return retView;
@@ -26659,18 +26658,18 @@ class LocalRelativeSidValueBlock extends HexBlock(LocalBaseBlock) {
         const intBuffer = inputView.subarray(inputOffset, inputOffset + inputLength);
         this.valueHexView = new Uint8Array(inputLength);
         for(let i125 = 0; i125 < inputLength; i125++){
-            this.valueHexView[i125] = intBuffer[i125] & 0x7F;
+            this.valueHexView[i125] = intBuffer[i125] & 127;
             this.blockLength++;
-            if ((intBuffer[i125] & 0x80) === 0x00) break;
+            if ((intBuffer[i125] & 128) === 0) break;
         }
         const tempView = new Uint8Array(this.blockLength);
         for(let i3 = 0; i3 < this.blockLength; i3++)tempView[i3] = this.valueHexView[i3];
         this.valueHexView = tempView;
-        if ((intBuffer[this.blockLength - 1] & 0x80) !== 0x00) {
+        if ((intBuffer[this.blockLength - 1] & 128) !== 0) {
             this.error = "End of input reached before message was fully decoded";
             return -1;
         }
-        if (this.valueHexView[0] === 0x00) this.warnings.push("Needlessly long format of SID encoding");
+        if (this.valueHexView[0] === 0) this.warnings.push("Needlessly long format of SID encoding");
         if (this.blockLength <= 8) this.valueDec = utilFromBase(this.valueHexView, 7);
         else {
             this.isHexOnly = true;
@@ -26683,7 +26682,7 @@ class LocalRelativeSidValueBlock extends HexBlock(LocalBaseBlock) {
             if (sizeOnly) return new ArrayBuffer(this.valueHexView.byteLength);
             const curView = this.valueHexView;
             const retView = new Uint8Array(this.blockLength);
-            for(let i126 = 0; i126 < this.blockLength - 1; i126++)retView[i126] = curView[i126] | 0x80;
+            for(let i126 = 0; i126 < this.blockLength - 1; i126++)retView[i126] = curView[i126] | 128;
             retView[this.blockLength - 1] = curView[this.blockLength - 1];
             return retView.buffer;
         }
@@ -26696,7 +26695,7 @@ class LocalRelativeSidValueBlock extends HexBlock(LocalBaseBlock) {
         if (!sizeOnly) {
             const encodedView = new Uint8Array(encodedBuf);
             const len = encodedBuf.byteLength - 1;
-            for(let i127 = 0; i127 < len; i127++)retView[i127] = encodedView[i127] | 0x80;
+            for(let i127 = 0; i127 < len; i127++)retView[i127] = encodedView[i127] | 128;
             retView[len] = encodedView[len];
         }
         return retView.buffer;
@@ -26941,8 +26940,8 @@ class LocalUniversalStringValueBlock extends LocalSimpleStringBlock {
         for(let i132 = 0; i132 < valueView.length; i132 += 4){
             valueView[i132] = valueView[i132 + 3];
             valueView[i132 + 1] = valueView[i132 + 2];
-            valueView[i132 + 2] = 0x00;
-            valueView[i132 + 3] = 0x00;
+            valueView[i132 + 2] = 0;
+            valueView[i132 + 3] = 0;
         }
         this.valueBlock.value = String.fromCharCode.apply(null, new Uint32Array(copyBuffer));
     }
@@ -27888,7 +27887,7 @@ class ECPublicKey {
     fromSchema(schema) {
         if (schema instanceof ArrayBuffer === false) throw new Error("Object's schema was not verified against input data for ECPublicKey");
         const view = new Uint8Array(schema);
-        if (view[0] !== 0x04) throw new Error("Object's schema was not verified against input data for ECPublicKey");
+        if (view[0] !== 4) throw new Error("Object's schema was not verified against input data for ECPublicKey");
         let coordinateLength;
         switch(this.namedCurve){
             case "1.2.840.10045.3.1.7":
@@ -27910,7 +27909,7 @@ class ECPublicKey {
     toSchema() {
         return new RawData({
             data: utilConcatBuf(new Uint8Array([
-                0x04
+                4
             ]).buffer, this.x, this.y)
         });
     }
@@ -29334,24 +29333,24 @@ let engine = {
     subtle: null
 };
 function makePKCS12B2Key(cryptoEngine, hashAlgorithm, keyLength, password, salt, iterationCount) {
-    let u4;
+    let u1;
     let v;
     const result = [];
     switch(hashAlgorithm.toUpperCase()){
         case "SHA-1":
-            u4 = 20;
+            u1 = 20;
             v = 64;
             break;
         case "SHA-256":
-            u4 = 32;
+            u1 = 32;
             v = 64;
             break;
         case "SHA-384":
-            u4 = 48;
+            u1 = 48;
             v = 128;
             break;
         case "SHA-512":
-            u4 = 64;
+            u1 = 64;
             v = 128;
             break;
         default:
@@ -29361,11 +29360,11 @@ function makePKCS12B2Key(cryptoEngine, hashAlgorithm, keyLength, password, salt,
     const passwordTransformed = new ArrayBuffer(password.byteLength * 2 + 2);
     const passwordTransformedView = new Uint8Array(passwordTransformed);
     for(let i140 = 0; i140 < passwordViewInitial.length; i140++){
-        passwordTransformedView[i140 * 2] = 0x00;
+        passwordTransformedView[i140 * 2] = 0;
         passwordTransformedView[i140 * 2 + 1] = passwordViewInitial[i140];
     }
-    passwordTransformedView[passwordTransformedView.length - 2] = 0x00;
-    passwordTransformedView[passwordTransformedView.length - 1] = 0x00;
+    passwordTransformedView[passwordTransformedView.length - 2] = 0;
+    passwordTransformedView[passwordTransformedView.length - 1] = 0;
     password = passwordTransformed.slice(0);
     const D = new ArrayBuffer(v);
     const dView = new Uint8Array(D);
@@ -29387,7 +29386,7 @@ function makePKCS12B2Key(cryptoEngine, hashAlgorithm, keyLength, password, salt,
     let iView = new Uint8Array(I);
     iView.set(sView);
     iView.set(pView, sView.length);
-    const c = Math.ceil((keyLength >> 3) / u4);
+    const c = Math.ceil((keyLength >> 3) / u1);
     let internalSequence = Promise.resolve(I);
     for(let i4 = 0; i4 <= c; i4++){
         internalSequence = internalSequence.then((_I)=>{
@@ -29413,11 +29412,11 @@ function makePKCS12B2Key(cryptoEngine, hashAlgorithm, keyLength, password, salt,
                 const chunk = Array.from(new Uint8Array(I.slice(sliceStart, sliceStart + sliceLength)));
                 sliceStart += v;
                 if (sliceStart + v > I.byteLength) sliceLength = I.byteLength - sliceStart;
-                let x = 0x1ff;
+                let x = 511;
                 for(let l = B.byteLength - 1; l >= 0; l--){
                     x >>= 8;
                     x += bView[l] + chunk[l];
-                    chunk[l] = x & 0xff;
+                    chunk[l] = x & 255;
                 }
                 iRound.push(...chunk);
             }
@@ -29685,7 +29684,7 @@ function createECDSASignatureFromCMS(cmsSignature) {
                 const rValueBufferCorrected = new ArrayBuffer(correctedLength);
                 const rValueViewCorrected = new Uint8Array(rValueBufferCorrected);
                 rValueViewCorrected.set(rValueView, 1);
-                rValueViewCorrected[0] = 0x00;
+                rValueViewCorrected[0] = 0;
                 return utilConcatBuf(rValueBufferCorrected, sValue.valueBlock.valueHex);
             }
         case rValue.valueBlock.valueHex.byteLength > sValue.valueBlock.valueHex.byteLength:
@@ -29696,7 +29695,7 @@ function createECDSASignatureFromCMS(cmsSignature) {
                 const sValueBufferCorrected = new ArrayBuffer(correctedLength);
                 const sValueViewCorrected = new Uint8Array(sValueBufferCorrected);
                 sValueViewCorrected.set(sValueView, 1);
-                sValueViewCorrected[0] = 0x00;
+                sValueViewCorrected[0] = 0;
                 return utilConcatBuf(rValue.valueBlock.valueHex, sValueBufferCorrected);
             }
         default:
@@ -29707,12 +29706,12 @@ function createECDSASignatureFromCMS(cmsSignature) {
                     const rValueBufferCorrected = new ArrayBuffer(correctedLength);
                     const rValueViewCorrected = new Uint8Array(rValueBufferCorrected);
                     rValueViewCorrected.set(rValueView, 1);
-                    rValueViewCorrected[0] = 0x00;
+                    rValueViewCorrected[0] = 0;
                     const sValueView = new Uint8Array(sValue.valueBlock.valueHex);
                     const sValueBufferCorrected = new ArrayBuffer(correctedLength);
                     const sValueViewCorrected = new Uint8Array(sValueBufferCorrected);
                     sValueViewCorrected.set(sValueView, 1);
-                    sValueViewCorrected[0] = 0x00;
+                    sValueViewCorrected[0] = 0;
                     return utilConcatBuf(rValueBufferCorrected, sValueBufferCorrected);
                 }
             }
@@ -30520,9 +30519,9 @@ class CryptoEngine {
                                 name: "RSASSA-PKCS1-v1_5",
                                 modulusLength: 2048,
                                 publicExponent: new Uint8Array([
-                                    0x01,
-                                    0x00,
-                                    0x01
+                                    1,
+                                    0,
+                                    1
                                 ]),
                                 hash: {
                                     name: "SHA-256"
@@ -30583,9 +30582,9 @@ class CryptoEngine {
                                 name: "RSA-PSS",
                                 modulusLength: 2048,
                                 publicExponent: new Uint8Array([
-                                    0x01,
-                                    0x00,
-                                    0x01
+                                    1,
+                                    0,
+                                    1
                                 ]),
                                 hash: {
                                     name: "SHA-1"
@@ -30640,9 +30639,9 @@ class CryptoEngine {
                                 name: "RSA-OAEP",
                                 modulusLength: 2048,
                                 publicExponent: new Uint8Array([
-                                    0x01,
-                                    0x00,
-                                    0x01
+                                    1,
+                                    0,
+                                    1
                                 ]),
                                 hash: {
                                     name: "SHA-256"
@@ -31520,9 +31519,9 @@ function kdfWithCounter(hashFunction, Zbuffer, Counter, SharedInfo) {
     if (Counter > 255) return Promise.reject("Please set \"Counter\" variable to value less or equal to 255");
     const counterBuffer = new ArrayBuffer(4);
     const counterView = new Uint8Array(counterBuffer);
-    counterView[0] = 0x00;
-    counterView[1] = 0x00;
-    counterView[2] = 0x00;
+    counterView[0] = 0;
+    counterView[1] = 0;
+    counterView[2] = 0;
     counterView[3] = Counter;
     let combinedBuffer = new ArrayBuffer(0);
     const crypto = getCrypto();
@@ -33283,11 +33282,11 @@ class IssuingDistributionPoint {
         }
         if ("onlyContainsUserCerts" in asn1.result) {
             const view = new Uint8Array(asn1.result.onlyContainsUserCerts.valueBlock.valueHex);
-            this.onlyContainsUserCerts = view[0] !== 0x00;
+            this.onlyContainsUserCerts = view[0] !== 0;
         }
         if ("onlyContainsCACerts" in asn1.result) {
             const view = new Uint8Array(asn1.result.onlyContainsCACerts.valueBlock.valueHex);
-            this.onlyContainsCACerts = view[0] !== 0x00;
+            this.onlyContainsCACerts = view[0] !== 0;
         }
         if ("onlySomeReasons" in asn1.result) {
             const view = new Uint8Array(asn1.result.onlySomeReasons.valueBlock.valueHex);
@@ -33295,11 +33294,11 @@ class IssuingDistributionPoint {
         }
         if ("indirectCRL" in asn1.result) {
             const view = new Uint8Array(asn1.result.indirectCRL.valueBlock.valueHex);
-            this.indirectCRL = view[0] !== 0x00;
+            this.indirectCRL = view[0] !== 0;
         }
         if ("onlyContainsAttributeCerts" in asn1.result) {
             const view = new Uint8Array(asn1.result.onlyContainsAttributeCerts.valueBlock.valueHex);
-            this.onlyContainsAttributeCerts = view[0] !== 0x00;
+            this.onlyContainsAttributeCerts = view[0] !== 0;
         }
     }
     toSchema() {
@@ -33329,7 +33328,7 @@ class IssuingDistributionPoint {
                     tagNumber: 1
                 },
                 valueHex: new Uint8Array([
-                    0xFF
+                    255
                 ]).buffer
             }));
         }
@@ -33340,7 +33339,7 @@ class IssuingDistributionPoint {
                     tagNumber: 2
                 },
                 valueHex: new Uint8Array([
-                    0xFF
+                    255
                 ]).buffer
             }));
         }
@@ -33363,7 +33362,7 @@ class IssuingDistributionPoint {
                     tagNumber: 4
                 },
                 valueHex: new Uint8Array([
-                    0xFF
+                    255
                 ]).buffer
             }));
         }
@@ -33374,7 +33373,7 @@ class IssuingDistributionPoint {
                     tagNumber: 5
                 },
                 valueHex: new Uint8Array([
-                    0xFF
+                    255
                 ]).buffer
             }));
         }
@@ -34673,30 +34672,30 @@ class ByteStream {
         this.buffer = new ArrayBuffer(stringLength >> 1);
         this.view = new Uint8Array(this.buffer);
         const hexMap = new Map();
-        hexMap.set("0", 0x00);
-        hexMap.set("1", 0x01);
-        hexMap.set("2", 0x02);
-        hexMap.set("3", 0x03);
-        hexMap.set("4", 0x04);
-        hexMap.set("5", 0x05);
-        hexMap.set("6", 0x06);
-        hexMap.set("7", 0x07);
-        hexMap.set("8", 0x08);
-        hexMap.set("9", 0x09);
-        hexMap.set("A", 0x0A);
-        hexMap.set("a", 0x0A);
-        hexMap.set("B", 0x0B);
-        hexMap.set("b", 0x0B);
-        hexMap.set("C", 0x0C);
-        hexMap.set("c", 0x0C);
-        hexMap.set("D", 0x0D);
-        hexMap.set("d", 0x0D);
-        hexMap.set("E", 0x0E);
-        hexMap.set("e", 0x0E);
-        hexMap.set("F", 0x0F);
-        hexMap.set("f", 0x0F);
+        hexMap.set("0", 0);
+        hexMap.set("1", 1);
+        hexMap.set("2", 2);
+        hexMap.set("3", 3);
+        hexMap.set("4", 4);
+        hexMap.set("5", 5);
+        hexMap.set("6", 6);
+        hexMap.set("7", 7);
+        hexMap.set("8", 8);
+        hexMap.set("9", 9);
+        hexMap.set("A", 10);
+        hexMap.set("a", 10);
+        hexMap.set("B", 11);
+        hexMap.set("b", 11);
+        hexMap.set("C", 12);
+        hexMap.set("c", 12);
+        hexMap.set("D", 13);
+        hexMap.set("d", 13);
+        hexMap.set("E", 14);
+        hexMap.set("e", 14);
+        hexMap.set("F", 15);
+        hexMap.set("f", 15);
         let j = 0;
-        let temp = 0x00;
+        let temp = 0;
         for(let i146 = 0; i146 < stringLength; i146++){
             if (!(i146 % 2)) {
                 temp = hexMap.get(hexString.charAt(i146)) << 4;
@@ -35166,7 +35165,7 @@ class ByteStream {
             rightPatterns.splice(0, 1);
             currentPositionLeft = 0;
         }
-        result.sort((a21, b)=>a21.left - b.left
+        result.sort((a6, b)=>a6.left - b.left
         );
         return result;
     }
@@ -35217,7 +35216,7 @@ class ByteStream {
             rightPatterns.splice(0, 1);
             currentPositionLeft = 0;
         }
-        result.sort((a22, b)=>a22.left.position - b.left.position
+        result.sort((a7, b)=>a7.left.position - b.left.position
         );
         return result;
     }
@@ -36117,7 +36116,7 @@ class BitStream {
         if (this.view.length == 0) return;
         if (shift < 0 || shift > 8) throw new Error("The \"shift\" parameter must be in range 0-8");
         if (shift > this.bitsCount) throw new Error("The \"shift\" parameter can not be bigger than \"this.bitsCount\"");
-        const shiftMask = 0xFF >> 8 - shift;
+        const shiftMask = 255 >> 8 - shift;
         this.view[this.view.length - 1] >>= shift;
         for(let i162 = this.view.length - 2; i162 >= 0; i162--){
             this.view[i162 + 1] |= (this.view[i162] & shiftMask) << 8 - shift;
@@ -36131,14 +36130,14 @@ class BitStream {
         if (this.view.length == 0) return;
         if (shift < 0 || shift > 8) throw new Error("The \"shift\" parameter must be in range 0-8");
         if (shift > this.bitsCount) throw new Error("The \"shift\" parameter can not be bigger than \"this.bitsCount\"");
-        const bitsOffset = this.bitsCount & 0x07;
+        const bitsOffset = this.bitsCount & 7;
         if (bitsOffset > shift) {
-            this.view[0] &= 0xFF >> bitsOffset + shift;
+            this.view[0] &= 255 >> bitsOffset + shift;
         } else {
             const buffer = new ArrayBuffer(this.buffer.byteLength - 1);
             const view = new Uint8Array(buffer);
             view.set(new Uint8Array(this.buffer, 1, this.buffer.byteLength - 1));
-            view[0] &= 0xFF >> shift - bitsOffset;
+            view[0] &= 255 >> shift - bitsOffset;
             this.buffer = buffer.slice(0);
             this.view = new Uint8Array(this.buffer);
         }
@@ -36160,17 +36159,17 @@ class BitStream {
         if (end < 0 || end > (this.view.length << 3) - 1) return new BitStream();
         if (end - start + 1 > this.bitsCount) return new BitStream();
         const startIndex = start >> 3;
-        const startOffset = start & 0x07;
+        const startOffset = start & 7;
         const endIndex = end >> 3;
-        const endOffset = end & 0x07;
+        const endOffset = end & 7;
         const bitsLength = endIndex - startIndex == 0 ? 1 : endIndex - startIndex + 1;
         const result = new BitStream();
         result.buffer = new ArrayBuffer(bitsLength);
         result.view = new Uint8Array(result.buffer);
         result.bitsCount = bitsLength << 3;
         result.view.set(new Uint8Array(this.buffer, startIndex, bitsLength));
-        result.view[0] &= 0xFF >> startOffset;
-        result.view[bitsLength] &= 0xFF << 7 - endOffset;
+        result.view[0] &= 255 >> startOffset;
+        result.view[bitsLength] &= 255 << 7 - endOffset;
         if (7 - endOffset) result.shiftRight(7 - endOffset, false);
         result.bitsCount = end - start + 1;
         result.shrink();
@@ -36196,11 +36195,11 @@ class BitStream {
     }
     reverseBytes() {
         for(let i163 = 0; i163 < this.view.length; i163++){
-            this.view[i163] = (this.view[i163] * 0x0802 & 0x22110 | this.view[i163] * 0x8020 & 0x88440) * 0x10101 >> 16;
+            this.view[i163] = (this.view[i163] * 2050 & 139536 | this.view[i163] * 32800 & 558144) * 65793 >> 16;
         }
         if (this.bitsCount % 8) {
             const currentLength = (this.bitsCount >> 3) + (this.bitsCount % 8 ? 1 : 0);
-            this.view[this.view.length - currentLength] >>= 8 - (this.bitsCount & 0x07);
+            this.view[this.view.length - currentLength] >>= 8 - (this.bitsCount & 7);
         }
     }
     reverseValue() {
@@ -36211,12 +36210,12 @@ class BitStream {
         this.fromString(reversedValue.join(""));
     }
     getNumberValue() {
-        const byteLength9 = this.buffer.byteLength - 1;
-        if (byteLength9 > 3) return -1;
-        if (byteLength9 == -1) return 0;
+        const byteLength3 = this.buffer.byteLength - 1;
+        if (byteLength3 > 3) return -1;
+        if (byteLength3 == -1) return 0;
         const value = new Uint32Array(1);
         const view = new Uint8Array(value.buffer);
-        for(let i165 = byteLength9; i165 >= 0; i165--)view[byteLength9 - i165] = this.view[i165];
+        for(let i165 = byteLength3; i165 >= 0; i165--)view[byteLength3 - i165] = this.view[i165];
         return value[0];
     }
     findPattern(pattern, start = null, length = null, backward = false) {
@@ -36578,8 +36577,8 @@ class SignedCertificateTimestamp {
         publicKeyInfo = new PublicKeyInfo({
             schema: asn1.result
         });
-        stream.appendChar(0x00);
-        stream.appendChar(0x00);
+        stream.appendChar(0);
+        stream.appendChar(0);
         const timeBuffer = new ArrayBuffer(8);
         const timeView = new Uint8Array(timeBuffer);
         const baseArray = utilToBase(this.timestamp.valueOf(), 8);
@@ -41253,26 +41252,26 @@ class RSAESOAEPParams {
                     algorithmId: "1.2.840.113549.1.1.9",
                     algorithmParams: new OctetString({
                         valueHex: new Uint8Array([
-                            0xda,
-                            0x39,
-                            0xa3,
-                            0xee,
-                            0x5e,
-                            0x6b,
-                            0x4b,
-                            0x0d,
-                            0x32,
-                            0x55,
-                            0xbf,
-                            0xef,
-                            0x95,
-                            0x60,
-                            0x18,
-                            0x90,
-                            0xaf,
-                            0xd8,
-                            0x07,
-                            0x09
+                            218,
+                            57,
+                            163,
+                            238,
+                            94,
+                            107,
+                            75,
+                            13,
+                            50,
+                            85,
+                            191,
+                            239,
+                            149,
+                            96,
+                            24,
+                            144,
+                            175,
+                            216,
+                            7,
+                            9
                         ]).buffer
                     })
                 });
@@ -43457,8 +43456,8 @@ class CertificateChainValidationEngine {
                     if (certificate.extensions[j].extnID === "2.5.29.15") {
                         keyUsagePresent = true;
                         const view = new Uint8Array(certificate.extensions[j].parsedValue.valueBlock.valueHex);
-                        if ((view[0] & 0x04) === 0x04) mustBeCA = true;
-                        if ((view[0] & 0x02) === 0x02) cRLSign = true;
+                        if ((view[0] & 4) === 4) mustBeCA = true;
+                        if ((view[0] & 2) === 2) cRLSign = true;
                     }
                     if (certificate.extensions[j].extnID === "2.5.29.19") {
                         if ("cA" in certificate.extensions[j].parsedValue) {
@@ -43815,17 +43814,17 @@ class CertificateChainValidationEngine {
                     for(let j = 0; j < this.certs[i187].extensions.length; j++){
                         if (this.certs[i187].extensions[j].extnID === "2.5.29.32") {
                             certPolicies[i187] = this.certs[i187].extensions[j].parsedValue;
-                            for(let s13 = 0; s13 < allPolicies.length; s13++){
-                                if (allPolicies[s13] === "2.5.29.32.0") {
-                                    delete policiesAndCerts[s13][i187];
+                            for(let s10 = 0; s10 < allPolicies.length; s10++){
+                                if (allPolicies[s10] === "2.5.29.32.0") {
+                                    delete policiesAndCerts[s10][i187];
                                     break;
                                 }
                             }
                             for(let k = 0; k < this.certs[i187].extensions[j].parsedValue.certificatePolicies.length; k++){
                                 let policyIndex = -1;
-                                for(let s14 = 0; s14 < allPolicies.length; s14++){
-                                    if (this.certs[i187].extensions[j].parsedValue.certificatePolicies[k].policyIdentifier === allPolicies[s14]) {
-                                        policyIndex = s14;
+                                for(let s11 = 0; s11 < allPolicies.length; s11++){
+                                    if (this.certs[i187].extensions[j].parsedValue.certificatePolicies[k].policyIdentifier === allPolicies[s11]) {
+                                        policyIndex = s11;
                                         break;
                                     }
                                 }
@@ -43931,9 +43930,9 @@ class CertificateChainValidationEngine {
                         }
                         let issuerDomainPolicyIndex = -1;
                         let subjectDomainPolicyIndex = -1;
-                        for(let n13 = 0; n13 < allPolicies.length; n13++){
-                            if (allPolicies[n13] === policyMappings[i10 + 1].mappings[k].issuerDomainPolicy) issuerDomainPolicyIndex = n13;
-                            if (allPolicies[n13] === policyMappings[i10 + 1].mappings[k].subjectDomainPolicy) subjectDomainPolicyIndex = n13;
+                        for(let n10 = 0; n10 < allPolicies.length; n10++){
+                            if (allPolicies[n10] === policyMappings[i10 + 1].mappings[k].issuerDomainPolicy) issuerDomainPolicyIndex = n10;
+                            if (allPolicies[n10] === policyMappings[i10 + 1].mappings[k].subjectDomainPolicy) subjectDomainPolicyIndex = n10;
                         }
                         if (typeof policiesAndCerts[issuerDomainPolicyIndex][i10] !== "undefined") delete policiesAndCerts[issuerDomainPolicyIndex][i10];
                         for(let j = 0; j < certPolicies[i10].certificatePolicies.length; j++){
@@ -45878,7 +45877,7 @@ class SignedAndUnsignedAttributes {
         this.type = asn1.result.idBlock.tagNumber;
         this.encodedValue = asn1.result.valueBeforeDecode;
         const encodedView = new Uint8Array(this.encodedValue);
-        encodedView[0] = 0x31;
+        encodedView[0] = 49;
         if ("attributes" in asn1.result === false) {
             if (this.type === 0) throw new Error("Wrong structure of SignedUnsignedAttributes");
             else return;
@@ -46912,7 +46911,7 @@ class SignedData {
                 else {
                     data = this.signerInfos[signerIndex].signedAttrs.toSchema(true).toBER(false);
                     const view = new Uint8Array(data);
-                    view[0] = 0x31;
+                    view[0] = 49;
                 }
             } else {
                 if ("eContent" in this.encapContentInfo) {
@@ -47660,18 +47659,18 @@ class Decoder {
     }
     encodeKeys(rec) {
         if (!this._keyMap) return rec;
-        let map4 = new Map();
-        for (let [k, v] of Object.entries(rec))map4.set(this._keyMap.hasOwnProperty(k) ? this._keyMap[k] : k, v);
-        return map4;
+        let map2 = new Map();
+        for (let [k, v] of Object.entries(rec))map2.set(this._keyMap.hasOwnProperty(k) ? this._keyMap[k] : k, v);
+        return map2;
     }
-    decodeKeys(map5) {
-        if (!this._keyMap || map5.constructor.name != 'Map') return map5;
+    decodeKeys(map3) {
+        if (!this._keyMap || map3.constructor.name != 'Map') return map3;
         if (!this._mapKey) {
             this._mapKey = new Map();
             for (let [k, v] of Object.entries(this._keyMap))this._mapKey.set(v, k);
         }
         let res = {};
-        map5.forEach((v, k)=>res[this._mapKey.has(k) ? this._mapKey.get(k) : k] = v
+        map3.forEach((v, k)=>res[this._mapKey.has(k) ? this._mapKey.get(k) : k] = v
         );
         return res;
     }
@@ -47680,7 +47679,7 @@ class Decoder {
         if (this._keyMap) {
             switch(res.constructor.name){
                 case 'Array':
-                    return res.map((r8)=>this.decodeKeys(r8)
+                    return res.map((r3)=>this.decodeKeys(r3)
                     );
             }
         }
@@ -47787,24 +47786,24 @@ function checkedRead() {
 function read() {
     let token = src[position++];
     let majorType = token >> 5;
-    token = token & 0x1f;
-    if (token > 0x17) {
+    token = token & 31;
+    if (token > 23) {
         switch(token){
-            case 0x18:
+            case 24:
                 token = src[position++];
                 break;
-            case 0x19:
+            case 25:
                 if (majorType == 7) {
                     return getFloat16();
                 }
                 token = dataView.getUint16(position);
                 position += 2;
                 break;
-            case 0x1a:
+            case 26:
                 if (majorType == 7) {
                     let value = dataView.getFloat32(position);
                     if (currentDecoder.useFloat32 > 2) {
-                        let multiplier = mult10[(src[position] & 0x7f) << 1 | src[position + 1] >> 7];
+                        let multiplier = mult10[(src[position] & 127) << 1 | src[position + 1] >> 7];
                         position += 4;
                         return (multiplier * value + (value > 0 ? 0.5 : -0.5) >> 0) / multiplier;
                     }
@@ -47814,7 +47813,7 @@ function read() {
                 token = dataView.getUint32(position);
                 position += 4;
                 break;
-            case 0x1b:
+            case 27:
                 if (majorType == 7) {
                     let value = dataView.getFloat64(position);
                     position += 8;
@@ -47824,12 +47823,12 @@ function read() {
                     if (dataView.getUint32(position) > 0) throw new Error('JavaScript does not support arrays, maps, or strings with length over 4294967295');
                     token = dataView.getUint32(position + 4);
                 } else if (currentDecoder.int64AsNumber) {
-                    token = dataView.getUint32(position) * 0x100000000;
+                    token = dataView.getUint32(position) * 4294967296;
                     token += dataView.getUint32(position + 4);
                 } else token = dataView.getBigUint64(position);
                 position += 8;
                 break;
-            case 0x1f:
+            case 31:
                 switch(majorType){
                     case 2:
                     case 3:
@@ -47853,10 +47852,10 @@ function read() {
                                 currentDecoder.mapsAsObjects = true;
                                 restoreMapsAsObject = false;
                             }
-                            let map6 = new Map();
-                            if (currentDecoder.keyMap) while((key = read()) != STOP_CODE)map6.set(currentDecoder.decodeKey(key), read());
-                            else while((key = read()) != STOP_CODE)map6.set(key, read());
-                            return map6;
+                            let map4 = new Map();
+                            if (currentDecoder.keyMap) while((key = read()) != STOP_CODE)map4.set(currentDecoder.decodeKey(key), read());
+                            else while((key = read()) != STOP_CODE)map4.set(key, read());
+                            return map4;
                         }
                     case 7:
                         return STOP_CODE;
@@ -47898,21 +47897,21 @@ function read() {
                     currentDecoder.mapsAsObjects = true;
                     restoreMapsAsObject = false;
                 }
-                let map7 = new Map();
-                if (currentDecoder.keyMap) for(let i7 = 0; i7 < token; i7++)map7.set(currentDecoder.decodeKey(read()), read());
-                else for(let i6 = 0; i6 < token; i6++)map7.set(read(), read());
-                return map7;
+                let map5 = new Map();
+                if (currentDecoder.keyMap) for(let i7 = 0; i7 < token; i7++)map5.set(currentDecoder.decodeKey(read()), read());
+                else for(let i6 = 0; i6 < token; i6++)map5.set(read(), read());
+                return map5;
             }
         case 6:
-            if (token >= 0xdff9) {
-                let structure = currentStructures[token & 0x1fff];
+            if (token >= 57337) {
+                let structure = currentStructures[token & 8191];
                 if (structure) {
                     if (!structure.read) structure.read = createStructureReader(structure);
                     return structure.read();
                 }
-                if (token < 0x10000) {
-                    if (token == 0xdfff) return recordDefinition(read());
-                    else if (token == 0xdffe) {
+                if (token < 65536) {
+                    if (token == 57343) return recordDefinition(read());
+                    else if (token == 57342) {
                         let length = readJustLength();
                         let id = read();
                         for(let i8 = 2; i8 < length; i8++){
@@ -47922,12 +47921,12 @@ function read() {
                             ]);
                         }
                         return read();
-                    } else if (token == 0xdff9) {
+                    } else if (token == 57337) {
                         return readBundleExt();
                     }
                     if (currentDecoder.getShared) {
                         loadShared();
-                        structure = currentStructures[token & 0x1fff];
+                        structure = currentStructures[token & 8191];
                         if (structure) {
                             if (!structure.read) structure.read = createStructureReader(structure);
                             return structure.read();
@@ -47949,15 +47948,15 @@ function read() {
             }
         case 7:
             switch(token){
-                case 0x14:
+                case 20:
                     return false;
-                case 0x15:
+                case 21:
                     return true;
-                case 0x16:
+                case 22:
                     return null;
-                case 0x17:
+                case 23:
                     return;
-                case 0x1f:
+                case 31:
                 default:
                     let packedValue = (packedValues || getPackedValues())[token];
                     if (packedValue !== undefined) return packedValue;
@@ -47976,17 +47975,17 @@ const validName = /^[a-zA-Z_$][a-zA-Z\d_$]*$/;
 function createStructureReader(structure) {
     function readObject() {
         let length = src[position++];
-        length = length & 0x1f;
-        if (length > 0x17) {
+        length = length & 31;
+        if (length > 23) {
             switch(length){
-                case 0x18:
+                case 24:
                     length = src[position++];
                     break;
-                case 0x19:
+                case 25:
                     length = dataView.getUint16(position);
                     position += 2;
                     break;
-                case 0x1a:
+                case 26:
                     length = dataView.getUint32(position);
                     position += 4;
                     break;
@@ -48031,30 +48030,30 @@ function readStringJS(length) {
     result = '';
     while(position < end){
         const byte1 = src[position++];
-        if ((byte1 & 0x80) === 0) {
+        if ((byte1 & 128) === 0) {
             units.push(byte1);
-        } else if ((byte1 & 0xe0) === 0xc0) {
-            const byte2 = src[position++] & 0x3f;
-            units.push((byte1 & 0x1f) << 6 | byte2);
-        } else if ((byte1 & 0xf0) === 0xe0) {
-            const byte2 = src[position++] & 0x3f;
-            const byte3 = src[position++] & 0x3f;
-            units.push((byte1 & 0x1f) << 12 | byte2 << 6 | byte3);
-        } else if ((byte1 & 0xf8) === 0xf0) {
-            const byte2 = src[position++] & 0x3f;
-            const byte3 = src[position++] & 0x3f;
-            const byte4 = src[position++] & 0x3f;
-            let unit = (byte1 & 0x07) << 0x12 | byte2 << 0x0c | byte3 << 0x06 | byte4;
-            if (unit > 0xffff) {
-                unit -= 0x10000;
-                units.push(unit >>> 10 & 0x3ff | 0xd800);
-                unit = 0xdc00 | unit & 0x3ff;
+        } else if ((byte1 & 224) === 192) {
+            const byte2 = src[position++] & 63;
+            units.push((byte1 & 31) << 6 | byte2);
+        } else if ((byte1 & 240) === 224) {
+            const byte2 = src[position++] & 63;
+            const byte3 = src[position++] & 63;
+            units.push((byte1 & 31) << 12 | byte2 << 6 | byte3);
+        } else if ((byte1 & 248) === 240) {
+            const byte2 = src[position++] & 63;
+            const byte3 = src[position++] & 63;
+            const byte4 = src[position++] & 63;
+            let unit = (byte1 & 7) << 18 | byte2 << 12 | byte3 << 6 | byte4;
+            if (unit > 65535) {
+                unit -= 65536;
+                units.push(unit >>> 10 & 1023 | 55296);
+                unit = 56320 | unit & 1023;
             }
             units.push(unit);
         } else {
             units.push(byte1);
         }
-        if (units.length >= 0x1000) {
+        if (units.length >= 4096) {
             result += fromCharCode.apply(String, units);
             units.length = 0;
         }
@@ -48070,7 +48069,7 @@ function longStringInJS(length) {
     let bytes = new Array(length);
     for(let i12 = 0; i12 < length; i12++){
         const __byte = src[position++];
-        if ((__byte & 0x80) > 0) {
+        if ((__byte & 128) > 0) {
             position = start;
             return;
         }
@@ -48083,127 +48082,127 @@ function shortStringInJS(length) {
         if (length < 2) {
             if (length === 0) return '';
             else {
-                let a23 = src[position++];
-                if ((a23 & 0x80) > 1) {
+                let a8 = src[position++];
+                if ((a8 & 128) > 1) {
                     position -= 1;
                     return;
                 }
-                return fromCharCode(a23);
+                return fromCharCode(a8);
             }
         } else {
-            let a24 = src[position++];
+            let a9 = src[position++];
             let b = src[position++];
-            if ((a24 & 0x80) > 0 || (b & 0x80) > 0) {
+            if ((a9 & 128) > 0 || (b & 128) > 0) {
                 position -= 2;
                 return;
             }
-            if (length < 3) return fromCharCode(a24, b);
+            if (length < 3) return fromCharCode(a9, b);
             let c = src[position++];
-            if ((c & 0x80) > 0) {
+            if ((c & 128) > 0) {
                 position -= 3;
                 return;
             }
-            return fromCharCode(a24, b, c);
+            return fromCharCode(a9, b, c);
         }
     } else {
-        let a25 = src[position++];
+        let a10 = src[position++];
         let b = src[position++];
         let c = src[position++];
         let d = src[position++];
-        if ((a25 & 0x80) > 0 || (b & 0x80) > 0 || (c & 0x80) > 0 || (d & 0x80) > 0) {
+        if ((a10 & 128) > 0 || (b & 128) > 0 || (c & 128) > 0 || (d & 128) > 0) {
             position -= 4;
             return;
         }
         if (length < 6) {
-            if (length === 4) return fromCharCode(a25, b, c, d);
+            if (length === 4) return fromCharCode(a10, b, c, d);
             else {
-                let e16 = src[position++];
-                if ((e16 & 0x80) > 0) {
+                let e9 = src[position++];
+                if ((e9 & 128) > 0) {
                     position -= 5;
                     return;
                 }
-                return fromCharCode(a25, b, c, d, e16);
+                return fromCharCode(a10, b, c, d, e9);
             }
         } else if (length < 8) {
-            let e17 = src[position++];
+            let e10 = src[position++];
             let f = src[position++];
-            if ((e17 & 0x80) > 0 || (f & 0x80) > 0) {
+            if ((e10 & 128) > 0 || (f & 128) > 0) {
                 position -= 6;
                 return;
             }
-            if (length < 7) return fromCharCode(a25, b, c, d, e17, f);
+            if (length < 7) return fromCharCode(a10, b, c, d, e10, f);
             let g = src[position++];
-            if ((g & 0x80) > 0) {
+            if ((g & 128) > 0) {
                 position -= 7;
                 return;
             }
-            return fromCharCode(a25, b, c, d, e17, f, g);
+            return fromCharCode(a10, b, c, d, e10, f, g);
         } else {
-            let e18 = src[position++];
+            let e11 = src[position++];
             let f = src[position++];
             let g = src[position++];
             let h = src[position++];
-            if ((e18 & 0x80) > 0 || (f & 0x80) > 0 || (g & 0x80) > 0 || (h & 0x80) > 0) {
+            if ((e11 & 128) > 0 || (f & 128) > 0 || (g & 128) > 0 || (h & 128) > 0) {
                 position -= 8;
                 return;
             }
             if (length < 10) {
-                if (length === 8) return fromCharCode(a25, b, c, d, e18, f, g, h);
+                if (length === 8) return fromCharCode(a10, b, c, d, e11, f, g, h);
                 else {
                     let i13 = src[position++];
-                    if ((i13 & 0x80) > 0) {
+                    if ((i13 & 128) > 0) {
                         position -= 9;
                         return;
                     }
-                    return fromCharCode(a25, b, c, d, e18, f, g, h, i13);
+                    return fromCharCode(a10, b, c, d, e11, f, g, h, i13);
                 }
             } else if (length < 12) {
                 let i14 = src[position++];
                 let j = src[position++];
-                if ((i14 & 0x80) > 0 || (j & 0x80) > 0) {
+                if ((i14 & 128) > 0 || (j & 128) > 0) {
                     position -= 10;
                     return;
                 }
-                if (length < 11) return fromCharCode(a25, b, c, d, e18, f, g, h, i14, j);
+                if (length < 11) return fromCharCode(a10, b, c, d, e11, f, g, h, i14, j);
                 let k = src[position++];
-                if ((k & 0x80) > 0) {
+                if ((k & 128) > 0) {
                     position -= 11;
                     return;
                 }
-                return fromCharCode(a25, b, c, d, e18, f, g, h, i14, j, k);
+                return fromCharCode(a10, b, c, d, e11, f, g, h, i14, j, k);
             } else {
                 let i15 = src[position++];
                 let j = src[position++];
                 let k = src[position++];
                 let l = src[position++];
-                if ((i15 & 0x80) > 0 || (j & 0x80) > 0 || (k & 0x80) > 0 || (l & 0x80) > 0) {
+                if ((i15 & 128) > 0 || (j & 128) > 0 || (k & 128) > 0 || (l & 128) > 0) {
                     position -= 12;
                     return;
                 }
                 if (length < 14) {
-                    if (length === 12) return fromCharCode(a25, b, c, d, e18, f, g, h, i15, j, k, l);
+                    if (length === 12) return fromCharCode(a10, b, c, d, e11, f, g, h, i15, j, k, l);
                     else {
                         let m = src[position++];
-                        if ((m & 0x80) > 0) {
+                        if ((m & 128) > 0) {
                             position -= 13;
                             return;
                         }
-                        return fromCharCode(a25, b, c, d, e18, f, g, h, i15, j, k, l, m);
+                        return fromCharCode(a10, b, c, d, e11, f, g, h, i15, j, k, l, m);
                     }
                 } else {
                     let m = src[position++];
-                    let n14 = src[position++];
-                    if ((m & 0x80) > 0 || (n14 & 0x80) > 0) {
+                    let n11 = src[position++];
+                    if ((m & 128) > 0 || (n11 & 128) > 0) {
                         position -= 14;
                         return;
                     }
-                    if (length < 15) return fromCharCode(a25, b, c, d, e18, f, g, h, i15, j, k, l, m, n14);
-                    let o24 = src[position++];
-                    if ((o24 & 0x80) > 0) {
+                    if (length < 15) return fromCharCode(a10, b, c, d, e11, f, g, h, i15, j, k, l, m, n11);
+                    let o2 = src[position++];
+                    if ((o2 & 128) > 0) {
                         position -= 15;
                         return;
                     }
-                    return fromCharCode(a25, b, c, d, e18, f, g, h, i15, j, k, l, m, n14, o24);
+                    return fromCharCode(a10, b, c, d, e11, f, g, h, i15, j, k, l, m, n11, o2);
                 }
             }
         }
@@ -48216,13 +48215,13 @@ function getFloat16() {
     let byte0 = src[position++];
     let byte1 = src[position++];
     let half = (byte0 << 8) + byte1;
-    let exp = half >> 10 & 0x1f;
-    let mant = half & 0x3ff;
+    let exp = half >> 10 & 31;
+    let mant = half & 1023;
     let val;
     if (exp == 0) val = Math.exp(mant, -24);
     else if (exp != 31) val = Math.exp(mant + 1024, exp - 25);
     else val = mant == 0 ? Infinity : NaN;
-    return half & 0x8000 ? -val : val;
+    return half & 32768 ? -val : val;
 }
 new Array(4096);
 class Tag {
@@ -48255,7 +48254,7 @@ currentExtensions[5] = (fraction)=>{
     return fraction[1] * Math.exp(fraction[0] * Math.log(2));
 };
 const recordDefinition = (definition)=>{
-    let id = definition[0] - 0xe000;
+    let id = definition[0] - 57344;
     let structure = definition[1];
     let existingStructure = currentStructures[id];
     if (existingStructure && existingStructure.isShared) {
@@ -48287,7 +48286,7 @@ currentExtensions[27] = (data)=>{
     return (glbl[data[0]] || Error)(data[1], data[2]);
 };
 const packedTable = (read1)=>{
-    if (src[position++] != 0x84) throw new Error('Packed values structure must be followed by a 4 element array');
+    if (src[position++] != 132) throw new Error('Packed values structure must be followed by a 4 element array');
     let newPackedValues = read1();
     packedValues = packedValues ? newPackedValues.concat(packedValues.slice(newPackedValues.length)) : newPackedValues;
     packedValues.prefixes = read1();
@@ -48350,10 +48349,10 @@ currentExtensions[258] = (array)=>new Set(array)
     }
     return read4();
 }).handlesRead = true;
-function combine(a26, b) {
-    if (typeof a26 === 'string') return a26 + b;
-    if (a26 instanceof Array) return a26.concat(b);
-    return Object.assign({}, a26, b);
+function combine(a11, b) {
+    if (typeof a11 === 'string') return a11 + b;
+    if (a11 instanceof Array) return a11.concat(b);
+    return Object.assign({}, a11, b);
 }
 function getPackedValues() {
     if (!packedValues) {
@@ -48369,7 +48368,7 @@ currentExtensionRanges.push((tag, input)=>{
     if (tag >= 216 && tag <= 223) return combine(input, getPackedValues().suffixes[tag - 216]);
     if (tag >= 27647 && tag <= 28671) return combine(input, getPackedValues().suffixes[tag - 27639]);
     if (tag >= 1811940352 && tag <= 1879048191) return combine(input, getPackedValues().suffixes[tag - 1811939328]);
-    if (tag == 0x53687264) {
+    if (tag == 1399353956) {
         return {
             packedValues: packedValues,
             structures: currentStructures.slice(0),
@@ -48452,17 +48451,17 @@ function readBundleExt() {
     return read();
 }
 function readJustLength() {
-    let token = src[position++] & 0x1f;
-    if (token > 0x17) {
+    let token = src[position++] & 31;
+    if (token > 23) {
         switch(token){
-            case 0x18:
+            case 24:
                 token = src[position++];
                 break;
-            case 0x19:
+            case 25:
                 token = dataView.getUint16(position);
                 position += 2;
                 break;
-            case 0x1a:
+            case 26:
                 token = dataView.getUint32(position);
                 position += 4;
                 break;
@@ -48544,7 +48543,7 @@ let f32Array = new Float32Array(1);
 let u8Array = new Uint8Array(f32Array.buffer, 0, 4);
 function roundFloat32(float32Number) {
     f32Array[0] = float32Number;
-    let multiplier = mult10[(u8Array[3] & 0x7f) << 1 | u8Array[2] >> 7];
+    let multiplier = mult10[(u8Array[3] & 127) << 1 | u8Array[2] >> 7];
     return (multiplier * float32Number + (float32Number > 0 ? 0.5 : -0.5) >> 0) / multiplier;
 }
 let textEncoder;
@@ -48555,7 +48554,7 @@ let extensions, extensionClasses;
 const hasNodeBuffer = typeof Buffer !== 'undefined';
 const ByteArrayAllocate = hasNodeBuffer ? Buffer.allocUnsafeSlow : Uint8Array;
 const ByteArray = hasNodeBuffer ? Buffer : Uint8Array;
-const MAX_BUFFER_SIZE = hasNodeBuffer ? 0x100000000 : 0x7fd00000;
+const MAX_BUFFER_SIZE = hasNodeBuffer ? 4294967296 : 2144337920;
 let target;
 let targetView;
 let position1 = 0;
@@ -48604,7 +48603,7 @@ class Encoder extends Decoder {
             if (this._keyMap && !this._mapped) {
                 switch(value.constructor.name){
                     case 'Array':
-                        value = value.map((r9)=>this.encodeKeys(r9)
+                        value = value.map((r4)=>this.encodeKeys(r4)
                         );
                         break;
                 }
@@ -48618,15 +48617,15 @@ class Encoder extends Decoder {
                 position1 = 0;
             }
             safeEnd = target.length - 10;
-            if (safeEnd - position1 < 0x800) {
+            if (safeEnd - position1 < 2048) {
                 target = new ByteArrayAllocate(target.length);
                 targetView = new DataView(target.buffer, 0, target.length);
                 safeEnd = target.length - 10;
                 position1 = 0;
-            } else if (encodeOptions === REUSE_BUFFER_MODE) position1 = position1 + 7 & 0x7ffffff8;
+            } else if (encodeOptions === REUSE_BUFFER_MODE) position1 = position1 + 7 & 2147483640;
             start = position1;
             if (encoder1.useSelfDescribedHeader) {
-                targetView.setUint32(position1, 0xd9d9f700);
+                targetView.setUint32(position1, 3654940416);
                 position1 += 3;
             }
             referenceMap1 = encoder1.structuredClone ? new Map() : null;
@@ -48663,7 +48662,7 @@ class Encoder extends Decoder {
                             }
                             transition = nextTransition;
                         }
-                        transition[RECORD_SYMBOL] = i193 | 0x100000;
+                        transition[RECORD_SYMBOL] = i193 | 1048576;
                     }
                 }
                 if (!isSequential) sharedStructures.nextId = sharedStructuresLength;
@@ -48680,7 +48679,7 @@ class Encoder extends Decoder {
                 packedValues1.samplingPackedValues = samplingPackedValues;
                 findRepetitiveStrings(value, packedValues1);
                 if (packedValues1.values.length > 0) {
-                    target[position1++] = 0xd8;
+                    target[position1++] = 216;
                     target[position1++] = 51;
                     writeArrayHeader(4);
                     let valuesArray = packedValues1.values;
@@ -48766,9 +48765,9 @@ class Encoder extends Decoder {
                 if (packedObjectMap) {
                     let packedPosition = packedObjectMap[value];
                     if (packedPosition >= 0) {
-                        if (packedPosition < 16) target[position1++] = packedPosition + 0xe0;
+                        if (packedPosition < 16) target[position1++] = packedPosition + 224;
                         else {
-                            target[position1++] = 0xc6;
+                            target[position1++] = 198;
                             if (packedPosition & 1) encode12(15 - packedPosition >> 1);
                             else encode12(packedPosition - 16 >> 1);
                         }
@@ -48782,16 +48781,16 @@ class Encoder extends Decoder {
                     }
                 }
                 let strLength = value.length;
-                if (bundledStrings1 && strLength >= 4 && strLength < 0x400) {
-                    if ((bundledStrings1.size += strLength) > 0xf000) {
+                if (bundledStrings1 && strLength >= 4 && strLength < 1024) {
+                    if ((bundledStrings1.size += strLength) > 61440) {
                         let extStart;
                         let maxBytes = (bundledStrings1[0] ? bundledStrings1[0].length * 3 + bundledStrings1[1].length : 0) + 10;
                         if (position1 + maxBytes > safeEnd) target = makeRoom(position1 + maxBytes);
-                        target[position1++] = 0xd9;
-                        target[position1++] = 0xdf;
-                        target[position1++] = 0xf9;
-                        target[position1++] = bundledStrings1.position ? 0x84 : 0x82;
-                        target[position1++] = 0x1a;
+                        target[position1++] = 217;
+                        target[position1++] = 223;
+                        target[position1++] = 249;
+                        target[position1++] = bundledStrings1.position ? 132 : 130;
+                        target[position1++] = 26;
                         extStart = position1 - start;
                         position1 += 4;
                         if (bundledStrings1.position) {
@@ -48806,127 +48805,127 @@ class Encoder extends Decoder {
                     }
                     let twoByte = hasNonLatin.test(value);
                     bundledStrings1[twoByte ? 0 : 1] += value;
-                    target[position1++] = twoByte ? 0xce : 0xcf;
+                    target[position1++] = twoByte ? 206 : 207;
                     encode12(strLength);
                     return;
                 }
                 let headerSize;
-                if (strLength < 0x20) {
+                if (strLength < 32) {
                     headerSize = 1;
-                } else if (strLength < 0x100) {
+                } else if (strLength < 256) {
                     headerSize = 2;
-                } else if (strLength < 0x10000) {
+                } else if (strLength < 65536) {
                     headerSize = 3;
                 } else {
                     headerSize = 5;
                 }
                 let maxBytes = strLength * 3;
                 if (position1 + maxBytes > safeEnd) target = makeRoom(position1 + maxBytes);
-                if (strLength < 0x40 || !encodeUtf8) {
+                if (strLength < 64 || !encodeUtf8) {
                     let i196, c1, c2, strPosition = position1 + headerSize;
                     for(i196 = 0; i196 < strLength; i196++){
                         c1 = value.charCodeAt(i196);
-                        if (c1 < 0x80) {
+                        if (c1 < 128) {
                             target[strPosition++] = c1;
-                        } else if (c1 < 0x800) {
-                            target[strPosition++] = c1 >> 6 | 0xc0;
-                            target[strPosition++] = c1 & 0x3f | 0x80;
-                        } else if ((c1 & 0xfc00) === 0xd800 && ((c2 = value.charCodeAt(i196 + 1)) & 0xfc00) === 0xdc00) {
-                            c1 = 0x10000 + ((c1 & 0x03ff) << 10) + (c2 & 0x03ff);
+                        } else if (c1 < 2048) {
+                            target[strPosition++] = c1 >> 6 | 192;
+                            target[strPosition++] = c1 & 63 | 128;
+                        } else if ((c1 & 64512) === 55296 && ((c2 = value.charCodeAt(i196 + 1)) & 64512) === 56320) {
+                            c1 = 65536 + ((c1 & 1023) << 10) + (c2 & 1023);
                             i196++;
-                            target[strPosition++] = c1 >> 18 | 0xf0;
-                            target[strPosition++] = c1 >> 12 & 0x3f | 0x80;
-                            target[strPosition++] = c1 >> 6 & 0x3f | 0x80;
-                            target[strPosition++] = c1 & 0x3f | 0x80;
+                            target[strPosition++] = c1 >> 18 | 240;
+                            target[strPosition++] = c1 >> 12 & 63 | 128;
+                            target[strPosition++] = c1 >> 6 & 63 | 128;
+                            target[strPosition++] = c1 & 63 | 128;
                         } else {
-                            target[strPosition++] = c1 >> 12 | 0xe0;
-                            target[strPosition++] = c1 >> 6 & 0x3f | 0x80;
-                            target[strPosition++] = c1 & 0x3f | 0x80;
+                            target[strPosition++] = c1 >> 12 | 224;
+                            target[strPosition++] = c1 >> 6 & 63 | 128;
+                            target[strPosition++] = c1 & 63 | 128;
                         }
                     }
                     length = strPosition - position1 - headerSize;
                 } else {
                     length = encodeUtf8(value, position1 + headerSize, maxBytes);
                 }
-                if (length < 0x18) {
-                    target[position1++] = 0x60 | length;
-                } else if (length < 0x100) {
+                if (length < 24) {
+                    target[position1++] = 96 | length;
+                } else if (length < 256) {
                     if (headerSize < 2) {
                         target.copyWithin(position1 + 2, position1 + 1, position1 + 1 + length);
                     }
-                    target[position1++] = 0x78;
+                    target[position1++] = 120;
                     target[position1++] = length;
-                } else if (length < 0x10000) {
+                } else if (length < 65536) {
                     if (headerSize < 3) {
                         target.copyWithin(position1 + 3, position1 + 2, position1 + 2 + length);
                     }
-                    target[position1++] = 0x79;
+                    target[position1++] = 121;
                     target[position1++] = length >> 8;
-                    target[position1++] = length & 0xff;
+                    target[position1++] = length & 255;
                 } else {
                     if (headerSize < 5) {
                         target.copyWithin(position1 + 5, position1 + 3, position1 + 3 + length);
                     }
-                    target[position1++] = 0x7a;
+                    target[position1++] = 122;
                     targetView.setUint32(position1, length);
                     position1 += 4;
                 }
                 position1 += length;
             } else if (type === 'number') {
                 if (value >>> 0 === value) {
-                    if (value < 0x18) {
+                    if (value < 24) {
                         target[position1++] = value;
-                    } else if (value < 0x100) {
-                        target[position1++] = 0x18;
+                    } else if (value < 256) {
+                        target[position1++] = 24;
                         target[position1++] = value;
-                    } else if (value < 0x10000) {
-                        target[position1++] = 0x19;
+                    } else if (value < 65536) {
+                        target[position1++] = 25;
                         target[position1++] = value >> 8;
-                        target[position1++] = value & 0xff;
+                        target[position1++] = value & 255;
                     } else {
-                        target[position1++] = 0x1a;
+                        target[position1++] = 26;
                         targetView.setUint32(position1, value);
                         position1 += 4;
                     }
                 } else if (value >> 0 === value) {
-                    if (value >= -0x18) {
-                        target[position1++] = 0x1f - value;
-                    } else if (value >= -0x100) {
-                        target[position1++] = 0x38;
+                    if (value >= -24) {
+                        target[position1++] = 31 - value;
+                    } else if (value >= -256) {
+                        target[position1++] = 56;
                         target[position1++] = ~value;
-                    } else if (value >= -0x10000) {
-                        target[position1++] = 0x39;
+                    } else if (value >= -65536) {
+                        target[position1++] = 57;
                         targetView.setUint16(position1, ~value);
                         position1 += 2;
                     } else {
-                        target[position1++] = 0x3a;
+                        target[position1++] = 58;
                         targetView.setUint32(position1, ~value);
                         position1 += 4;
                     }
                 } else {
                     let useFloat32;
-                    if ((useFloat32 = this.useFloat32) > 0 && value < 0x100000000 && value >= -0x80000000) {
-                        target[position1++] = 0xfa;
+                    if ((useFloat32 = this.useFloat32) > 0 && value < 4294967296 && value >= -2147483648) {
+                        target[position1++] = 250;
                         targetView.setFloat32(position1, value);
                         let xShifted;
-                        if (useFloat32 < 4 || (xShifted = value * mult10[(target[position1] & 0x7f) << 1 | target[position1 + 1] >> 7]) >> 0 === xShifted) {
+                        if (useFloat32 < 4 || (xShifted = value * mult10[(target[position1] & 127) << 1 | target[position1 + 1] >> 7]) >> 0 === xShifted) {
                             position1 += 4;
                             return;
                         } else position1--;
                     }
-                    target[position1++] = 0xfb;
+                    target[position1++] = 251;
                     targetView.setFloat64(position1, value);
                     position1 += 8;
                 }
             } else if (type === 'object') {
-                if (!value) target[position1++] = 0xf6;
+                if (!value) target[position1++] = 246;
                 else {
                     if (referenceMap1) {
                         let referee = referenceMap1.get(value);
                         if (referee) {
-                            target[position1++] = 0xd8;
+                            target[position1++] = 216;
                             target[position1++] = 29;
-                            target[position1++] = 0x19;
+                            target[position1++] = 25;
                             if (!referee.references) {
                                 let idsToInsert = referenceMap1.idsToInsert || (referenceMap1.idsToInsert = []);
                                 referee.references = [];
@@ -48944,8 +48943,8 @@ class Encoder extends Decoder {
                         writeObject(value, true);
                     } else if (constructor === Array) {
                         length = value.length;
-                        if (length < 0x18) {
-                            target[position1++] = 0x80 | length;
+                        if (length < 24) {
+                            target[position1++] = 128 | length;
                         } else {
                             writeArrayHeader(length);
                         }
@@ -48954,22 +48953,22 @@ class Encoder extends Decoder {
                         }
                     } else if (constructor === Map) {
                         if (this.mapsAsObjects ? this.useTag259ForMaps !== false : this.useTag259ForMaps) {
-                            target[position1++] = 0xd9;
+                            target[position1++] = 217;
                             target[position1++] = 1;
                             target[position1++] = 3;
                         }
                         length = value.size;
-                        if (length < 0x18) {
-                            target[position1++] = 0xa0 | length;
-                        } else if (length < 0x100) {
-                            target[position1++] = 0xb8;
+                        if (length < 24) {
+                            target[position1++] = 160 | length;
+                        } else if (length < 256) {
+                            target[position1++] = 184;
                             target[position1++] = length;
-                        } else if (length < 0x10000) {
-                            target[position1++] = 0xb9;
+                        } else if (length < 65536) {
+                            target[position1++] = 185;
                             target[position1++] = length >> 8;
-                            target[position1++] = length & 0xff;
+                            target[position1++] = length & 255;
                         } else {
-                            target[position1++] = 0xba;
+                            target[position1++] = 186;
                             targetView.setUint32(position1, length);
                             position1 += 4;
                         }
@@ -48991,17 +48990,17 @@ class Encoder extends Decoder {
                                 let extension = extensions[i198];
                                 let tag = extension.tag;
                                 if (tag == undefined) tag = extension.getTag && extension.getTag(value);
-                                if (tag < 0x18) {
-                                    target[position1++] = 0xc0 | tag;
-                                } else if (tag < 0x100) {
-                                    target[position1++] = 0xd8;
+                                if (tag < 24) {
+                                    target[position1++] = 192 | tag;
+                                } else if (tag < 256) {
+                                    target[position1++] = 216;
                                     target[position1++] = tag;
-                                } else if (tag < 0x10000) {
-                                    target[position1++] = 0xd9;
+                                } else if (tag < 65536) {
+                                    target[position1++] = 217;
                                     target[position1++] = tag >> 8;
-                                    target[position1++] = tag & 0xff;
+                                    target[position1++] = tag & 255;
                                 } else if (tag > -1) {
-                                    target[position1++] = 0xda;
+                                    target[position1++] = 218;
                                     targetView.setUint32(position1, tag);
                                     position1 += 4;
                                 }
@@ -49010,28 +49009,28 @@ class Encoder extends Decoder {
                             }
                         }
                         if (value[Symbol.iterator]) {
-                            target[position1++] = 0x9f;
+                            target[position1++] = 159;
                             for (let entry of value){
                                 encode12(entry);
                             }
-                            target[position1++] = 0xff;
+                            target[position1++] = 255;
                             return;
                         }
                         writeObject(value, !value.hasOwnProperty);
                     }
                 }
             } else if (type === 'boolean') {
-                target[position1++] = value ? 0xf5 : 0xf4;
+                target[position1++] = value ? 245 : 244;
             } else if (type === 'bigint') {
                 if (value < BigInt(1) << BigInt(64) && value >= 0) {
-                    target[position1++] = 0x1b;
+                    target[position1++] = 27;
                     targetView.setBigUint64(position1, value);
                 } else if (value > -(BigInt(1) << BigInt(64)) && value < 0) {
-                    target[position1++] = 0x3b;
+                    target[position1++] = 59;
                     targetView.setBigUint64(position1, -value - BigInt(1));
                 } else {
                     if (this.largeBigIntToFloat) {
-                        target[position1++] = 0xfb;
+                        target[position1++] = 251;
                         targetView.setFloat64(position1, Number(value));
                     } else {
                         throw new RangeError(value + ' was too large to fit in CBOR 64-bit integer format, set largeBigIntToFloat to convert to float-64');
@@ -49039,7 +49038,7 @@ class Encoder extends Decoder {
                 }
                 position1 += 8;
             } else if (type === 'undefined') {
-                target[position1++] = 0xf7;
+                target[position1++] = 247;
             } else {
                 throw new Error('Unknown type: ' + type);
             }
@@ -49048,17 +49047,17 @@ class Encoder extends Decoder {
             let keys = Object.keys(object);
             let vals = Object.values(object);
             let length = keys.length;
-            if (length < 0x18) {
-                target[position1++] = 0xa0 | length;
-            } else if (length < 0x100) {
-                target[position1++] = 0xb8;
+            if (length < 24) {
+                target[position1++] = 160 | length;
+            } else if (length < 256) {
+                target[position1++] = 184;
                 target[position1++] = length;
-            } else if (length < 0x10000) {
-                target[position1++] = 0xb9;
+            } else if (length < 65536) {
+                target[position1++] = 185;
                 target[position1++] = length >> 8;
-                target[position1++] = length & 0xff;
+                target[position1++] = length & 255;
             } else {
-                target[position1++] = 0xba;
+                target[position1++] = 186;
                 targetView.setUint32(position1, length);
                 position1 += 4;
             }
@@ -49074,7 +49073,7 @@ class Encoder extends Decoder {
                 }
             }
         } : (object, safePrototype)=>{
-            target[position1++] = 0xb9;
+            target[position1++] = 185;
             let objectOffset = position1 - start;
             position1 += 2;
             let size = 0;
@@ -49092,7 +49091,7 @@ class Encoder extends Decoder {
                 }
             }
             target[(objectOffset++) + start] = size >> 8;
-            target[objectOffset + start] = size & 0xff;
+            target[objectOffset + start] = size & 255;
         } : (object, safePrototype)=>{
             let nextTransition, transition = structures.transitions || (structures.transitions = Object.create(null));
             let newTransitions = 0;
@@ -49116,8 +49115,8 @@ class Encoder extends Decoder {
                 for(let key in object)if (safePrototype || object.hasOwnProperty(key)) {
                     nextTransition = transition[key];
                     if (!nextTransition) {
-                        if (transition[RECORD_SYMBOL] & 0x100000) {
-                            parentRecordId = transition[RECORD_SYMBOL] & 0xffff;
+                        if (transition[RECORD_SYMBOL] & 1048576) {
+                            parentRecordId = transition[RECORD_SYMBOL] & 65535;
                         }
                         nextTransition = transition[key] = Object.create(null);
                         newTransitions++;
@@ -49128,10 +49127,10 @@ class Encoder extends Decoder {
             }
             let recordId = transition[RECORD_SYMBOL];
             if (recordId !== undefined) {
-                recordId &= 0xffff;
-                target[position1++] = 0xd9;
-                target[position1++] = recordId >> 8 | 0xe0;
-                target[position1++] = recordId & 0xff;
+                recordId &= 65535;
+                target[position1++] = 217;
+                target[position1++] = recordId >> 8 | 224;
+                target[position1++] = recordId & 255;
             } else {
                 if (!keys) keys = transition.__keys__ || (transition.__keys__ = Object.keys(object));
                 if (parentRecordId === undefined) {
@@ -49140,7 +49139,7 @@ class Encoder extends Decoder {
                         recordId = 0;
                         structures.nextId = 1;
                     }
-                    if (recordId >= 0x100) {
+                    if (recordId >= 256) {
                         structures.nextId = (recordId = maxSharedStructures) + 1;
                     }
                 } else {
@@ -49148,32 +49147,32 @@ class Encoder extends Decoder {
                 }
                 structures[recordId] = keys;
                 if (recordId < maxSharedStructures) {
-                    target[position1++] = 0xd9;
-                    target[position1++] = recordId >> 8 | 0xe0;
-                    target[position1++] = recordId & 0xff;
+                    target[position1++] = 217;
+                    target[position1++] = recordId >> 8 | 224;
+                    target[position1++] = recordId & 255;
                     transition = structures.transitions;
                     for(let i202 = 0; i202 < length; i202++){
-                        if (transition[RECORD_SYMBOL] === undefined || transition[RECORD_SYMBOL] & 0x100000) transition[RECORD_SYMBOL] = recordId;
+                        if (transition[RECORD_SYMBOL] === undefined || transition[RECORD_SYMBOL] & 1048576) transition[RECORD_SYMBOL] = recordId;
                         transition = transition[keys[i202]];
                     }
-                    transition[RECORD_SYMBOL] = recordId | 0x100000;
+                    transition[RECORD_SYMBOL] = recordId | 1048576;
                     hasSharedUpdate = true;
                 } else {
                     transition[RECORD_SYMBOL] = recordId;
-                    targetView.setUint32(position1, 0xd9dfff00);
+                    targetView.setUint32(position1, 3655335680);
                     position1 += 3;
                     if (newTransitions) transitionsCount += serializationsSinceTransitionRebuild * newTransitions;
-                    if (recordIdsToRemove.length >= 0x100 - maxSharedStructures) recordIdsToRemove.shift()[RECORD_SYMBOL] = undefined;
+                    if (recordIdsToRemove.length >= 256 - maxSharedStructures) recordIdsToRemove.shift()[RECORD_SYMBOL] = undefined;
                     recordIdsToRemove.push(transition);
                     writeArrayHeader(length + 2);
-                    encode12(0xe000 + recordId);
+                    encode12(57344 + recordId);
                     encode12(keys);
                     for (let v of Object.values(object))encode12(v);
                     return;
                 }
             }
-            if (length < 0x18) {
-                target[position1++] = 0x80 | length;
+            if (length < 24) {
+                target[position1++] = 128 | length;
             } else {
                 writeArrayHeader(length);
             }
@@ -49181,9 +49180,9 @@ class Encoder extends Decoder {
         };
         const makeRoom = (end)=>{
             let newSize;
-            if (end > 0x1000000) {
+            if (end > 16777216) {
                 if (end - start > MAX_BUFFER_SIZE) throw new Error('Encoded buffer would be larger than maximum buffer size');
-                newSize = Math.min(MAX_BUFFER_SIZE, Math.round(Math.max((end - start) * (end > 0x4000000 ? 1.25 : 2), 0x400000) / 0x1000) * 0x1000);
+                newSize = Math.min(MAX_BUFFER_SIZE, Math.round(Math.max((end - start) * (end > 67108864 ? 1.25 : 2), 4194304) / 4096) * 4096);
             } else newSize = (Math.max(end - start << 2, target.length - 1) >> 12) + 1 << 12;
             let newBuffer = new ByteArrayAllocate(newSize);
             targetView = new DataView(newBuffer.buffer, 0, newSize);
@@ -49232,16 +49231,16 @@ class SharedData {
     }
 }
 function writeArrayHeader(length) {
-    if (length < 0x18) target[position1++] = 0x80 | length;
-    else if (length < 0x100) {
-        target[position1++] = 0x98;
+    if (length < 24) target[position1++] = 128 | length;
+    else if (length < 256) {
+        target[position1++] = 152;
         target[position1++] = length;
-    } else if (length < 0x10000) {
-        target[position1++] = 0x99;
+    } else if (length < 65536) {
+        target[position1++] = 153;
         target[position1++] = length >> 8;
-        target[position1++] = length & 0xff;
+        target[position1++] = length & 255;
     } else {
-        target[position1++] = 0x9a;
+        target[position1++] = 154;
         targetView.setUint32(position1, length);
         position1 += 4;
     }
@@ -49320,12 +49319,12 @@ extensions = [
         tag: 1,
         encode (date, encode) {
             let seconds = date.getTime() / 1000;
-            if ((this.useTimestamp32 || date.getMilliseconds() === 0) && seconds >= 0 && seconds < 0x100000000) {
-                target[position1++] = 0x1a;
+            if ((this.useTimestamp32 || date.getMilliseconds() === 0) && seconds >= 0 && seconds < 4294967296) {
+                target[position1++] = 26;
                 targetView.setUint32(position1, seconds);
                 position1 += 4;
             } else {
-                target[position1++] = 0xfb;
+                target[position1++] = 251;
                 targetView.setFloat64(position1, seconds);
                 position1 += 8;
             }
@@ -49391,7 +49390,7 @@ extensions = [
             let packedValues3 = sharedData.packedValues || [];
             let sharedStructures = sharedData.structures || [];
             if (packedValues3.values.length > 0) {
-                target[position1++] = 0xd8;
+                target[position1++] = 216;
                 target[position1++] = 51;
                 writeArrayHeader(4);
                 let valuesArray = packedValues3.values;
@@ -49404,13 +49403,13 @@ extensions = [
                 }
             }
             if (sharedStructures) {
-                targetView.setUint32(position1, 0xd9dffe00);
+                targetView.setUint32(position1, 3655335424);
                 position1 += 3;
                 let definitions = sharedStructures.slice(0);
-                definitions.unshift(0xe000);
-                definitions.push(new Tag(sharedData.version, 0x53687264));
+                definitions.unshift(57344);
+                definitions.push(new Tag(sharedData.version, 1399353956));
                 encode6(definitions);
-            } else encode6(new Tag(sharedData.version, 0x53687264));
+            } else encode6(new Tag(sharedData.version, 1399353956));
         }
     }
 ];
@@ -49428,17 +49427,17 @@ function typedArrayEncoder(tag, size) {
 }
 function writeBuffer(buffer, makeRoom) {
     let length = buffer.byteLength;
-    if (length < 0x18) {
-        target[position1++] = 0x40 + length;
-    } else if (length < 0x100) {
-        target[position1++] = 0x58;
+    if (length < 24) {
+        target[position1++] = 64 + length;
+    } else if (length < 256) {
+        target[position1++] = 88;
         target[position1++] = length;
-    } else if (length < 0x10000) {
-        target[position1++] = 0x59;
+    } else if (length < 65536) {
+        target[position1++] = 89;
         target[position1++] = length >> 8;
-        target[position1++] = length & 0xff;
+        target[position1++] = length & 255;
     } else {
-        target[position1++] = 0x5a;
+        target[position1++] = 90;
         targetView.setUint32(position1, length);
         position1 += 4;
     }
@@ -49452,14 +49451,14 @@ function insertIds(serialized, idsToInsert) {
     let nextId;
     let distanceToMove = idsToInsert.length * 2;
     let lastEnd = serialized.length - distanceToMove;
-    idsToInsert.sort((a27, b)=>a27.offset > b.offset ? 1 : -1
+    idsToInsert.sort((a12, b)=>a12.offset > b.offset ? 1 : -1
     );
     for(let id = 0; id < idsToInsert.length; id++){
         let referee = idsToInsert[id];
         referee.id = id;
         for (let position4 of referee.references){
             serialized[position4++] = id >> 8;
-            serialized[position4] = id & 0xff;
+            serialized[position4] = id & 255;
         }
     }
     while(nextId = idsToInsert.pop()){
@@ -49467,7 +49466,7 @@ function insertIds(serialized, idsToInsert) {
         serialized.copyWithin(offset + distanceToMove, offset, lastEnd);
         distanceToMove -= 2;
         let position5 = offset + distanceToMove;
-        serialized[position5++] = 0xd8;
+        serialized[position5++] = 216;
         serialized[position5++] = 28;
         lastEnd = offset;
     }
@@ -49546,17 +49545,17 @@ function decodeIter(bufferIterator, options = {}) {
         return yields;
     };
     if (typeof bufferIterator[Symbol.iterator] === 'function') {
-        return function* iter() {
+        return (function* iter() {
             for (const value of bufferIterator){
                 yield* parser(value);
             }
-        }();
+        })();
     } else if (typeof bufferIterator[Symbol.asyncIterator] === 'function') {
-        return async function* iter() {
+        return (async function* iter() {
             for await (const value of bufferIterator){
                 yield* parser(value);
             }
-        }();
+        })();
     }
 }
 const mod3 = function() {
@@ -49590,7 +49589,7 @@ const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 }, lookup = genLookup(chars), lookupUrl = genLookup(charsUrl);
 let base64 = {};
 base64.toArrayBuffer = (data, urlMode)=>{
-    let bufferLength = data.length * .75, len = data.length, i207, p = 0, encoded1, encoded2, encoded3, encoded4;
+    let bufferLength = data.length * 0.75, len = data.length, i207, p = 0, encoded1, encoded2, encoded3, encoded4;
     if (data[data.length - 1] === "=") {
         bufferLength--;
         if (data[data.length - 2] === "=") {
@@ -49649,8 +49648,8 @@ function isPem(pem) {
     const pemRegex = /^-----BEGIN .+-----$\n([A-Za-z0-9+/=]|\n)*^-----END .+-----$/m;
     return !!pem.match(pemRegex);
 }
-function isPositiveInteger(n15) {
-    return n15 >>> 0 === parseFloat(n15);
+function isPositiveInteger(n12) {
+    return n12 >>> 0 === parseFloat(n12);
 }
 function abToBuf(ab) {
     return new Uint8Array(ab).buffer;
@@ -49675,7 +49674,7 @@ function abToPem(type, ab) {
     const str = coerceToBase64(ab, "pem buffer");
     return [
         `-----BEGIN ${type}-----\n`,
-        ...str.match(/.{1,64}/g).map((s15)=>s15 + "\n"
+        ...str.match(/.{1,64}/g).map((s12)=>s12 + "\n"
         ),
         `-----END ${type}-----\n`, 
     ].join("");
@@ -49883,15 +49882,15 @@ async function verifySignature(publicKey, expectedSignature, data, hashName) {
         console.error(_e);
     }
 }
-async function hashDigest(o25, alg) {
-    if (typeof o25 === "string") {
-        o25 = new TextEncoder().encode(o25);
+async function hashDigest(o3, alg) {
+    if (typeof o3 === "string") {
+        o3 = new TextEncoder().encode(o3);
     }
-    const result = await webcrypto.subtle.digest(alg || "SHA-256", o25);
+    const result = await webcrypto.subtle.digest(alg || "SHA-256", o3);
     return result;
 }
-function randomValues(n16) {
-    const byteArray = new Uint8Array(n16);
+function randomValues(n13) {
+    const byteArray = new Uint8Array(n13);
     webcrypto.getRandomValues(byteArray);
     return byteArray;
 }
@@ -50282,7 +50281,7 @@ function decodeU2FTransportType(u2fRawTransports) {
         throw new Error("u2fRawTransports was malformatted");
     }
     u2fRawTransports = new Uint8Array(u2fRawTransports);
-    if (u2fRawTransports[0] !== 0x03 || u2fRawTransports[1] !== 0x02 || u2fRawTransports[2] > 7) {
+    if (u2fRawTransports[0] !== 3 || u2fRawTransports[1] !== 2 || u2fRawTransports[2] > 7) {
         throw new Error("u2fRawTransports had unknown data");
     }
     const bitLen = u2fRawTransports[2];
@@ -50290,7 +50289,7 @@ function decodeU2FTransportType(u2fRawTransports) {
     let type = u2fRawTransports[3] >> bitLen;
     const ret = new Set();
     for(let i217 = bitCount; i217 >= 0; i217--){
-        if (type & 0x1) switch(i217){
+        if (type & 1) switch(i217){
             case 0:
                 ret.add("bluetooth-classic");
                 break;
@@ -50318,15 +50317,15 @@ function decodeKeyUsage(value) {
         throw new Error("certificate: expected 'keyUsage' value to be number");
     }
     const retSet = new Set();
-    if (value & 0x80) retSet.add("digitalSignature");
-    if (value & 0x40) retSet.add("contentCommitment");
-    if (value & 0x20) retSet.add("keyEncipherment");
-    if (value & 0x10) retSet.add("dataEncipherment");
-    if (value & 0x08) retSet.add("keyAgreement");
-    if (value & 0x04) retSet.add("keyCertSign");
-    if (value & 0x02) retSet.add("cRLSign");
-    if (value & 0x01) retSet.add("encipherOnly");
-    if (value & 0x01) retSet.add("decipherOnly");
+    if (value & 128) retSet.add("digitalSignature");
+    if (value & 64) retSet.add("contentCommitment");
+    if (value & 32) retSet.add("keyEncipherment");
+    if (value & 16) retSet.add("dataEncipherment");
+    if (value & 8) retSet.add("keyAgreement");
+    if (value & 4) retSet.add("keyCertSign");
+    if (value & 2) retSet.add("cRLSign");
+    if (value & 1) retSet.add("encipherOnly");
+    if (value & 1) retSet.add("decipherOnly");
     return retSet;
 }
 function decodeExtKeyUsage(value) {
@@ -50346,10 +50345,10 @@ function decodeFidoAaguid(value) {
         throw new Error("AAGUID ASN.1 was wrong size. Should be 18, got " + value.byteLength);
     }
     const aaguidBuf = new Uint8Array(value);
-    if (aaguidBuf[0] !== 0x04) {
+    if (aaguidBuf[0] !== 4) {
         throw new Error("AAGUID ASN.1 should start with 0x04 (octet string)");
     }
-    if (aaguidBuf[1] !== 0x10) {
+    if (aaguidBuf[1] !== 16) {
         throw new Error("AAGUID ASN.1 should have length 16");
     }
     return aaguidBuf.buffer.slice(2);
@@ -50485,11 +50484,11 @@ class CertManager {
         if (!Array.isArray(roots) || roots.length < 1) {
             throw new Error("expected 'roots' to be non-empty Array, got: " + roots);
         }
-        roots = roots.map((r10)=>{
-            if (!(r10 instanceof Certificate1)) {
-                r10 = new Certificate1(r10);
+        roots = roots.map((r5)=>{
+            if (!(r5 instanceof Certificate1)) {
+                r5 = new Certificate1(r5);
             }
-            return r10._cert;
+            return r5._cert;
         });
         crls = crls || [];
         if (!Array.isArray(crls)) {
@@ -50828,15 +50827,15 @@ class MdsEntry {
         this.attachmentHint = this.attachmentHint instanceof Array ? this.attachmentHint : attachmentHintToArr(this.attachmentHint);
         function attachmentHintToArr(hint) {
             const ret = [];
-            if (hint & 0x0001) ret.push("internal");
-            if (hint & 0x0002) ret.push("external");
-            if (hint & 0x0004) ret.push("wired");
-            if (hint & 0x0008) ret.push("wireless");
-            if (hint & 0x0010) ret.push("nfc");
-            if (hint & 0x0020) ret.push("bluetooth");
-            if (hint & 0x0040) ret.push("network");
-            if (hint & 0x0080) ret.push("ready");
-            if (hint & 0xFF00) throw new Error("unknown attachment hint flags: " + hint & 0xFF00);
+            if (hint & 1) ret.push("internal");
+            if (hint & 2) ret.push("external");
+            if (hint & 4) ret.push("wired");
+            if (hint & 8) ret.push("wireless");
+            if (hint & 16) ret.push("nfc");
+            if (hint & 32) ret.push("bluetooth");
+            if (hint & 64) ret.push("network");
+            if (hint & 128) ret.push("ready");
+            if (hint & 65280) throw new Error("unknown attachment hint flags: " + hint & 65280);
             return ret;
         }
         if (!Array.isArray(this.attestationTypes)) throw new Error("expected attestationTypes to be Array, got: " + this.attestationTypes);
@@ -50844,11 +50843,11 @@ class MdsEntry {
         );
         function attestationTypeToStr(att) {
             switch(att){
-                case 0x3E07:
+                case 15879:
                     return "basic-full";
-                case 0x3E08:
+                case 15880:
                     return "basic-surrogate";
-                case 0x3E09:
+                case 15881:
                     return "ecdaa";
                 default:
                     throw new Error("uknown attestation type: " + att);
@@ -50860,23 +50859,23 @@ class MdsEntry {
         this.authenticationAlgorithm = typeof this.authenticationAlgorithm === "string" ? this.authenticationAlgorithm : algToStr1(this.authenticationAlgorithm);
         function algToStr1(alg) {
             switch(alg){
-                case 0x0001:
+                case 1:
                     return "ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW";
-                case 0x0002:
+                case 2:
                     return "ALG_SIGN_SECP256R1_ECDSA_SHA256_DER";
-                case 0x0003:
+                case 3:
                     return "ALG_SIGN_RSASSA_PSS_SHA256_RAW";
-                case 0x0004:
+                case 4:
                     return "ALG_SIGN_RSASSA_PSS_SHA256_DER";
-                case 0x0005:
+                case 5:
                     return "ALG_SIGN_SECP256K1_ECDSA_SHA256_RAW";
-                case 0x0006:
+                case 6:
                     return "ALG_SIGN_SECP256K1_ECDSA_SHA256_DER";
-                case 0x0007:
+                case 7:
                     return "ALG_SIGN_SM2_SM3_RAW";
-                case 0x0008:
+                case 8:
                     return "ALG_SIGN_RSA_EMSA_PKCS1_SHA256_RAW";
-                case 0x0009:
+                case 9:
                     return "ALG_SIGN_RSA_EMSA_PKCS1_SHA256_DER";
                 default:
                     throw new Error("unknown authentication algorithm: " + alg);
@@ -50890,36 +50889,36 @@ class MdsEntry {
         this.keyProtection = this.keyProtection instanceof Array ? this.keyProtection : keyProtToArr(this.keyProtection);
         function keyProtToArr(kp) {
             const ret = [];
-            if (kp & 0x0001) ret.push("software");
-            if (kp & 0x0002) ret.push("hardware");
-            if (kp & 0x0004) ret.push("tee");
-            if (kp & 0x0008) ret.push("secure-element");
-            if (kp & 0x0010) ret.push("remote-handle");
-            if (kp & 0xFFE0) throw new Error("unknown key protection flags: " + kp & 0xFFE0);
+            if (kp & 1) ret.push("software");
+            if (kp & 2) ret.push("hardware");
+            if (kp & 4) ret.push("tee");
+            if (kp & 8) ret.push("secure-element");
+            if (kp & 16) ret.push("remote-handle");
+            if (kp & 65504) throw new Error("unknown key protection flags: " + kp & 65504);
             return ret;
         }
         this.matcherProtection = this.matcherProtection instanceof Array ? this.matcherProtection : matcherProtToArr(this.matcherProtection);
         function matcherProtToArr(mp) {
             const ret = [];
-            if (mp & 0x0001) ret.push("software");
-            if (mp & 0x0002) ret.push("hardware");
-            if (mp & 0x0004) ret.push("tee");
-            if (mp & 0xFFF8) throw new Error("unknown key protection flags: " + mp & 0xFFF8);
+            if (mp & 1) ret.push("software");
+            if (mp & 2) ret.push("hardware");
+            if (mp & 4) ret.push("tee");
+            if (mp & 65528) throw new Error("unknown key protection flags: " + mp & 65528);
             return ret;
         }
         if (this.publicKeyAlgAndEncodings) this.publicKeyAlgAndEncoding = `ALG_KEY_${this.publicKeyAlgAndEncodings[0].toUpperCase()}`;
         this.publicKeyAlgAndEncoding = typeof this.publicKeyAlgAndEncoding === "string" ? this.publicKeyAlgAndEncoding : pkAlgAndEncodingToStr(this.publicKeyAlgAndEncoding);
         function pkAlgAndEncodingToStr(pkalg) {
             switch(pkalg){
-                case 0x0100:
+                case 256:
                     return "ALG_KEY_ECC_X962_RAW";
-                case 0x0101:
+                case 257:
                     return "ALG_KEY_ECC_X962_DER";
-                case 0x0102:
+                case 258:
                     return "ALG_KEY_RSA_2048_RAW";
-                case 0x0103:
+                case 259:
                     return "ALG_KEY_RSA_2048_DER";
-                case 0x0104:
+                case 260:
                     return "ALG_KEY_COSE";
                 default:
                     throw new Error("unknown public key algorithm and encoding: " + pkalg);
@@ -50928,12 +50927,12 @@ class MdsEntry {
         this.tcDisplay = this.tcDisplay instanceof Array ? this.tcDisplay : tcDisplayToArr(this.tcDisplay);
         function tcDisplayToArr(tcd) {
             const ret = [];
-            if (tcd & 0x0001) ret.push("any");
-            if (tcd & 0x0002) ret.push("priviledged-software");
-            if (tcd & 0x0004) ret.push("tee");
-            if (tcd & 0x0008) ret.push("hardware");
-            if (tcd & 0x0010) ret.push("remote");
-            if (tcd & 0xFFE0) throw new Error("unknown transaction confirmation display flags: " + tcd & 0xFFE0);
+            if (tcd & 1) ret.push("any");
+            if (tcd & 2) ret.push("priviledged-software");
+            if (tcd & 4) ret.push("tee");
+            if (tcd & 8) ret.push("hardware");
+            if (tcd & 16) ret.push("remote");
+            if (tcd & 65504) throw new Error("unknown transaction confirmation display flags: " + tcd & 65504);
             return ret;
         }
         this.userVerificationDetails = uvDetailsToSet(this.userVerificationDetails);
@@ -50973,17 +50972,17 @@ class MdsEntry {
         }
         function uvToArr(uv) {
             const ret = [];
-            if (uv & 0x00000001) ret.push("presence");
-            if (uv & 0x00000002) ret.push("fingerprint");
-            if (uv & 0x00000004) ret.push("passcode");
-            if (uv & 0x00000008) ret.push("voiceprint");
-            if (uv & 0x00000010) ret.push("faceprint");
-            if (uv & 0x00000020) ret.push("location");
-            if (uv & 0x00000040) ret.push("eyeprint");
-            if (uv & 0x00000080) ret.push("pattern");
-            if (uv & 0x00000100) ret.push("handprint");
-            if (uv & 0x00000200) ret.push("none");
-            if (uv & 0x00000400) ret.push("all");
+            if (uv & 1) ret.push("presence");
+            if (uv & 2) ret.push("fingerprint");
+            if (uv & 4) ret.push("passcode");
+            if (uv & 8) ret.push("voiceprint");
+            if (uv & 16) ret.push("faceprint");
+            if (uv & 32) ret.push("location");
+            if (uv & 64) ret.push("eyeprint");
+            if (uv & 128) ret.push("pattern");
+            if (uv & 256) ret.push("handprint");
+            if (uv & 512) ret.push("none");
+            if (uv & 1024) ret.push("all");
             return ret;
         }
         if (this.protocolFamily === undefined) this.protocolFamily = "uaf";
@@ -51015,9 +51014,9 @@ class MdsCollection {
             parsedJws.header = protectedHeader;
             parsedJws.key = publicKey;
             this.toc = parsedJws.payload;
-        } catch (e19) {
-            e19.message = "could not parse and validate MDS TOC: " + e19.message;
-            throw e19;
+        } catch (e12) {
+            e12.message = "could not parse and validate MDS TOC: " + e12.message;
+            throw e12;
         }
         if (rootCert === undefined) {
             if (parsedJws.kid === "Metadata TOC Signer 3" || parsedJws.key && parsedJws.key.kid === "Metadata TOC Signer 3") {
@@ -51270,8 +51269,8 @@ async function validateCerts(parsedAttCert, aaguid, _x5c, audit) {
     const attCert = new Certificate1(coerceToBase64(parsedAttCert, "parsedAttCert"));
     try {
         await attCert.verify();
-    } catch (e20) {
-        const err = e20;
+    } catch (e13) {
+        const err = e13;
         if (err.message === "Please provide issuer certificate as a parameter") {
             audit.warning.set("attesation-not-validated", "could not validate attestation because the root attestation certification could not be found");
         } else {
@@ -51413,11 +51412,11 @@ async function fidoU2fValidateFn() {
         throw new Error("U2F public key y component was wrong size");
     }
     const verificationData = new Uint8Array([
-        0x00,
+        0,
         ...new Uint8Array(rpIdHash),
         ...new Uint8Array(clientDataHash),
         ...new Uint8Array(credId),
-        0x04,
+        4,
         ...new Uint8Array(x),
         ...new Uint8Array(y), 
     ]);
@@ -51531,7 +51530,7 @@ function parseCertInfo(certInfo) {
     const ci = new Map();
     ci.set("rawCertInfo", certInfo);
     const magic = dv.getUint32(offset);
-    if (magic !== 0xff544347) {
+    if (magic !== 4283712327) {
         throw new Error("tpm attestation: certInfo had bad magic number: " + magic.toString(16));
     }
     ci.set("magic", magic);
@@ -51612,50 +51611,50 @@ function parsePubArea(pubArea) {
     }
     return pa;
 }
-function decodeStructureTag(t8) {
-    switch(t8){
-        case 0x00C4:
+function decodeStructureTag(t4) {
+    switch(t4){
+        case 196:
             return "TPM_ST_RSP_COMMAND";
-        case 0x8000:
+        case 32768:
             return "TPM_ST_NULL";
-        case 0x8001:
+        case 32769:
             return "TPM_ST_NO_SESSIONS";
-        case 0x8002:
+        case 32770:
             return "TPM_ST_SESSIONS";
-        case 0x8003:
+        case 32771:
             return "TPM_RESERVED_0x8003";
-        case 0x8004:
+        case 32772:
             return "TPM_RESERVED_0x8004";
-        case 0x8014:
+        case 32788:
             return "TPM_ST_ATTEST_NV";
-        case 0x8015:
+        case 32789:
             return "TPM_ST_ATTEST_COMMAND_AUDIT";
-        case 0x8016:
+        case 32790:
             return "TPM_ST_ATTEST_SESSION_AUDIT";
-        case 0x8017:
+        case 32791:
             return "TPM_ST_ATTEST_CERTIFY";
-        case 0x8018:
+        case 32792:
             return "TPM_ST_ATTEST_QUOTE";
-        case 0x8019:
+        case 32793:
             return "TPM_ST_ATTEST_TIME";
-        case 0x801A:
+        case 32794:
             return "TPM_ST_ATTEST_CREATION";
-        case 0x801B:
+        case 32795:
             return "TPM_RESERVED_0x801B";
-        case 0x8021:
+        case 32801:
             return "TPM_ST_CREATION";
-        case 0x8022:
+        case 32802:
             return "TPM_ST_VERIFIED";
-        case 0x8023:
+        case 32803:
             return "TPM_ST_AUTH_SECRET";
-        case 0x8024:
+        case 32804:
             return "TPM_ST_HASHCHECK";
-        case 0x8025:
+        case 32805:
             return "TPM_ST_AUTH_SIGNED";
-        case 0x8029:
+        case 32809:
             return "TPM_ST_FU_MANIFEST";
         default:
-            throw new Error("tpm attestation: unknown structure tag: " + t8.toString(16));
+            throw new Error("tpm attestation: unknown structure tag: " + t4.toString(16));
     }
 }
 function decodeObjectAttributes(oa) {
@@ -51780,7 +51779,7 @@ async function tpmValidateFn() {
         throw new Error("tpm attestation: RSA 'n' of WebAuthn credentialPublicKey and TPM publicArea did not match");
     }
     const magic = certInfo.get("magic");
-    if (magic !== 0xff544347) {
+    if (magic !== 4283712327) {
         throw new Error("tpm attestation: certInfo had bad magic number: " + magic.toString(16));
     }
     const type = certInfo.get("type");
@@ -51823,8 +51822,8 @@ async function tpmValidateFn() {
     const attCert = new Certificate1(coerceToBase64(parsedAttCert, "parsedAttCert"));
     try {
         await attCert.verify();
-    } catch (e21) {
-        const err = e21;
+    } catch (e14) {
+        const err = e14;
         if (err.message === "Please provide issuer certificate as a parameter") {
             this.audit.warning.set("attesation-not-validated", "could not validate attestation because the root attestation certification could not be found");
         } else {
@@ -52594,14 +52593,14 @@ async function parseAuthenticatorData(authnrDataArrayBuffer) {
     const flags = authnrDataBuf.getUint8(offset);
     const flagsSet = new Set();
     ret.set("flags", flagsSet);
-    if (flags & 0x01) flagsSet.add("UP");
-    if (flags & 0x02) flagsSet.add("RFU1");
-    if (flags & 0x04) flagsSet.add("UV");
-    if (flags & 0x08) flagsSet.add("RFU3");
-    if (flags & 0x10) flagsSet.add("RFU4");
-    if (flags & 0x20) flagsSet.add("RFU5");
-    if (flags & 0x40) flagsSet.add("AT");
-    if (flags & 0x80) flagsSet.add("ED");
+    if (flags & 1) flagsSet.add("UP");
+    if (flags & 2) flagsSet.add("RFU1");
+    if (flags & 4) flagsSet.add("UV");
+    if (flags & 8) flagsSet.add("RFU3");
+    if (flags & 16) flagsSet.add("RFU4");
+    if (flags & 32) flagsSet.add("RFU5");
+    if (flags & 64) flagsSet.add("AT");
+    if (flags & 128) flagsSet.add("ED");
     offset++;
     ret.set("counter", authnrDataBuf.getUint32(offset, false));
     offset += 4;
@@ -53121,7 +53120,7 @@ async function validateAudit() {
     this.audit.complete = true;
     return true;
 }
-function attach(o26) {
+function attach(o4) {
     let mixins = {
         validateExpectations,
         validateCreateRequest,
@@ -53156,7 +53155,7 @@ function attach(o26) {
         validateAudit
     };
     for (let key of Object.keys(mixins)){
-        o26[key] = mixins[key];
+        o4[key] = mixins[key];
     }
 }
 export { attach as attach };
