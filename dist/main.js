@@ -23060,13 +23060,8 @@ const __default4 = {
     'toASCII': toASCII1,
     'toUnicode': toUnicode
 };
-function isCryptoKey(key) {
-    try {
-        return key != null && typeof key.extractable === 'boolean' && typeof key.algorithm.name === 'string' && typeof key.type === 'string';
-    } catch  {
-        return false;
-    }
-}
+const isCryptoKey = (key)=>key instanceof CryptoKey
+;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 function concat(...buffers) {

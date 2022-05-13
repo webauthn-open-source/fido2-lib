@@ -2,7 +2,7 @@
     "imports": {
         "tldts": "https://unpkg.com/tldts@5.7.78/dist/index.esm.min.js",
         "punycode": "https://deno.land/x/punycode@v2.1.1/punycode.js",
-        "jose": "https://deno.land/x/jose@v4.7.0/index.ts?module",
+        "jose": "https://deno.land/x/jose@v4.8.1/index.ts?module",
         "asn1js": "https://unpkg.com/asn1js@3.0.2?module",
         "cbor-x": "https://deno.land/x/cbor@v1.2.1/index.js?module",
         "std/": "https://deno.land/std@0.135.0/",
