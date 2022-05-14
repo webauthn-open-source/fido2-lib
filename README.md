@@ -3,25 +3,6 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json) 
 [![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib)
 
-## Install
-
-### Node
-
-``` bash
-npm install fido2-lib --save
-```
-
-### Deno
-
-Import `dist/main.js` from a trusted source. Below is only an example, using the official deno.land repository.
-It is recommended to [enable integrity checking](https://deno.land/manual/linking_to_external_code/integrity_checking). 
-
-```js
-// Check newest version from https://deno.land/x/fido2
-import { Fido2Lib } from "https://deno.land/x/fido2@3.1.4/dist/main.js";
-```
-
-
 ## Overview
 
 A library for performing FIDO 2.0 / WebAuthn server functionality
@@ -53,28 +34,38 @@ For working examples see [OWASP Single Sign-On](https://github.com/OWASP/SSO_Pro
 * Returns parsed and validated data, along with extra audit data for risk engines
 * Support both CommonJS (`require`) and ESM (`import`) natively
 
-## Example
+## Getting started
 
-**Import Library using CommonJS:**
-``` js
+### Node
+
+``` bash
+npm install fido2-lib --save
+```
+
+#### Import Library using CommonJS
+```js
 const { Fido2Lib } = require("fido2-lib");
-
-// create a new instance of the library
-const f2l = new Fido2Lib(/* ... */);
 ```
 
-**Import Library using ESM-syntax:**
-``` js
-// Node
+#### Import Library using ESM-syntax
+
+```js
 import { Fido2Lib } from "fido2-lib";
-
-// ... or Deno - Replace 3.1.4 with current version
-// import { Fido2Lib } from "https://deno.land/x/fido2@3.1.4/dist/main.js";
-
-
-// create a new instance of the library
-const f2l = new Fido2Lib(/* ... */);
 ```
+
+### Deno
+
+Import `dist/main.js` from a trusted source. Below is only an example, using the official deno.land repository.
+It is recommended to [enable integrity checking](https://deno.land/manual/linking_to_external_code/integrity_checking). 
+
+Get the URL to the latest version by going to [deno.land/x/fido2/dist/main.js](https://deno.land/x/fido2/dist/main.js).
+
+```js
+// This example will always redirect to the latest version, it's recommended that you use above method to get a fixed url
+import { Fido2Lib } from "https://deno.land/x/fido2/dist/main.js";
+```
+
+## Examples
 
 **Instantiate Library (Complex):**
 ``` js
