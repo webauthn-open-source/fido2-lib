@@ -66,7 +66,7 @@ function restoreAttestationFormats() {
 		appleAttestation.name,
 		appleAttestation.parseFn,
 		appleAttestation.validateFn
-	)
+	);
 }
 
 describe("Fido2Lib", function() {
