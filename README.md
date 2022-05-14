@@ -58,10 +58,11 @@ import { Fido2Lib } from "fido2-lib";
 Import `dist/main.js` from a trusted source. Below is only an example, using the official deno.land repository.
 It is recommended to [enable integrity checking](https://deno.land/manual/linking_to_external_code/integrity_checking). 
 
-Get the URL to the latest version by going to [deno.land/x/fido2/dist/main.js](https://deno.land/x/fido2/dist/main.js).
+Get url to the latest version by going to [deno.land/x/fido2/dist/main.js](https://deno.land/x/fido2/dist/main.js).
 
 ```js
-// This example will always redirect to the latest version, it's recommended that you use above method to get a fixed url
+// Example url will always redirect to the latest version
+// It is recommended that you use above method to get a fixed url
 import { Fido2Lib } from "https://deno.land/x/fido2/dist/main.js";
 ```
 
