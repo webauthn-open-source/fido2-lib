@@ -62,7 +62,7 @@ Get url to the latest version by going to [deno.land/x/fido2/dist/main.js](https
 
 ```js
 // Example url will always redirect to the latest version
-// It is recommended that you use above method to get a fixed url
+// It is recommended that you use the method mentioned above to get a fixed url
 import { Fido2Lib } from "https://deno.land/x/fido2/dist/main.js";
 ```
 
