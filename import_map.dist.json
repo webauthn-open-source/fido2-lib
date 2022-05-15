@@ -4,9 +4,9 @@
 
         "std/": "https://deno.land/std@0.135.0/",
 
-        "@hexagon/base64": "https://deno.land/x/b64@1.0.18/dist/base64.min.mjs",
+        "@hexagon/base64": "https://deno.land/x/b64@1.0.19/dist/base64.min.mjs",
 
-        "sinon": "https://cdn.jsdelivr.net/npm/sinon@13.0.2/pkg/sinon-esm.js",
+        "sinon": "https://unpkg.com/sinon@14.0.0/pkg/sinon-esm.js",
         "test_suite": "https://deno.land/x/test_suite@0.16.1/mod.ts",
 
         "chai": "./test/helpers/chai-deno-shim.js",
