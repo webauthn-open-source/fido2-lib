@@ -76,7 +76,7 @@ jobs:
         with:
           commit_message: "[skip_ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
           tagging_message: "${{ steps.package_version.outputs.current-version}}"
-          file_pattern: dist/*.js
+          file_pattern: dist/*.js dist/*.cjs
       - run: npm run docs
       - run: npm run publish-docs
         env:
