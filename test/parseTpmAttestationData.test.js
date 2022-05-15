@@ -409,7 +409,7 @@ runs.forEach(function(run) {
 			assert.isObject(credentialPublicKeyJwk);
 			assert.strictEqual(Object.keys(credentialPublicKeyJwk).length, 4);
 			assert.strictEqual(credentialPublicKeyJwk.kty, "RSA");
-			assert.strictEqual(credentialPublicKeyJwk.alg, "RSASSA-PKCS1-v1_5_w_SHA256");
+			assert.strictEqual(credentialPublicKeyJwk.alg, "RS256");
 			assert.strictEqual(credentialPublicKeyJwk.n, "xdpvTZNXveIC9cVYzQoxVtJU8uCtmrV5MfmCa3R94axPKdYHCHTc5XkQ4ZhESZ2OQkcDObFw0CK1AauI6cL07TAuRxnHDevohCQD7ZvfwicwphobcPYWxfG3AMrPeEYTfcSy1Gmo4VqrT62GVwhAItKPRNkHUyMSa3AHyYGTn99yTK9PvkdQQEMaTqBkQwvLLPrX0Fvbn2S1sOCVLs-GeSc9bG36gWAfFFAzFqE9B4LDGj5r3e09e8Rrwfqb7w3_g7ferxRrWCxGRIIaPGLtuqa-QivwTkPtr1_TeDCGFT1zYaIDBhpimKsm4TN8ocntBnQaWQVHeYjnIDBOrhidfw");
 			assert.strictEqual(credentialPublicKeyJwk.e, "AQAB");
 		});
