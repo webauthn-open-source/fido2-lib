@@ -50,16 +50,6 @@
 <a href="https://codecov.io/gh/webauthn-open-source/fido2-lib"><img src="https://codecov.io/gh/webauthn-open-source/fido2-lib/branch/master/graph/badge.svg" alt="Code Coverage"></a>
 <a href="https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json"><img src="https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
 <a href="https://badge.fury.io/js/fido2-lib"><img src="https://badge.fury.io/js/fido2-lib.svg" alt="npm version"></a></p>
-<h2>Install</h2>
-<h3>Node</h3>
-<pre class="prettyprint source lang-bash"><code>npm install fido2-lib --save
-</code></pre>
-<h3>Deno</h3>
-<p>Import <code>dist/main.js</code> from a trusted source. Below is only an example, using the official deno.land repository.
-It is recommended to <a href="https://deno.land/manual/linking_to_external_code/integrity_checking">enable integrity checking</a>.</p>
-<pre class="prettyprint source lang-js"><code>// Check newest version from https://deno.land/x/fido2
-import { Fido2Lib } from &quot;https://deno.land/x/fido2@3.1.2.1/dist/main.js&quot;;
-</code></pre>
 <h2>Overview</h2>
 <p>A library for performing FIDO 2.0 / WebAuthn server functionality</p>
 <p>This library contains all the functionality necessary for implementing a full FIDO2 / WebAuthn server. It intentionally does not implement any kind of networking protocol (e.g. - REST endpoints) so that it can remain independent of any messaging protocols.</p>
@@ -86,24 +76,25 @@ import { Fido2Lib } from &quot;https://deno.land/x/fido2@3.1.2.1/dist/main.js&qu
 <li>Returns parsed and validated data, along with extra audit data for risk engines</li>
 <li>Support both CommonJS (<code>require</code>) and ESM (<code>import</code>) natively</li>
 </ul>
-<h2>Example</h2>
-<p><strong>Import Library using CommonJS:</strong></p>
+<h2>Getting started</h2>
+<h3>Node</h3>
+<pre class="prettyprint source lang-bash"><code>npm install fido2-lib --save
+</code></pre>
+<h4>Import Library using CommonJS</h4>
 <pre class="prettyprint source lang-js"><code>const { Fido2Lib } = require(&quot;fido2-lib&quot;);
-
-// create a new instance of the library
-const f2l = new Fido2Lib(/* ... */);
 </code></pre>
-<p><strong>Import Library using ESM-syntax:</strong></p>
-<pre class="prettyprint source lang-js"><code>// Node
-import { Fido2Lib } from &quot;fido2-lib&quot;;
-
-// ... or Deno - Replace x.y.z with current version
-// import { Fido2Lib } from &quot;https://cdn.jsdelivr.net/npm/fido2-lib@x.y.z/dist/main.js&quot;;
-
-
-// create a new instance of the library
-const f2l = new Fido2Lib(/* ... */);
+<h4>Import Library using ESM-syntax</h4>
+<pre class="prettyprint source lang-js"><code>import { Fido2Lib } from &quot;fido2-lib&quot;;
 </code></pre>
+<h3>Deno</h3>
+<p>Import <code>dist/main.js</code> from a trusted source. Below is only an example, using the official deno.land repository.
+It is recommended to <a href="https://deno.land/manual/linking_to_external_code/integrity_checking">enable integrity checking</a>.</p>
+<p>Get url to the latest version by going to <a href="https://deno.land/x/fido2/dist/main.js">deno.land/x/fido2/dist/main.js</a>.</p>
+<pre class="prettyprint source lang-js"><code>// Example url will always redirect to the latest version
+// It is recommended that you use the method mentioned above to get a fixed url
+import { Fido2Lib } from &quot;https://deno.land/x/fido2/dist/main.js&quot;;
+</code></pre>
+<h2>Examples</h2>
 <p><strong>Instantiate Library (Complex):</strong></p>
 <pre class="prettyprint source lang-js"><code>// could also use one or more of the options below,
 // which just makes the options calls easier later on:
@@ -170,6 +161,22 @@ const authnResult = await f2l.assertionResult(clientAssertionResponse, assertion
 <h2>Migration from v2 to v3</h2>
 <p>Generally v3 is assumed to be completely compatible with v2 - compatibility should have increased.
 As many inner workings have been changed, please verify that your application still works with v3 and report issues, if you newly encounter bugs.</p>
+<h2>Contributing</h2>
+<h4>Setting up the environment</h4>
+<p>It's recommended to have both Deno (&gt;=1.20) and Node 16-18 available to be able to run all checks and tests.</p>
+<h3>Before commiting</h3>
+<p>Please run <code>npm run lint</code>, <code>npm run test</code> and <code>deno task test</code> before committing, to make sure every test and check passes.</p>
+<p>See <a href="/package.json">package.json</a> for available npm scripts, and <a href="/deno.jsonc">deno.jsonc</a> for available Deno tasks.</p>
+<p>Make sure to add tests if you add new features.</p>
+<h3>Dependencies</h3>
+<p>When adding, removing or updating dependencies, start out with npm as usual. Then update <code>import_map.json</code> to points to the same versions shown by <code>npm list</code>, and run <code>deno task update-deps</code> to update the Deno lock-file.</p>
+<h3>Pull Request</h3>
+<p>When you're finished with the changes, create a pull request.</p>
+<ul>
+<li>Enable the checkbox to <a href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork">allow maintainer edits</a> so the branch can be updated for a merge.
+Once you submit your PR, a team member will review your proposal. We may ask questions or request for additional information.</li>
+<li>If you run into any merge issues, checkout this <a href="https://lab.github.com/githubtraining/managing-merge-conflicts">git tutorial</a> to help you resolve merge conflicts and other issues.</li>
+</ul>
 <h2>Sponsor</h2>
 <p>Work for this project was supported by <a href="https://github.com/apowers313">Adam Power</a>.</p></article>
     </section>
@@ -184,7 +191,7 @@ As many inner workings have been changed, please verify that your application st
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Fri May 13 2022 15:00:20 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Sun May 15 2022 08:31:30 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
