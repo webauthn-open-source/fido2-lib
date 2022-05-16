@@ -149,13 +149,13 @@ describe("key utils", function() {
 				});
 				it("correctly identifies algorithm as ECDSA P-256 with SHA-256 hash", () => {
 					const alg = k.getAlgorithm();
-					assert.equal(alg.name, "ES256");
+					assert.equal(alg.name, "ECDSA");
 					assert.equal(alg.hash, "SHA-256");
 					assert.equal(alg.namedCurve, "P-256");
 				});
 				it("can export to jwk", () => {
 					const jwk = k.toJwk();
-					assert.equal(jwk.alg, "ECDSA_w_SHA256");
+					assert.equal(jwk.alg, "ES256");
 					assert.equal(jwk.crv, "P-256");
 				});
 				it("can export to PEM", async () => {
