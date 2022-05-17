@@ -634,16 +634,13 @@ const helpers = {
 	resolveOid,
 };
 
-function getKeyInfo(ber) {
-	const asn1 = asn1js.fromBER(ber);
-	if (asn1.offset === -1) {
-		throw new Error("error parsing ASN.1");
-	}
-	return new pkijs.PublicKeyInfo({ schema: asn1.result });
-}
-
-// main COSE labels
-// defined here: https://tools.ietf.org/html/rfc8152#section-7.1
+/**
+ * Main COSE labels
+ * defined here: https://tools.ietf.org/html/rfc8152#section-7.1
+ * used by {@link fromCose}
+ * 
+ * @private
+ */
 const coseLabels = {
 	1: {
 		name: "kty",
@@ -679,48 +676,13 @@ const coseLabels = {
 	},
 };
 
-// Extract hash from Cose Alg
-const algHashes = {
-	ECDSA_w_SHA256: "SHA-256",
-	// EdDSA: ""
-	ECDSA_w_SHA384: "SHA-384",
-	ECDSA_w_SHA512: "SHA-512",
-	"RSASSA-PKCS1-v1_5_w_SHA256": "SHA-256",
-	"RSASSA-PKCS1-v1_5_w_SHA384": "SHA-384",
-	"RSASSA-PKCS1-v1_5_w_SHA512": "SHA-512",
-	"RSASSA-PKCS1-v1_5_w_SHA1": "SHA-1",
-};
-
-const algMap$1 = {
-	"RSASSA-PKCS1-v1_5_w_SHA256": "RS256",
-	"ECDSA_w_SHA256": "ES256",
-	"ECDSA_w_SHA384": "ES256",
-	"ECDSA_w_SHA512": "ES256",
-};
-
-function algToStr(alg) {
-	if (typeof alg !== "number") {
-		throw new TypeError("expected 'alg' to be a number, got: " + alg);
-	}
-
-	const algValues = coseLabels["3"].values;
-	return algValues[alg];
-}
-
-function algToHashStr(alg) {
-	if (typeof alg === "number") alg = algToStr(alg);
-
-	if (typeof alg !== "string") {
-		throw new Error(
-			"'alg' is not a string or a valid COSE algorithm number",
-		);
-	}
-
-	return algHashes[alg];
-}
-
-// key-specific parameters
-const keyParamList = {
+/**
+ * Key specific COSE parameters
+ * used by {@link fromCose}
+ * 
+ * @private
+ */
+const coseKeyParamList = {
 	// ECDSA key parameters
 	// defined here: https://tools.ietf.org/html/rfc8152#section-13.1.1
 	EC: {
@@ -736,112 +698,179 @@ const keyParamList = {
 				7: "Ed448",
 			},
 		},
-		"-2": {
-			name: "x",
-			// value = Buffer
-		},
-		"-3": {
-			name: "y",
-			// value = Buffer
-		},
-		"-4": {
-			name: "d",
-			// value = Buffer
-		},
+		// value = Buffer
+		"-2": { name: "x" },
+		"-3": { name: "y" },
+		"-4": { name: "d" },
 	},
 	// RSA key parameters
 	// defined here: https://tools.ietf.org/html/rfc8230#section-4
 	RSA: {
-		"-1": {
-			name: "n",
-			// value = Buffer
-		},
-		"-2": {
-			name: "e",
-			// value = Buffer
-		},
-		"-3": {
-			name: "d",
-			// value = Buffer
-		},
-		"-4": {
-			name: "p",
-			// value = Buffer
-		},
-		"-5": {
-			name: "q",
-			// value = Buffer
-		},
-		"-6": {
-			name: "dP",
-			// value = Buffer
-		},
-		"-7": {
-			name: "dQ",
-			// value = Buffer
-		},
-		"-8": {
-			name: "qInv",
-			// value = Buffer
-		},
-		"-9": {
-			name: "other",
-			// value = Array
-		},
-		"-10": {
-			name: "r_i",
-			// value = Buffer
-		},
-		"-11": {
-			name: "d_i",
-			// value = Buffer
-		},
-		"-12": {
-			name: "t_i",
-			// value = Buffer
-		},
+		// value = Buffer
+		"-1": { name: "n" },
+		"-2": { name: "e" },
+		"-3": { name: "d" },
+		"-4": { name: "p" },
+		"-5": { name: "q" },
+		"-6": { name: "dP" },
+		"-7": { name: "dQ" },
+		"-8": { name: "qInv" },
+		"-9": { name: "other" },
+		"-10": { name: "r_i" },
+		"-11": { name: "d_i" },
+		"-12": { name: "t_i" },
 	},
 };
 
-function jwkToAlgorithm(jwk) {
-	const alg = {};
-	if (algMap$1[jwk.alg]) {
-		alg.name = algMap$1[jwk.alg];
-	}
-	if (algHashes[jwk.alg]) {
-		alg.hash = algHashes[jwk.alg];
-	}
-	if (jwk.crv) {
-		alg.namedCurve = jwk.crv;
-	}
-	return alg;
-}
+/**
+ * Maps COSE algorithm identifier to JWK alg
+ * used by {@link fromCose}
+ * 
+ * @private
+ */
+const algToJWKAlg = {
+	"RSASSA-PKCS1-v1_5_w_SHA256": "RS256",
+	"RSASSA-PKCS1-v1_5_w_SHA384": "RS256",
+	"RSASSA-PKCS1-v1_5_w_SHA512": "RS256",
+	"RSASSA-PKCS1-v1_5_w_SHA1": "RS256",
+	"ECDSA_w_SHA256": "ES256",
+	"ECDSA_w_SHA384": "ES256",
+	"ECDSA_w_SHA512": "ES256",
+};
 
-class Key {
-	constructor(key, alg) {
-		// Stored on import
+/**
+ * Maps Cose algorithm identifier or JWK.alg to webcrypto algorithm identifier
+ * used by {@link setAlgorithm}
+ * 
+ * @private
+ */
+const algorithmInputMap = {
+	/* Cose Algorithm identifier to Webcrypto algorithm name */
+	"RSASSA-PKCS1-v1_5_w_SHA256": "RSASSA-PKCS1-v1_5",
+	"RSASSA-PKCS1-v1_5_w_SHA384": "RSASSA-PKCS1-v1_5",
+	"RSASSA-PKCS1-v1_5_w_SHA512": "RSASSA-PKCS1-v1_5",
+	"RSASSA-PKCS1-v1_5_w_SHA1": "RSASSA-PKCS1-v1_5",
+	"ECDSA_w_SHA256": "ECDSA",
+	"ECDSA_w_SHA384": "ECDSA",
+	"ECDSA_w_SHA512": "ECDSA",
+
+	/* JWK alg to Webcrypto algorithm name */
+	"RS256": "RSASSA-PKCS1-v1_5",
+	"ES256": "ECDSA",
+};
+
+/**
+ * Maps Cose algorithm identifier webcrypto hash name
+ * used by {@link setAlgorithm}
+ * 
+ * @private
+ */
+const inputHashMap = {
+	/* Cose Algorithm identifier to Webcrypto hash name */
+	"RSASSA-PKCS1-v1_5_w_SHA256": "SHA-256",
+	"RSASSA-PKCS1-v1_5_w_SHA384": "SHA-384",
+	"RSASSA-PKCS1-v1_5_w_SHA512": "SHA-512",
+	"RSASSA-PKCS1-v1_5_w_SHA1": "SHA-1",
+	"ECDSA_w_SHA256": "SHA-256",
+	"ECDSA_w_SHA384": "SHA-384",
+	"ECDSA_w_SHA512": "SHA-512",
+};
+
+/** 
+ * Class representing a generic public key, 
+ * with utility functions to convert between different formats
+ * using Webcrypto
+ */
+class PublicKey {
+
+	/**
+	 * Create a empty public key
+	 * 
+	 * @returns {CryptoKey}
+	 */
+	constructor() {
+		/**
+		 * Internal reference to imported PEM string
+		 * @type {string}
+		 * @private
+		 */
 		this._original_pem = undefined;
+
+		/**
+		 * Internal reference to imported JWK object
+		 * @type {object}
+		 * @private
+		 */
 		this._original_jwk = undefined;
+
+		/**
+		 * Internal reference to imported Cose data
+		 * @type {object}
+		 * @private
+		 */
 		this._original_cose = undefined;
+
+		/**
+		 * Internal reference to algorithm, should be of RsaHashedImportParams or EcKeyImportParams format
+		 * @type {object}
+		 * @private
+		 */
+		this._alg = undefined;
+
+		/**
+		 * Internal reference to a CryptoKey object
+		 * @type {object}
+		 * @private
+		 */
+		this._key = undefined;
+	}
+
+	/**
+	 * Import a CryptoKey, makes basic checks and throws on failure
+	 * 
+	 * @public
+	 * @param {CryptoKey} key - CryptoKey to import
+	 * @param {object} [alg] - Algorithm override
+	 * 
+	 * @returns {CryptoKey} - Returns this for chaining
+	 */
+	fromCryptoKey(key, alg) {
+		
+		// Throw on missing key
+		if (!key) {
+			throw new TypeError("No key passed");
+		}
 
 		// Allow a CryptoKey to be passed through the constructor
 		if (key && (!key.type || key.type !== "public")) {
-			throw new TypeError("Invalid argument passed to Key constructor, should be instance of CryptoKey with type public");
+			throw new TypeError("Invalid argument passed to fromCryptoKey, should be instance of CryptoKey with type public");
 		}
 
-		if (key && !alg) {
-			if (key.algorithm) {
-				alg = key.algorithm;
-			} else {
-				throw new TypeError("Key cannot be supplied without algorithm");
-			}
-		}
+		// Store key
 		this._key = key;
-		this._alg = alg;
-		this._keyinfo = undefined;
+
+		// Store internal representation of algorithm
+		this.setAlgorithm(key.algorithm);
+
+		// Update algorithm if passed
+		if (alg) {
+			this.setAlgorithm(alg);
+		}
+
+		return this;
+
 	}
 
+	/**
+	 * Import public key from SPKI PEM. Throws on any type of failure.
+	 *
+	 * @async
+	 * @public
+	 * @param {string} pem - PEM formatted string
+	 * @return {Promise<PublicKey>} - Returns itself for chaining
+	 */
 	async fromPem(pem, hashName) {
+
 		// Convert PEM to Base64
 		let base64ber,
 			ber;
@@ -863,17 +892,19 @@ class Key {
 		}
 
 		// Extract x509 information
-		// ToDo: Extract algorithm from key info, and pass on
-		this._keyInfo = getKeyInfo(ber);
+		const asn1 = asn1js.fromBER(ber);
+		if (asn1.offset === -1) {
+			throw new Error("error parsing ASN.1");
+		}
+		let keyInfo = new pkijs.PublicKeyInfo({ schema: asn1.result });
 		const algorithm = {};
 
-		// ToDo: Support for more formats?
-		// Handle ECDSA
-		if (this._keyInfo.algorithm.algorithmId === "1.2.840.10045.2.1") {
+		// Extract algorithm from key info
+		if (keyInfo.algorithm.algorithmId === "1.2.840.10045.2.1") {
 			algorithm.name = "ECDSA";
 
 			// Use parsedKey to extract namedCurve if present, else default to P-256
-			const parsedKey = this._keyInfo.parsedKey;
+			const parsedKey = keyInfo.parsedKey;
 			if (parsedKey && parsedKey.namedCurve === "1.2.840.10045.3.1.7") {
 				algorithm.namedCurve = "P-256";
 			} else {
@@ -881,29 +912,42 @@ class Key {
 			}
 
 			// Handle RSA
-		} else if (this._keyInfo.algorithm.algorithmId === "1.2.840.113549.1.1.1") {
+		} else if (keyInfo.algorithm.algorithmId === "1.2.840.113549.1.1.1") {
 			algorithm.name = "RSASSA-PKCS1-v1_5";
 
 			// Default hash to SHA-256
 			algorithm.hash = hashName || "SHA-256";
 		}
+		this.setAlgorithm(algorithm);
 
+		// Import key using webcrypto
 		let importSPKIResult;
 		try {
 			importSPKIResult = await webcrypto.subtle.importKey("spki", ber, algorithm, true, ["verify"]);
 		} catch (_e1) {
-			throw new Error("Unsupported key format", _e1, _e2);
+			throw new Error("Unsupported key format", _e1);
 		}
+
+		// Store references
 		this._original_pem = pem;
 		this._key = importSPKIResult;
-		this._alg = algorithm;
-		return this._key;
+		
+		return this;
 	}
 
+	
+	/**
+	 * Import public key from JWK. Throws on any type of failure.
+	 *
+	 * @async
+	 * @public
+	 * @param {object} jwk - JWK object
+	 * @return {Promise<PublicKey>} - Returns itself for chaining
+	 */
 	async fromJWK(jwk, extractable) {
+
 		// Copy JWK
 		const jwkCopy = JSON.parse(JSON.stringify(jwk));
-
 		// Force extractable flag if specified
 		if (
 			typeof extractable !== "undefined" &&
@@ -913,18 +957,31 @@ class Key {
 		}
 
 		// Store alg
-		this._alg = jwkToAlgorithm(jwkCopy);
+		this.setAlgorithm(jwkCopy);
 
 		// Import jwk with Jose
 		this._original_jwk = jwk;
-		const generatedKey = await jose.importJWK(
+		const generatedKey = await webcrypto.subtle.importKey(
+			"jwk",
 			jwkCopy,
-			algMap$1[jwkCopy.alg] || jwkCopy.alg,
+			this.getAlgorithm(),
+			true,
+			["verify"]
 		);
 		this._key = generatedKey;
-		return this._key;
+		return this;
 	}
 
+	/**
+	 * Import public key from COSE data. Throws on any type of failure.
+	 * 
+	 * Internally this function converts COSE to a JWK, then calls .fromJwk() to import key to CryptoKey
+	 *
+	 * @async
+	 * @public
+	 * @param {object} cose - COSE data
+	 * @return {Promise<PublicKey>} - Returns itself for chaining
+	 */
 	async fromCose(cose) {
 		if (typeof cose !== "object") {
 			throw new TypeError(
@@ -968,7 +1025,7 @@ class Key {
 			retKey[name] = value;
 		}
 
-		const keyParams = keyParamList[retKey.kty];
+		const keyParams = coseKeyParamList[retKey.kty];
 
 		// parse key-specific parameters
 		for (const kv of extraMap) {
@@ -990,19 +1047,36 @@ class Key {
 			retKey[name] = value;
 		}
 
-		// Import key from jwk
+		// Store reference to original cose object
 		this._original_cose = cose;
 
+		// Set algorithm from cose JWK-like
+		this.setAlgorithm(retKey);
+
+		// Convert cose algorithm identifier to jwk algorithm name
+		retKey.alg = algToJWKAlg[retKey.alg];
+
 		await this.fromJWK(retKey, true);
-		return this._key;
+		return this;
 	}
 
+	/**
+	 * Exports public key to PEM. 
+	 * - Reuses original PEM string if present.
+	 * - Possible to force regeneration of PEM string by setting 'forcedExport' parameter to true
+	 * - Throws on any kind of failure
+	 *
+	 * @async
+	 * @public
+	 * @param {boolean} [forcedExport] - Force regeneration of PEM string even if original PEM-string is available
+	 * @return {Promise<string>} - Returns PEM string
+	 */
 	async toPem(forcedExport) {
 		if (this._original_pem && !forcedExport) {
 			return this._original_pem;
 		} else if (this.getKey()) {
-			let pemResult = await jose.exportSPKI(this.getKey());
-
+			const pemResult = abToPem("PUBLIC KEY",await webcrypto.subtle.exportKey("spki", this.getKey()));
+			
 			// Add trailing \n if missing (Deno only)
 			if (pemResult[pemResult.length - 1] !== "\n") {
 				pemResult += "\n";
@@ -1014,6 +1088,14 @@ class Key {
 		}
 	}
 
+	/**
+	 * Exports public key to JWK. 
+	 * - Only works if original jwk from 'fromJwk()' is available
+	 * - Throws on any kind of failure
+	 *
+	 * @public
+	 * @return {object} - Returns JWK object
+	 */
 	toJwk() {
 		if (this._original_jwk) {
 			return this._original_jwk;
@@ -1022,6 +1104,14 @@ class Key {
 		}
 	}
 
+	/**
+	 * Exports public key to COSE data 
+	 * - Only works if original cose data from 'fromCose()' is available
+	 * - Throws on any kind of failure
+	 *
+	 * @public
+	 * @return {object} - Returns COSE data object
+	 */
 	toCose() {
 		if (this._original_cose) {
 			return this._original_cose;
@@ -1030,6 +1120,14 @@ class Key {
 		}
 	}
 
+	/**
+	 * Returns internal key in CryptoKey format
+	 * - Mainly intended for internal use
+	 * - Throws if internal CryptoKey does not exist
+	 *
+	 * @public
+	 * @return {CryptoKey} - Internal CryptoKey instance, or undefined
+	 */
 	getKey() {
 		if (this._key) {
 			return this._key;
@@ -1038,9 +1136,119 @@ class Key {
 		}
 	}
 
+	/**
+	 * Returns internal algorithm, which should be of one of the following formats 
+	 * - RsaHashedImportParams
+	 * - EcKeyImportParams
+	 * - undefined
+	 *
+	 * @public
+	 * @return {object|undefined} - Internal algorithm representation, or undefined
+	 */
 	getAlgorithm() {
 		return this._alg;
 	}
+
+	/**
+	 * Sets internal algorithm identifier in format used by webcrypto, should be one of
+	 * - Allows adding missing properties
+	 * - Makes sure `alg.hash` is is `{ hash: { name: 'foo'} }` format
+	 * - Syncs back updated algorithm to this._key
+	 *
+	 * @public
+	 * @param {object} - RsaHashedImportParams, EcKeyImportParams, JWK or JWK-like
+	 * @return {object|undefined} - Internal algorithm representation, or undefined
+	 */
+	setAlgorithm(algorithmInput) {
+
+		let algorithmOutput = this._alg || {};
+
+		// Check for name if not already present
+		// From Algorithm object
+		if (algorithmInput.name) {
+			algorithmOutput.name = algorithmInput.name;
+			// JWK or JWK-like
+		} else if (algorithmInput.alg) {
+			const algMapResult = algorithmInputMap[algorithmInput.alg];
+			if (algMapResult) {
+				algorithmOutput.name = algMapResult;	
+			}
+		}
+
+		// Check for hash if not already present
+		// From Algorithm object
+		if (algorithmInput.hash) {
+			if (algorithmInput.hash.name) {
+				algorithmOutput.hash = algorithmInput.hash;
+			} else {
+				algorithmOutput.hash = { name: algorithmInput.hash };			}
+			// Try to extract hash from JWK-like .alg
+		} else if (algorithmInput.alg) {
+			let hashMapResult = inputHashMap[algorithmInput.alg];
+			if (hashMapResult) {
+				algorithmOutput.hash = { name: hashMapResult };
+			}
+
+		}
+
+		// Try to extract namedCurve if not already present
+		if (algorithmInput.namedCurve) {
+			algorithmOutput.namedCurve = algorithmInput.namedCurve;
+		} else if (algorithmInput.crv) {
+			algorithmOutput.namedCurve = algorithmInput.crv;
+		}
+
+		// Set this._alg if any algorithm properties existed, or were added
+		if (Object.keys(algorithmOutput).length > 0) {
+			this._alg = algorithmOutput;
+
+			// Sync algorithm hash to CryptoKey
+			if (this._alg.hash && this._key) {
+				this._key.algorithm.hash = this._alg.hash;
+			}
+		}
+
+	}
+
+}
+
+/** 
+ * Utility function to convert a cose algorithm to string
+ * @param {string|number} - Cose algorithm
+*/
+function coseAlgToStr(alg) {
+	if (typeof alg !== "number") {
+		throw new TypeError("expected 'alg' to be a number, got: " + alg);
+	}
+
+	const algValues = coseLabels["3"].values;
+
+	const mapResult = algValues[alg];
+	if (!mapResult) {
+		throw new Error("'alg' is not a valid COSE algorithm number");
+	}
+
+	return algValues[alg];
+}
+
+
+/** 
+ * Utility function to convert a cose hashing algorithm to string
+ * @param {string|number} - Cose algorithm
+ */
+function coseAlgToHashStr(alg) {
+	if (typeof alg === "number") alg = coseAlgToStr(alg);
+
+	if (typeof alg !== "string") {
+		throw new Error("'alg' is not a string or a valid COSE algorithm number");
+	}
+
+	const mapResult = inputHashMap[alg];
+	if (!mapResult) {
+		throw new Error("'alg' is not a valid COSE algorithm");
+	}
+
+	return inputHashMap[alg];
 }
 
 // External dependencies
@@ -1256,19 +1464,24 @@ function checkRpId(rpId) {
 }
 
 async function verifySignature(publicKey, expectedSignature, data, hashName) {
+
 	let publicKeyInst;
-	if (publicKey instanceof Key) {
+	if (publicKey instanceof PublicKey) {
 		publicKeyInst = publicKey;
 
-		// Check for Public CryptoKey
+	// Check for Public CryptoKey
 	} else if (publicKey && publicKey.type === "public") {
-		publicKeyInst = new Key(publicKey);
-
-		// Try importing from PEM
+		publicKeyInst = new PublicKey();
+		publicKeyInst.fromCryptoKey(publicKey);
+	
+	// Try importing from PEM
 	} else {
-		publicKeyInst = new Key();
-		await publicKeyInst.fromPem(publicKey, hashName);
+		publicKeyInst = new PublicKey();
+		await publicKeyInst.fromPem(publicKey);
+
 	}
+	
+	// Check for valid algorithm
 	const alg = publicKeyInst.getAlgorithm();
 	if (typeof alg === "undefined") {
 		throw new Error("verifySignature: Algoritm missing.");
@@ -1284,12 +1497,15 @@ async function verifySignature(publicKey, expectedSignature, data, hashName) {
 		throw new Error("verifySignature: Hash name missing.");
 	}
 
+	// Sync (possible updated) algorithm back to key
+	publicKeyInst.setAlgorithm(alg);
+
 	try {
 		let uSignature = new Uint8Array(expectedSignature);
 		if (alg.name === "ECDSA") {
 			uSignature = await derToRaw(uSignature);
 		}
-		return await webcrypto.subtle.verify(alg, publicKeyInst.getKey(), uSignature, new Uint8Array(data));
+		return await webcrypto.subtle.verify(publicKeyInst.getAlgorithm(), publicKeyInst.getKey(), uSignature, new Uint8Array(data));
 	} catch (_e) {
 		console.error(_e);
 	}
@@ -2661,7 +2877,7 @@ async function parseAuthenticatorData(authnrDataArrayBuffer) {
 		offset += credIdLen;
 
 		// Import public key
-		const publicKey = new Key();
+		const publicKey = new PublicKey();
 		await publicKey.fromCose(
 			authnrDataBuf.buffer.slice(offset, authnrDataBuf.buffer.byteLength),
 		);
@@ -4068,8 +4284,8 @@ function tpmParseFn(attStmt) {
 
 	// alg
 	const alg = {
-		algName: algToStr(attStmt.alg),
-		hashAlg: algToHashStr(attStmt.alg),
+		algName: coseAlgToStr(attStmt.alg),
+		hashAlg: coseAlgToHashStr(attStmt.alg),
 	};
 	ret.set("alg", alg);
 
@@ -5464,9 +5680,9 @@ exports.Fido2AssertionResult = Fido2AssertionResult;
 exports.Fido2AttestationResult = Fido2AttestationResult;
 exports.Fido2Lib = Fido2Lib;
 exports.Fido2Result = Fido2Result;
-exports.Key = Key;
 exports.MdsCollection = MdsCollection;
 exports.MdsEntry = MdsEntry;
+exports.PublicKey = PublicKey;
 exports.abToBuf = abToBuf$1;
 exports.abToHex = abToHex;
 exports.androidSafetyNetAttestation = androidSafetyNetAttestation;
@@ -5476,6 +5692,8 @@ exports.attach = attach;
 exports.coerceToArrayBuffer = coerceToArrayBuffer$1;
 exports.coerceToBase64 = coerceToBase64;
 exports.coerceToBase64Url = coerceToBase64Url;
+exports.coseAlgToHashStr = coseAlgToHashStr;
+exports.coseAlgToStr = coseAlgToStr;
 exports.fidoU2fAttestation = fidoU2fAttestation;
 exports.helpers = helpers;
 exports.isBase64Url = isBase64Url;

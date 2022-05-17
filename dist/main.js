@@ -50252,6 +50252,68 @@ function coerceToArrayBuffer(buf, name) {
     }
     return buf;
 }
+function coerceToBase64(thing, name) {
+    if (!name) {
+        throw new TypeError("name not specified in coerceToBase64");
+    }
+    if (typeof thing !== "string") {
+        try {
+            thing = mod5.base64.fromArrayBuffer(coerceToArrayBuffer(thing, name));
+        } catch (_err) {
+            throw new Error(`could not coerce '${name}' to string`);
+        }
+    }
+    return thing;
+}
+function str2ab(str) {
+    const buf = new ArrayBuffer(str.length);
+    const bufView = new Uint8Array(buf);
+    for(let i209 = 0, strLen = str.length; i209 < strLen; i209++){
+        bufView[i209] = str.charCodeAt(i209);
+    }
+    return buf;
+}
+function coerceToBase64Url(thing, name) {
+    if (!name) {
+        throw new TypeError("name not specified in coerceToBase64");
+    }
+    if (typeof thing === "string") {
+        thing = thing.replace(/\+/g, "-").replace(/\//g, "_").replace(/=*$/g, "");
+    }
+    if (typeof thing !== "string") {
+        try {
+            thing = mod5.base64.fromArrayBuffer(coerceToArrayBuffer(thing, name), true);
+        } catch (_err) {
+            throw new Error(`could not coerce '${name}' to string`);
+        }
+    }
+    return thing;
+}
+function arrayBufferEquals(b1, b2) {
+    if (!(b1 instanceof ArrayBuffer) || !(b2 instanceof ArrayBuffer)) {
+        return false;
+    }
+    if (b1.byteLength !== b2.byteLength) {
+        return false;
+    }
+    b1 = new Uint8Array(b1);
+    b2 = new Uint8Array(b2);
+    for(let i214 = 0; i214 < b1.byteLength; i214++){
+        if (b1[i214] !== b2[i214]) return false;
+    }
+    return true;
+}
+function abToHex(ab) {
+    if (!(ab instanceof ArrayBuffer)) {
+        throw new TypeError("Invalid argument passed to abToHex");
+    }
+    const result = Array.prototype.map.call(new Uint8Array(ab), (x)=>("00" + x.toString(16)).slice(-2)
+    ).join("");
+    return result;
+}
+function b64ToJsObject(b64, desc) {
+    return JSON.parse(ab2str(coerceToArrayBuffer(b64, desc)));
+}
 if (typeof self !== "undefined" && "crypto" in self) {
     console.warn("[FIDO2-LIB] Native crypto is enabled");
     webcrypto = self.crypto;
@@ -50355,8 +50417,8 @@ function validDomainName(value) {
     }
     const labels = ascii.split(".");
     let label;
-    for(let i209 = 0; i209 < labels.length; ++i209){
-        label = labels[i209];
+    for(let i215 = 0; i215 < labels.length; ++i215){
+        label = labels[i215];
         if (!label.length) {
             return false;
         }
@@ -50394,13 +50456,14 @@ function checkRpId(rpId) {
 }
 async function verifySignature(publicKey, expectedSignature, data, hashName) {
     let publicKeyInst;
-    if (publicKey instanceof Key) {
+    if (publicKey instanceof PublicKey) {
         publicKeyInst = publicKey;
     } else if (publicKey && publicKey.type === "public") {
-        publicKeyInst = new Key(publicKey);
+        publicKeyInst = new PublicKey();
+        publicKeyInst.fromCryptoKey(publicKey);
     } else {
-        publicKeyInst = new Key();
-        await publicKeyInst.fromPem(publicKey, hashName);
+        publicKeyInst = new PublicKey();
+        await publicKeyInst.fromPem(publicKey);
     }
     const alg = publicKeyInst.getAlgorithm();
     if (typeof alg === "undefined") {
@@ -50414,12 +50477,13 @@ async function verifySignature(publicKey, expectedSignature, data, hashName) {
     if (!alg.hash) {
         throw new Error("verifySignature: Hash name missing.");
     }
+    publicKeyInst.setAlgorithm(alg);
     try {
         let uSignature = new Uint8Array(expectedSignature);
         if (alg.name === "ECDSA") {
             uSignature = await derToRaw(uSignature);
         }
-        return await webcrypto.subtle.verify(alg, publicKeyInst.getKey(), uSignature, new Uint8Array(data));
+        return await webcrypto.subtle.verify(publicKeyInst.getAlgorithm(), publicKeyInst.getKey(), uSignature, new Uint8Array(data));
     } catch (_e) {
         console.error(_e);
     }
@@ -50476,68 +50540,6 @@ const mod5 = {
     verifySignature: verifySignature,
     webcrypto: webcrypto
 };
-function coerceToBase64(thing, name) {
-    if (!name) {
-        throw new TypeError("name not specified in coerceToBase64");
-    }
-    if (typeof thing !== "string") {
-        try {
-            thing = mod5.base64.fromArrayBuffer(coerceToArrayBuffer(thing, name));
-        } catch (_err) {
-            throw new Error(`could not coerce '${name}' to string`);
-        }
-    }
-    return thing;
-}
-function str2ab(str) {
-    const buf = new ArrayBuffer(str.length);
-    const bufView = new Uint8Array(buf);
-    for(let i214 = 0, strLen = str.length; i214 < strLen; i214++){
-        bufView[i214] = str.charCodeAt(i214);
-    }
-    return buf;
-}
-function coerceToBase64Url(thing, name) {
-    if (!name) {
-        throw new TypeError("name not specified in coerceToBase64");
-    }
-    if (typeof thing === "string") {
-        thing = thing.replace(/\+/g, "-").replace(/\//g, "_").replace(/=*$/g, "");
-    }
-    if (typeof thing !== "string") {
-        try {
-            thing = mod5.base64.fromArrayBuffer(coerceToArrayBuffer(thing, name), true);
-        } catch (_err) {
-            throw new Error(`could not coerce '${name}' to string`);
-        }
-    }
-    return thing;
-}
-function arrayBufferEquals(b1, b2) {
-    if (!(b1 instanceof ArrayBuffer) || !(b2 instanceof ArrayBuffer)) {
-        return false;
-    }
-    if (b1.byteLength !== b2.byteLength) {
-        return false;
-    }
-    b1 = new Uint8Array(b1);
-    b2 = new Uint8Array(b2);
-    for(let i215 = 0; i215 < b1.byteLength; i215++){
-        if (b1[i215] !== b2[i215]) return false;
-    }
-    return true;
-}
-function abToHex(ab) {
-    if (!(ab instanceof ArrayBuffer)) {
-        throw new TypeError("Invalid argument passed to abToHex");
-    }
-    const result = Array.prototype.map.call(new Uint8Array(ab), (x)=>("00" + x.toString(16)).slice(-2)
-    ).join("");
-    return result;
-}
-function b64ToJsObject(b64, desc) {
-    return JSON.parse(ab2str(coerceToArrayBuffer(b64, desc)));
-}
 function jsObjectToB64(obj) {
     return mod5.base64.fromString(JSON.stringify(obj).replace(/[\u{0080}-\u{FFFF}]/gu, ""));
 }
@@ -50670,15 +50672,40 @@ class Certificate1 {
         return ret;
     }
 }
-function getKeyInfo(ber) {
-    const asn1 = mod5.fromBER(ber);
-    if (asn1.offset === -1) {
-        throw new Error("error parsing ASN.1");
+const coseLabels = {
+    1: {
+        name: "kty",
+        values: {
+            2: "EC",
+            3: "RSA"
+        }
+    },
+    2: {
+        name: "kid",
+        values: {}
+    },
+    3: {
+        name: "alg",
+        values: {
+            "-7": "ECDSA_w_SHA256",
+            "-8": "EdDSA",
+            "-35": "ECDSA_w_SHA384",
+            "-36": "ECDSA_w_SHA512",
+            "-257": "RSASSA-PKCS1-v1_5_w_SHA256",
+            "-258": "RSASSA-PKCS1-v1_5_w_SHA384",
+            "-259": "RSASSA-PKCS1-v1_5_w_SHA512",
+            "-65535": "RSASSA-PKCS1-v1_5_w_SHA1"
+        }
+    },
+    4: {
+        name: "key_ops",
+        values: {}
+    },
+    5: {
+        name: "base_iv",
+        values: {}
     }
-    return new mod5.pkijs.PublicKeyInfo({
-        schema: asn1.result
-    });
-}
+};
 function resolveOid(id, value) {
     const ret = {
         id,
@@ -51058,70 +51085,7 @@ class CertManager {
 const helpers = {
     resolveOid
 };
-const coseLabels = {
-    1: {
-        name: "kty",
-        values: {
-            2: "EC",
-            3: "RSA"
-        }
-    },
-    2: {
-        name: "kid",
-        values: {}
-    },
-    3: {
-        name: "alg",
-        values: {
-            "-7": "ECDSA_w_SHA256",
-            "-8": "EdDSA",
-            "-35": "ECDSA_w_SHA384",
-            "-36": "ECDSA_w_SHA512",
-            "-257": "RSASSA-PKCS1-v1_5_w_SHA256",
-            "-258": "RSASSA-PKCS1-v1_5_w_SHA384",
-            "-259": "RSASSA-PKCS1-v1_5_w_SHA512",
-            "-65535": "RSASSA-PKCS1-v1_5_w_SHA1"
-        }
-    },
-    4: {
-        name: "key_ops",
-        values: {}
-    },
-    5: {
-        name: "base_iv",
-        values: {}
-    }
-};
-const algHashes = {
-    ECDSA_w_SHA256: "SHA-256",
-    ECDSA_w_SHA384: "SHA-384",
-    ECDSA_w_SHA512: "SHA-512",
-    "RSASSA-PKCS1-v1_5_w_SHA256": "SHA-256",
-    "RSASSA-PKCS1-v1_5_w_SHA384": "SHA-384",
-    "RSASSA-PKCS1-v1_5_w_SHA512": "SHA-512",
-    "RSASSA-PKCS1-v1_5_w_SHA1": "SHA-1"
-};
-const algMap = {
-    "RSASSA-PKCS1-v1_5_w_SHA256": "RS256",
-    "ECDSA_w_SHA256": "ES256",
-    "ECDSA_w_SHA384": "ES256",
-    "ECDSA_w_SHA512": "ES256"
-};
-function algToStr(alg) {
-    if (typeof alg !== "number") {
-        throw new TypeError("expected 'alg' to be a number, got: " + alg);
-    }
-    const algValues = coseLabels["3"].values;
-    return algValues[alg];
-}
-function algToHashStr(alg) {
-    if (typeof alg === "number") alg = algToStr(alg);
-    if (typeof alg !== "string") {
-        throw new Error("'alg' is not a string or a valid COSE algorithm number");
-    }
-    return algHashes[alg];
-}
-const keyParamList = {
+const coseKeyParamList = {
     EC: {
         "-1": {
             name: "crv",
@@ -51184,37 +51148,56 @@ const keyParamList = {
         }
     }
 };
-function jwkToAlgorithm(jwk) {
-    const alg = {};
-    if (algMap[jwk.alg]) {
-        alg.name = algMap[jwk.alg];
-    }
-    if (algHashes[jwk.alg]) {
-        alg.hash = algHashes[jwk.alg];
-    }
-    if (jwk.crv) {
-        alg.namedCurve = jwk.crv;
-    }
-    return alg;
-}
-class Key {
-    constructor(key, alg){
+const algToJWKAlg = {
+    "RSASSA-PKCS1-v1_5_w_SHA256": "RS256",
+    "RSASSA-PKCS1-v1_5_w_SHA384": "RS256",
+    "RSASSA-PKCS1-v1_5_w_SHA512": "RS256",
+    "RSASSA-PKCS1-v1_5_w_SHA1": "RS256",
+    "ECDSA_w_SHA256": "ES256",
+    "ECDSA_w_SHA384": "ES256",
+    "ECDSA_w_SHA512": "ES256"
+};
+const algorithmInputMap = {
+    "RSASSA-PKCS1-v1_5_w_SHA256": "RSASSA-PKCS1-v1_5",
+    "RSASSA-PKCS1-v1_5_w_SHA384": "RSASSA-PKCS1-v1_5",
+    "RSASSA-PKCS1-v1_5_w_SHA512": "RSASSA-PKCS1-v1_5",
+    "RSASSA-PKCS1-v1_5_w_SHA1": "RSASSA-PKCS1-v1_5",
+    "ECDSA_w_SHA256": "ECDSA",
+    "ECDSA_w_SHA384": "ECDSA",
+    "ECDSA_w_SHA512": "ECDSA",
+    "RS256": "RSASSA-PKCS1-v1_5",
+    "ES256": "ECDSA"
+};
+const inputHashMap = {
+    "RSASSA-PKCS1-v1_5_w_SHA256": "SHA-256",
+    "RSASSA-PKCS1-v1_5_w_SHA384": "SHA-384",
+    "RSASSA-PKCS1-v1_5_w_SHA512": "SHA-512",
+    "RSASSA-PKCS1-v1_5_w_SHA1": "SHA-1",
+    "ECDSA_w_SHA256": "SHA-256",
+    "ECDSA_w_SHA384": "SHA-384",
+    "ECDSA_w_SHA512": "SHA-512"
+};
+class PublicKey {
+    constructor(){
         this._original_pem = undefined;
         this._original_jwk = undefined;
         this._original_cose = undefined;
-        if (key && (!key.type || key.type !== "public")) {
-            throw new TypeError("Invalid argument passed to Key constructor, should be instance of CryptoKey with type public");
+        this._alg = undefined;
+        this._key = undefined;
+    }
+    fromCryptoKey(key, alg) {
+        if (!key) {
+            throw new TypeError("No key passed");
         }
-        if (key && !alg) {
-            if (key.algorithm) {
-                alg = key.algorithm;
-            } else {
-                throw new TypeError("Key cannot be supplied without algorithm");
-            }
+        if (key && (!key.type || key.type !== "public")) {
+            throw new TypeError("Invalid argument passed to fromCryptoKey, should be instance of CryptoKey with type public");
         }
         this._key = key;
-        this._alg = alg;
-        this._keyinfo = undefined;
+        this.setAlgorithm(key.algorithm);
+        if (alg) {
+            this.setAlgorithm(alg);
+        }
+        return this;
     }
     async fromPem(pem, hashName) {
         let base64ber, ber;
@@ -51230,43 +51213,51 @@ class Key {
         if (ber.byteLength === 0) {
             throw new Error("Supplied key ber was empty (0 bytes)");
         }
-        this._keyInfo = getKeyInfo(ber);
+        const asn1 = mod5.fromBER(ber);
+        if (asn1.offset === -1) {
+            throw new Error("error parsing ASN.1");
+        }
+        let keyInfo = new mod5.pkijs.PublicKeyInfo({
+            schema: asn1.result
+        });
         const algorithm = {};
-        if (this._keyInfo.algorithm.algorithmId === "1.2.840.10045.2.1") {
+        if (keyInfo.algorithm.algorithmId === "1.2.840.10045.2.1") {
             algorithm.name = "ECDSA";
-            const parsedKey = this._keyInfo.parsedKey;
+            const parsedKey = keyInfo.parsedKey;
             if (parsedKey && parsedKey.namedCurve === "1.2.840.10045.3.1.7") {
                 algorithm.namedCurve = "P-256";
             } else {
                 algorithm.namedCurve = "P-256";
             }
-        } else if (this._keyInfo.algorithm.algorithmId === "1.2.840.113549.1.1.1") {
+        } else if (keyInfo.algorithm.algorithmId === "1.2.840.113549.1.1.1") {
             algorithm.name = "RSASSA-PKCS1-v1_5";
             algorithm.hash = hashName || "SHA-256";
         }
+        this.setAlgorithm(algorithm);
         let importSPKIResult;
         try {
             importSPKIResult = await mod5.webcrypto.subtle.importKey("spki", ber, algorithm, true, [
                 "verify"
             ]);
         } catch (_e1) {
-            throw new Error("Unsupported key format", _e1, _e2);
+            throw new Error("Unsupported key format", _e1);
         }
         this._original_pem = pem;
         this._key = importSPKIResult;
-        this._alg = algorithm;
-        return this._key;
+        return this;
     }
     async fromJWK(jwk, extractable) {
         const jwkCopy = JSON.parse(JSON.stringify(jwk));
         if (typeof extractable !== "undefined" && typeof extractable === "boolean") {
             jwkCopy.ext = extractable;
         }
-        this._alg = jwkToAlgorithm(jwkCopy);
+        this.setAlgorithm(jwkCopy);
         this._original_jwk = jwk;
-        const generatedKey = await mod5.importJWK(jwkCopy, algMap[jwkCopy.alg] || jwkCopy.alg);
+        const generatedKey = await mod5.webcrypto.subtle.importKey("jwk", jwkCopy, this.getAlgorithm(), true, [
+            "verify"
+        ]);
         this._key = generatedKey;
-        return this._key;
+        return this;
     }
     async fromCose(cose) {
         if (typeof cose !== "object") {
@@ -51298,7 +51289,7 @@ class Key {
             }
             retKey[name] = value;
         }
-        const keyParams = keyParamList[retKey.kty];
+        const keyParams = coseKeyParamList[retKey.kty];
         for (const kv1 of extraMap){
             const key = kv1[0].toString();
             let value = kv1[1];
@@ -51313,14 +51304,16 @@ class Key {
             retKey[name] = value;
         }
         this._original_cose = cose;
+        this.setAlgorithm(retKey);
+        retKey.alg = algToJWKAlg[retKey.alg];
         await this.fromJWK(retKey, true);
-        return this._key;
+        return this;
     }
     async toPem(forcedExport) {
         if (this._original_pem && !forcedExport) {
             return this._original_pem;
         } else if (this.getKey()) {
-            let pemResult = await mod5.exportSPKI(this.getKey());
+            const pemResult = abToPem("PUBLIC KEY", await mod5.webcrypto.subtle.exportKey("spki", this.getKey()));
             if (pemResult[pemResult.length - 1] !== "\n") {
                 pemResult += "\n";
             }
@@ -51353,6 +51346,66 @@ class Key {
     getAlgorithm() {
         return this._alg;
     }
+    setAlgorithm(algorithmInput) {
+        let algorithmOutput = this._alg || {};
+        if (algorithmInput.name) {
+            algorithmOutput.name = algorithmInput.name;
+        } else if (algorithmInput.alg) {
+            const algMapResult = algorithmInputMap[algorithmInput.alg];
+            if (algMapResult) {
+                algorithmOutput.name = algMapResult;
+            }
+        }
+        if (algorithmInput.hash) {
+            if (algorithmInput.hash.name) {
+                algorithmOutput.hash = algorithmInput.hash;
+            } else {
+                algorithmOutput.hash = {
+                    name: algorithmInput.hash
+                };
+            }
+        } else if (algorithmInput.alg) {
+            let hashMapResult = inputHashMap[algorithmInput.alg];
+            if (hashMapResult) {
+                algorithmOutput.hash = {
+                    name: hashMapResult
+                };
+            }
+        }
+        if (algorithmInput.namedCurve) {
+            algorithmOutput.namedCurve = algorithmInput.namedCurve;
+        } else if (algorithmInput.crv) {
+            algorithmOutput.namedCurve = algorithmInput.crv;
+        }
+        if (Object.keys(algorithmOutput).length > 0) {
+            this._alg = algorithmOutput;
+            if (this._alg.hash && this._key) {
+                this._key.algorithm.hash = this._alg.hash;
+            }
+        }
+    }
+}
+function coseAlgToStr(alg) {
+    if (typeof alg !== "number") {
+        throw new TypeError("expected 'alg' to be a number, got: " + alg);
+    }
+    const algValues = coseLabels["3"].values;
+    const mapResult = algValues[alg];
+    if (!mapResult) {
+        throw new Error("'alg' is not a valid COSE algorithm number");
+    }
+    return algValues[alg];
+}
+function coseAlgToHashStr(alg) {
+    if (typeof alg === "number") alg = coseAlgToStr(alg);
+    if (typeof alg !== "string") {
+        throw new Error("'alg' is not a string or a valid COSE algorithm number");
+    }
+    const mapResult = inputHashMap[alg];
+    if (!mapResult) {
+        throw new Error("'alg' is not a valid COSE algorithm");
+    }
+    return inputHashMap[alg];
 }
 const fidoMdsRootCert = "-----BEGIN CERTIFICATE-----\n" + "MIIDXzCCAkegAwIBAgILBAAAAAABIVhTCKIwDQYJKoZIhvcNAQELBQAwTDEgMB4G\n" + "A1UECxMXR2xvYmFsU2lnbiBSb290IENBIC0gUjMxEzARBgNVBAoTCkdsb2JhbFNp\n" + "Z24xEzARBgNVBAMTCkdsb2JhbFNpZ24wHhcNMDkwMzE4MTAwMDAwWhcNMjkwMzE4\n" + "MTAwMDAwWjBMMSAwHgYDVQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEG\n" + "A1UEChMKR2xvYmFsU2lnbjETMBEGA1UEAxMKR2xvYmFsU2lnbjCCASIwDQYJKoZI\n" + "hvcNAQEBBQADggEPADCCAQoCggEBAMwldpB5BngiFvXAg7aEyiie/QV2EcWtiHL8\n" + "RgJDx7KKnQRfJMsuS+FggkbhUqsMgUdwbN1k0ev1LKMPgj0MK66X17YUhhB5uzsT\n" + "gHeMCOFJ0mpiLx9e+pZo34knlTifBtc+ycsmWQ1z3rDI6SYOgxXG71uL0gRgykmm\n" + "KPZpO/bLyCiR5Z2KYVc3rHQU3HTgOu5yLy6c+9C7v/U9AOEGM+iCK65TpjoWc4zd\n" + "QQ4gOsC0p6Hpsk+QLjJg6VfLuQSSaGjlOCZgdbKfd/+RFO+uIEn8rUAVSNECMWEZ\n" + "XriX7613t2Saer9fwRPvm2L7DWzgVGkWqQPabumDk3F2xmmFghcCAwEAAaNCMEAw\n" + "DgYDVR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFI/wS3+o\n" + "LkUkrk1Q+mOai97i3Ru8MA0GCSqGSIb3DQEBCwUAA4IBAQBLQNvAUKr+yAzv95ZU\n" + "RUm7lgAJQayzE4aGKAczymvmdLm6AC2upArT9fHxD4q/c2dKg8dEe3jgr25sbwMp\n" + "jjM5RcOO5LlXbKr8EpbsU8Yt5CRsuZRj+9xTaGdWPoO4zzUhw8lo/s7awlOqzJCK\n" + "6fBdRoyV3XpYKBovHd7NADdBj+1EbddTKJd+82cEHhXXipa0095MJ6RMG3NzdvQX\n" + "mcIfeg7jLQitChws/zyrVQ4PkX4268NXSb7hLi18YIvDQVETI53O9zJrlAGomecs\n" + "Mx86OyXShkDOOyyGeMlhLxS67ttVb9+E7gUJTb0o2HLO02JQZR7rkpeDMdmztcpH\n" + "WD9f\n" + "-----END CERTIFICATE-----\n";
 class MdsEntry {
@@ -51398,8 +51451,8 @@ class MdsEntry {
         if (this.authenticationAlgorithms) {
             this.authenticationAlgorithm = this.authenticationAlgorithms[0];
         }
-        this.authenticationAlgorithm = typeof this.authenticationAlgorithm === "string" ? this.authenticationAlgorithm : algToStr1(this.authenticationAlgorithm);
-        function algToStr1(alg) {
+        this.authenticationAlgorithm = typeof this.authenticationAlgorithm === "string" ? this.authenticationAlgorithm : algToStr(this.authenticationAlgorithm);
+        function algToStr(alg) {
             switch(alg){
                 case 1:
                     return "ALG_SIGN_SECP256R1_ECDSA_SHA256_RAW";
@@ -51709,7 +51762,7 @@ const noneAttestation = {
 const u2fRootCerts = [
     "MIIDHjCCAgagAwIBAgIEG0BT9zANBgkqhkiG9w0BAQsFADAuMSwwKgYDVQQDEyNZ\n" + "dWJpY28gVTJGIFJvb3QgQ0EgU2VyaWFsIDQ1NzIwMDYzMTAgFw0xNDA4MDEwMDAw\n" + "MDBaGA8yMDUwMDkwNDAwMDAwMFowLjEsMCoGA1UEAxMjWXViaWNvIFUyRiBSb290\n" + "IENBIFNlcmlhbCA0NTcyMDA2MzEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK\n" + "AoIBAQC/jwYuhBVlqaiYWEMsrWFisgJ+PtM91eSrpI4TK7U53mwCIawSDHy8vUmk\n" + "5N2KAj9abvT9NP5SMS1hQi3usxoYGonXQgfO6ZXyUA9a+KAkqdFnBnlyugSeCOep\n" + "8EdZFfsaRFtMjkwz5Gcz2Py4vIYvCdMHPtwaz0bVuzneueIEz6TnQjE63Rdt2zbw\n" + "nebwTG5ZybeWSwbzy+BJ34ZHcUhPAY89yJQXuE0IzMZFcEBbPNRbWECRKgjq//qT\n" + "9nmDOFVlSRCt2wiqPSzluwn+v+suQEBsUjTGMEd25tKXXTkNW21wIWbxeSyUoTXw\n" + "LvGS6xlwQSgNpk2qXYwf8iXg7VWZAgMBAAGjQjBAMB0GA1UdDgQWBBQgIvz0bNGJ\n" + "hjgpToksyKpP9xv9oDAPBgNVHRMECDAGAQH/AgEAMA4GA1UdDwEB/wQEAwIBBjAN\n" + "BgkqhkiG9w0BAQsFAAOCAQEAjvjuOMDSa+JXFCLyBKsycXtBVZsJ4Ue3LbaEsPY4\n" + "MYN/hIQ5ZM5p7EjfcnMG4CtYkNsfNHc0AhBLdq45rnT87q/6O3vUEtNMafbhU6kt\n" + "hX7Y+9XFN9NpmYxr+ekVY5xOxi8h9JDIgoMP4VB1uS0aunL1IGqrNooL9mmFnL2k\n" + "LVVee6/VR6C5+KSTCMCWppMuJIZII2v9o4dkoZ8Y7QRjQlLfYzd3qGtKbw7xaF1U\n" + "sG/5xUb/Btwb2X2g4InpiB/yt/3CpQXpiWX/K4mBvUKiGn05ZsqeY1gx4g0xLBqc\n" + "U9psmyPzK+Vsgw2jeRQ5JlKDyqE0hebfC1tvFu0CCrJFcw==", 
 ];
-const algMap1 = new Map([
+const algMap = new Map([
     [
         -7,
         {
@@ -51741,7 +51794,7 @@ const algMap1 = new Map([
 ]);
 function packedParseFn(attStmt) {
     const ret = new Map();
-    const algEntry = algMap1.get(attStmt.alg);
+    const algEntry = algMap.get(attStmt.alg);
     if (algEntry === undefined) {
         throw new Error("packed attestation: unknown algorithm: " + attStmt.alg);
     }
@@ -52052,8 +52105,8 @@ function tpmParseFn(attStmt) {
     ret.set("sig", coerceToArrayBuffer(attStmt.sig, "tpm signature"));
     ret.set("ver", attStmt.ver);
     const alg = {
-        algName: algToStr(attStmt.alg),
-        hashAlg: algToHashStr(attStmt.alg)
+        algName: coseAlgToStr(attStmt.alg),
+        hashAlg: coseAlgToHashStr(attStmt.alg)
     };
     ret.set("alg", alg);
     const certInfo = parseCertInfo(coerceToArrayBuffer(attStmt.certInfo, "certInfo"));
@@ -53156,7 +53209,7 @@ async function parseAuthenticatorData(authnrDataArrayBuffer) {
         offset += 2;
         ret.set("credId", authnrDataBuf.buffer.slice(offset, offset + credIdLen));
         offset += credIdLen;
-        const publicKey = new Key();
+        const publicKey = new PublicKey();
         await publicKey.fromCose(authnrDataBuf.buffer.slice(offset, authnrDataBuf.buffer.byteLength));
         ret.set("credentialPublicKeyCose", await publicKey.toCose());
         ret.set("credentialPublicKeyJwk", await publicKey.toJwk());
@@ -53201,7 +53254,7 @@ async function parseAuthnrAssertionResponse(msg) {
 }
 export { parseAttestationObject as parseAttestationObject, parseAuthenticatorData as parseAuthenticatorData, parseAuthnrAssertionResponse as parseAuthnrAssertionResponse, parseAuthnrAttestationResponse as parseAuthnrAttestationResponse, parseClientResponse as parseClientResponse, parseExpectations as parseExpectations };
 export { Certificate1 as Certificate, CertManager as CertManager, CRL as CRL, helpers as helpers };
-export { Key as Key };
+export { PublicKey as PublicKey, coseAlgToHashStr as coseAlgToHashStr, coseAlgToStr as coseAlgToStr };
 class Fido2Result {
     constructor(sym){
         if (sym !== lockSym) {
