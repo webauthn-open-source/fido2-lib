@@ -133,7 +133,7 @@ runs.forEach(function(run) {
 			assert.strictEqual(Object.keys(credentialPublicKeyJwk).length, 5);
 			assert.strictEqual(credentialPublicKeyJwk.kty, "EC");
 			assert.strictEqual(credentialPublicKeyJwk.crv, "P-256");
-			assert.strictEqual(credentialPublicKeyJwk.alg, "ECDSA_w_SHA256");
+			assert.strictEqual(credentialPublicKeyJwk.alg, "ES256");
 			// assert.instanceOf(credentialPublicKeyJwk.x, ArrayBuffer);
 			// var expectedX = new Uint8Array([
 			//     0xBB, 0x11, 0xCD, 0xDD, 0x6E, 0x9E, 0x86, 0x9D, 0x15, 0x59, 0x72, 0x9A, 0x30, 0xD8, 0x9E, 0xD4,
