@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>PublicKey - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.addExtension">addExtension</a></li><li data-type='method'><a href="Fido2Lib.html#.addMdsCollection">addMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.clearMdsCollections">clearMdsCollections</a></li><li data-type='method'><a href="Fido2Lib.html#.createMdsCollection">createMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllExtensions">deleteAllExtensions</a></li><li data-type='method'><a href="Fido2Lib.html#.findMdsEntry">findMdsEntry</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li><li data-type='method'><a href="Fido2Lib.html#disableExtension">disableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#enableExtension">enableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#setExtensionOptions">setExtensionOptions</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li><li><a href="MdsCollection.html">MdsCollection</a><ul class='methods'><li data-type='method'><a href="MdsCollection.html#addEntry">addEntry</a></li><li data-type='method'><a href="MdsCollection.html#addToc">addToc</a></li><li data-type='method'><a href="MdsCollection.html#findEntry">findEntry</a></li><li data-type='method'><a href="MdsCollection.html#getToc">getToc</a></li><li data-type='method'><a href="MdsCollection.html#validate">validate</a></li></ul></li><li><a href="MdsEntry.html">MdsEntry</a></li><li><a href="PublicKey.html">PublicKey</a><ul class='methods'><li data-type='method'><a href="PublicKey.html#fromCose">fromCose</a></li><li data-type='method'><a href="PublicKey.html#fromCryptoKey">fromCryptoKey</a></li><li data-type='method'><a href="PublicKey.html#fromJWK">fromJWK</a></li><li data-type='method'><a href="PublicKey.html#fromPem">fromPem</a></li><li data-type='method'><a href="PublicKey.html#getAlgorithm">getAlgorithm</a></li><li data-type='method'><a href="PublicKey.html#getKey">getKey</a></li><li data-type='method'><a href="PublicKey.html#setAlgorithm">setAlgorithm</a></li><li data-type='method'><a href="PublicKey.html#toCose">toCose</a></li><li data-type='method'><a href="PublicKey.html#toJwk">toJwk</a></li><li data-type='method'><a href="PublicKey.html#toPem">toPem</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#coseAlgToHashStr">coseAlgToHashStr</a></li><li><a href="global.html#coseAlgToStr">coseAlgToStr</a></li><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">PublicKey</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        PublicKey
+        </h2>
+        
+            <div class="class-description"><p>Class representing a generic public key,
+with utility functions to convert between different formats
+using Webcrypto</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="PublicKey"><span class="type-signature"></span>new PublicKey<span class="signature">()</span><span class="type-signature"> &rarr; {CryptoKey}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line150">line 150</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Create a empty public key</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">CryptoKey</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="fromCose"><span class="type-signature">(async) </span>fromCose<span class="signature">(cose)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="PublicKey.html">PublicKey</a>>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line351">line 351</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Import public key from COSE data. Throws on any type of failure.</p>
+<p>Internally this function converts COSE to a JWK, then calls .fromJwk() to import key to CryptoKey</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>COSE data</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Returns itself for chaining</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="PublicKey.html">PublicKey</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="fromCryptoKey"><span class="type-signature"></span>fromCryptoKey<span class="signature">(key, alg<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {CryptoKey}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line203">line 203</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Import a CryptoKey, makes basic checks and throws on failure</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">CryptoKey</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>CryptoKey to import</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>alg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Algorithm override</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Returns this for chaining</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">CryptoKey</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="fromJWK"><span class="type-signature">(async) </span>fromJWK<span class="signature">(jwk)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="PublicKey.html">PublicKey</a>>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line313">line 313</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Import public key from JWK. Throws on any type of failure.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>jwk</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>JWK object</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Returns itself for chaining</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="PublicKey.html">PublicKey</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="fromPem"><span class="type-signature">(async) </span>fromPem<span class="signature">(pem)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="PublicKey.html">PublicKey</a>>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line238">line 238</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Import public key from SPKI PEM. Throws on any type of failure.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pem</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>PEM formatted string</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Returns itself for chaining</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="PublicKey.html">PublicKey</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getAlgorithm"><span class="type-signature"></span>getAlgorithm<span class="signature">()</span><span class="type-signature"> &rarr; {object|undefined}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line514">line 514</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Returns internal algorithm, which should be of one of the following formats</p>
+<ul>
+<li>RsaHashedImportParams</li>
+<li>EcKeyImportParams</li>
+<li>undefined</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Internal algorithm representation, or undefined</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getKey"><span class="type-signature"></span>getKey<span class="signature">()</span><span class="type-signature"> &rarr; {CryptoKey}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line497">line 497</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Returns internal key in CryptoKey format</p>
+<ul>
+<li>Mainly intended for internal use</li>
+<li>Throws if internal CryptoKey does not exist</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Internal CryptoKey instance, or undefined</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">CryptoKey</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setAlgorithm"><span class="type-signature"></span>setAlgorithm<span class="signature">(algorithmInput)</span><span class="type-signature"> &rarr; {object|undefined}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line528">line 528</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Sets internal algorithm identifier in format used by webcrypto, should be one of</p>
+<ul>
+<li>Allows adding missing properties</li>
+<li>Makes sure <code>alg.hash</code> is is <code>{ hash: { name: 'foo'} }</code> format</li>
+<li>Syncs back updated algorithm to this._key</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>algorithmInput</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>RsaHashedImportParams, EcKeyImportParams, JWK or JWK-like</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Internal algorithm representation, or undefined</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="toCose"><span class="type-signature"></span>toCose<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line481">line 481</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Exports public key to COSE data</p>
+<ul>
+<li>Only works if original cose data from 'fromCose()' is available</li>
+<li>Throws on any kind of failure</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Returns COSE data object</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="toJwk"><span class="type-signature"></span>toJwk<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line465">line 465</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Exports public key to JWK.</p>
+<ul>
+<li>Only works if original jwk from 'fromJwk()' is available</li>
+<li>Throws on any kind of failure</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Returns JWK object</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="toPem"><span class="type-signature">(async) </span>toPem<span class="signature">(forcedExport<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;string>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="keyUtils.js.html">keyUtils.js</a>, <a href="keyUtils.js.html#line440">line 440</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Exports public key to PEM.</p>
+<ul>
+<li>Reuses original PEM string if present.</li>
+<li>Possible to force regeneration of PEM string by setting 'forcedExport' parameter to true</li>
+<li>Throws on any kind of failure</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>forcedExport</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Force regeneration of PEM string even if original PEM-string is available</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <ul>
+<li>Returns PEM string</li>
+</ul>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;string></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Tue May 17 2022 11:24:51 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
