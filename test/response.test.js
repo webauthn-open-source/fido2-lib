@@ -6,7 +6,7 @@ import * as h from "./helpers/fido2-helpers.js";
 
 // Testing subject
 import { coerceToArrayBuffer, Fido2AssertionResult, Fido2AttestationResult, Fido2Result, tools } from "../lib/main.js";
-import { eddsaFixture } from "./fixtures/eddsa.js";
+
 const assert = chai.assert;
 
 describe("Fido2Result", function() {
@@ -37,19 +37,6 @@ describe("Fido2AttestationResult", function() {
 		assert.throws(() => {
 			new Fido2AttestationResult();
 		}, Error, "Do not create with 'new' operator. Call 'Fido2AttestationResult.create()' or 'Fido2AssertionResult.create()' instead.");
-	});
-
-	it("identifies that EdDSA is not implemented yet with 'none' attestation", async function() {
-		let challengeResponse = h.functions.cloneObject(eddsaFixture.challengeResponseNoneAttestationB64Url);
-		challengeResponse.rawId = tools.base64.toArrayBuffer(challengeResponse.id, true);
-		challengeResponse.response.attestationObject = tools.base64.toArrayBuffer(challengeResponse.response.attestationObject, true);
-		challengeResponse.response.clientDataJSON = tools.base64.toArrayBuffer(challengeResponse.response.clientDataJSON, true);
-		
-		return assert.isRejected(Fido2AttestationResult.create(challengeResponse, {
-			origin: "https://localhost:8443",
-			challenge: eddsaFixture.challengeNoneAttestation,
-			flags: ["UP", "AT"],
-		}), Error, "EdDSA not supported yet, open GitHub issue");
 	});
 
 	it("passes with 'none' attestation", async function() {
