@@ -5,8 +5,7 @@ import * as chai from "chai";
 import * as h from "./helpers/fido2-helpers.js";
 
 // Testing subject
-import { coerceToArrayBuffer, Fido2AssertionResult, Fido2AttestationResult, Fido2Result, tools } from "../lib/main.js";
-
+import { coerceToArrayBuffer, Fido2AssertionResult, Fido2AttestationResult, Fido2Result } from "../lib/main.js";
 const assert = chai.assert;
 
 describe("Fido2Result", function() {
