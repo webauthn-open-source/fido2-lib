@@ -3,25 +3,6 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json) 
 [![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib)
 
-## Install
-
-### Node
-
-``` bash
-npm install fido2-lib --save
-```
-
-### Deno
-
-Import `dist/main.js` from a trusted source. Below is only an example, using the official deno.land repository.
-It is recommended to [enable integrity checking](https://deno.land/manual/linking_to_external_code/integrity_checking). 
-
-```js
-// Check newest version from https://deno.land/x/fido2
-import { Fido2Lib } from "https://deno.land/x/fido2@3.1.2.1/dist/main.js";
-```
-
-
 ## Overview
 
 A library for performing FIDO 2.0 / WebAuthn server functionality
@@ -53,28 +34,39 @@ For working examples see [OWASP Single Sign-On](https://github.com/OWASP/SSO_Pro
 * Returns parsed and validated data, along with extra audit data for risk engines
 * Support both CommonJS (`require`) and ESM (`import`) natively
 
-## Example
+## Getting started
 
-**Import Library using CommonJS:**
-``` js
+### Node
+
+``` bash
+npm install fido2-lib --save
+```
+
+#### Import Library using CommonJS
+```js
 const { Fido2Lib } = require("fido2-lib");
-
-// create a new instance of the library
-const f2l = new Fido2Lib(/* ... */);
 ```
 
-**Import Library using ESM-syntax:**
-``` js
-// Node
+#### Import Library using ESM-syntax
+
+```js
 import { Fido2Lib } from "fido2-lib";
-
-// ... or Deno - Replace x.y.z with current version
-// import { Fido2Lib } from "https://cdn.jsdelivr.net/npm/fido2-lib@x.y.z/dist/main.js";
-
-
-// create a new instance of the library
-const f2l = new Fido2Lib(/* ... */);
 ```
+
+### Deno
+
+Import `dist/main.js` from a trusted source. Below is only an example, using the official deno.land repository.
+It is recommended to [enable integrity checking](https://deno.land/manual/linking_to_external_code/integrity_checking). 
+
+Get url to the latest version by going to [deno.land/x/fido2/dist/main.js](https://deno.land/x/fido2/dist/main.js).
+
+```js
+// Example url will always redirect to the latest version
+// It is recommended that you use the method mentioned above to get a fixed url
+import { Fido2Lib } from "https://deno.land/x/fido2/dist/main.js";
+```
+
+## Examples
 
 **Instantiate Library (Complex):**
 ``` js
@@ -150,6 +142,32 @@ For a real-life example, refer to [OWASP Single Sign-On](https://github.com/OWAS
 
 Generally v3 is assumed to be completely compatible with v2 - compatibility should have increased.
 As many inner workings have been changed, please verify that your application still works with v3 and report issues, if you newly encounter bugs.
+
+
+## Contributing
+
+#### Setting up the environment
+
+It's recommended to have both Deno (>=1.20) and Node 16-18 available to be able to run all checks and tests.
+
+### Before commiting
+
+Please run ```npm run lint```, ```npm run test``` and ```deno task test``` before committing, to make sure every test and check passes.
+
+See [package.json](/package.json) for available npm scripts, and [deno.jsonc](/deno.jsonc) for available Deno tasks.
+
+Make sure to add tests if you add new features.
+
+### Dependencies
+
+When adding, removing or updating dependencies, start out with npm as usual. Then update `import_map.json` to points to the same versions shown by `npm list`, and run `deno task update-deps` to update the Deno lock-file.
+
+### Pull Request
+
+When you're finished with the changes, create a pull request.
+- Enable the checkbox to [allow maintainer edits](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork) so the branch can be updated for a merge.
+Once you submit your PR, a team member will review your proposal. We may ask questions or request for additional information.
+- If you run into any merge issues, checkout this [git tutorial](https://lab.github.com/githubtraining/managing-merge-conflicts) to help you resolve merge conflicts and other issues.
 
 ## Sponsor
 

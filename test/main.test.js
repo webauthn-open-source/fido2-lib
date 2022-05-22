@@ -905,7 +905,7 @@ describe("Fido2Lib", function() {
 		});
 
 		it("throws if argument isn't a MdsCollection", function() {
-			assert.isRejected(
+			return assert.isRejected(
 				Fido2Lib.addMdsCollection(),
 				Error,
 				"expected 'mdsCollection' to be instance of MdsCollection, got: undefined",

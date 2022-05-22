@@ -70,7 +70,7 @@ describe("bad attestationObject", function() {
 			fmt: 1,
 			attStmt: {},
 		};
-		assert.isRejected(
+		return assert.isRejected(
 			parseAttestationObject(
 				coerceToArrayBuffer(
 					tools.cbor.encode(fmtAdNumber),
@@ -84,7 +84,7 @@ describe("bad attestationObject", function() {
 		const missingAttStmt = {
 			fmt: "none",
 		};
-		assert.isRejected(
+		return assert.isRejected(
 			parseAttestationObject(
 				coerceToArrayBuffer(
 					tools.cbor.encode(missingAttStmt),
@@ -99,7 +99,7 @@ describe("bad attestationObject", function() {
 			fmt: "none",
 			attStmt: "attStmt",
 		};
-		assert.isRejected(
+		return assert.isRejected(
 			parseAttestationObject(
 				coerceToArrayBuffer(
 					tools.cbor.encode(malformedAttStmt),
@@ -114,7 +114,7 @@ describe("bad attestationObject", function() {
 			fmt: "none",
 			attStmt: {},
 		};
-		assert.isRejected(
+		return assert.isRejected(
 			parseAttestationObject(
 				coerceToArrayBuffer(
 					tools.cbor.encode(missingAuthData),
@@ -130,7 +130,7 @@ describe("bad attestationObject", function() {
 			attStmt: {},
 			authData: "authData",
 		};
-		assert.isRejected(
+		return assert.isRejected(
 			parseAttestationObject(
 				coerceToArrayBuffer(
 					tools.cbor.encode(malformedAuthData),
