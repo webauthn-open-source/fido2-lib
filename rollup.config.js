@@ -32,6 +32,7 @@ const tests = [
 	"test/parsePackedSelfAttestationData.test.js",
 	"test/parseTpmAttestationData.test.js",
 	"test/parseU2fAttestationData.test.js",
+	"test/parseAppleAttestationData.test.js",
 	"test/response.test.js",
 	"test/toolbox.test.js",
 	"test/utils.test.js",

@@ -12,6 +12,7 @@ import {
 	arrayBufferEquals,
 	abToBuf,
 	androidSafetyNetAttestation,
+	appleAttestation,
 	appendBuffer,
 	coerceToArrayBuffer,
 	Fido2AssertionResult,
@@ -59,6 +60,12 @@ function restoreAttestationFormats() {
 		androidSafetyNetAttestation.name,
 		androidSafetyNetAttestation.parseFn,
 		androidSafetyNetAttestation.validateFn
+	);
+	// add 'apple' attestation format
+	Fido2Lib.addAttestationFormat(
+		appleAttestation.name,
+		appleAttestation.parseFn,
+		appleAttestation.validateFn
 	);
 }
 
@@ -544,6 +551,40 @@ describe("Fido2Lib", function() {
 				assert.instanceOf(res, Fido2AttestationResult);
 				return res;
 			});
+		});
+
+		it("validates a credential request with 'apple' attestation", function() {
+			const serv = new Fido2Lib();
+			const expectations = {
+				challenge:
+          "AkSfM/TFowAdgrwV1NQ1JyTOHLuIlukj6skT5GPVDR3RsrB4eCa2JcSVd+ltFCf1XX3hl9p8NQbh3rurROnx0Q==",
+				origin: "http://localhost:3000",
+				factor: "either",
+			};
+
+			const makeCredentialAttestationSafetyNetResponse = {
+				rawId: coerceToArrayBuffer("nYpcVrc+OjVgCMS9laIxkRR64nk=", "rawId"),
+				response: {
+					attestationObject: coerceToArrayBuffer(
+						"o2NmbXRlYXBwbGVnYXR0U3RtdKFjeDVjglkCSDCCAkQwggHJoAMCAQICBgGAxyervjAKBggqhkjOPQQDAjBIMRwwGgYDVQQDDBNBcHBsZSBXZWJBdXRobiBDQSAxMRMwEQYDVQQKDApBcHBsZSBJbmMuMRMwEQYDVQQIDApDYWxpZm9ybmlhMB4XDTIyMDUxNDA5NTgyN1oXDTIyMDUxNzA5NTgyN1owgZExSTBHBgNVBAMMQGNlZDAwODVmNDUxMzEyODY0Njg3OThkNTIyOWFhODdhOThhNzYwNDQ2NzA0MWQ1YmFkODhlZDk3OTE0NzQ0MjQxGjAYBgNVBAsMEUFBQSBDZXJ0aWZpY2F0aW9uMRMwEQYDVQQKDApBcHBsZSBJbmMuMRMwEQYDVQQIDApDYWxpZm9ybmlhMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0FQqXwZPjTK8bPlw3NA14XeYC5OWxmwQ2CgrSfYtW36rdiNzfRExutXjpzhM/R/yhN3fFyYxUbe9wVww6Gn4lqNVMFMwDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8EBAMCBPAwMwYJKoZIhvdjZAgCBCYwJKEiBCCZNn3+lBmJWg6L9fm41ptdlsARxiVBVZoDzD5WKWitqTAKBggqhkjOPQQDAgNpADBmAjEAnjE6AVjiVRlOqzw3Xj4ySG/+X9RhfI2uhD3oXRbDKrhQnIm5npuC/zy15UeW+mv6AjEA9IYWcstULcXBlL0o65cCeyZ6fysXjBMkbc7cubP/wMvX9/mZtvyC5OHTLIGyJhhGWQI4MIICNDCCAbqgAwIBAgIQViVTlcen+0Dr4ijYJghTtjAKBggqhkjOPQQDAzBLMR8wHQYDVQQDDBZBcHBsZSBXZWJBdXRobiBSb290IENBMRMwEQYDVQQKDApBcHBsZSBJbmMuMRMwEQYDVQQIDApDYWxpZm9ybmlhMB4XDTIwMDMxODE4MzgwMVoXDTMwMDMxMzAwMDAwMFowSDEcMBoGA1UEAwwTQXBwbGUgV2ViQXV0aG4gQ0EgMTETMBEGA1UECgwKQXBwbGUgSW5jLjETMBEGA1UECAwKQ2FsaWZvcm5pYTB2MBAGByqGSM49AgEGBSuBBAAiA2IABIMuhy8mFJGBAiW59fzWu2N4tfVfP8sEW8c1mTR1/VSQRN+b/hkhF2XGmh3aBQs41FCDQBpDT7JNES1Ww+HPv8uYkf7AaWCBvvlsvHfIjd2vRqWu4d1RW1r6q5O+nAsmkaNmMGQwEgYDVR0TAQH/BAgwBgEB/wIBADAfBgNVHSMEGDAWgBQm12TZxXjCWmfRp95rEtAbY/HG1zAdBgNVHQ4EFgQU666CxP+hrFtR1M8kYQUAvmO9d4gwDgYDVR0PAQH/BAQDAgEGMAoGCCqGSM49BAMDA2gAMGUCMQDdixo0gaX62du052V7hB4UTCe3W4dqQYbCsUdXUDNyJ+/lVEV+9kiVDGMuXEg+cMECMCyKYETcIB/P5ZvDTSkwwUh4Udlg7Wp18etKyr44zSW4l9DIBb7wx/eLB6VxxugOB2hhdXRoRGF0YViYSZYN5YgOjGh0NBcPZHZgW4/krrmihjLHmVzzuoMdl2NFAAAAAPJKjnDQ0/gsKTcyUjzE3loAFJ2KXFa3Pjo1YAjEvZWiMZEUeuJ5pQECAyYgASFYINBUKl8GT40yvGz5cNzQNeF3mAuTlsZsENgoK0n2LVt+Ilggq3Yjc30RMbrV46c4TP0f8oTd3xcmMVG3vcFcMOhp+JY=",
+						"attestationObject"
+					),
+					clientDataJSON: coerceToArrayBuffer(
+						"eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiQWtTZk1fVEZvd0FkZ3J3VjFOUTFKeVRPSEx1SWx1a2o2c2tUNUdQVkRSM1JzckI0ZUNhMkpjU1ZkLWx0RkNmMVhYM2hsOXA4TlFiaDNydXJST254MFEiLCJvcmlnaW4iOiJodHRwOi8vbG9jYWxob3N0OjMwMDAifQ==",
+						"clientDataJSON"
+					),
+				},
+			};
+
+			return serv
+				.attestationResult(
+					makeCredentialAttestationSafetyNetResponse,
+					expectations
+				)
+				.then((res) => {
+					assert.instanceOf(res, Fido2AttestationResult);
+					return res;
+				});
 		});
 
 		it("catches bad requests");

@@ -190,11 +190,8 @@ function resolveOid(id, value) {
 			return ret;
 		case "1.3.6.1.4.1.45724.1.1.4":
 			ret.id = "fido-aaguid";
-			ret.value = decodeFidoAaguid(value);
 			return ret;
-
 			// Subject
-
 		case "2.5.4.6":
 			ret.id = "country-name";
 			return ret;
@@ -343,22 +340,9 @@ function decodeValue(valueBlock) {
 }
 
 function decodeU2FTransportType(u2fRawTransports) {
-	if (!(u2fRawTransports instanceof ArrayBuffer) ||
-                u2fRawTransports.byteLength !== 4) {
-		throw new Error("u2fRawTransports was malformatted");
-	}
-	u2fRawTransports = new Uint8Array(u2fRawTransports);
-	if (
-		u2fRawTransports[0] !== 0x03 ||
-		u2fRawTransports[1] !== 0x02 ||
-		u2fRawTransports[2] > 7
-	) {
-		throw new Error("u2fRawTransports had unknown data");
-	}
-	const bitLen = u2fRawTransports[2];
+	const bitLen = 3;
 	const bitCount = 8 - bitLen - 1;
-	let type = (u2fRawTransports[3] >> bitLen);
-
+	let type = (u2fRawTransports >> bitLen);
 	const ret = new Set();
 	for (let i = bitCount; i >= 0; i--) {
 		// https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-authenticator-transports-extension-v1.2-ps-20170411.html
@@ -415,27 +399,6 @@ function decodeExtKeyUsage(value) {
 
 	keyPurposes = keyPurposes.map((oid) => resolveOid(oid).id);
 	return keyPurposes;
-}
-
-function decodeFidoAaguid(value) {
-	if (!(value instanceof ArrayBuffer)) {
-		throw new Error("expected AAGUID to be ArrayBuffer");
-	}
-
-	if (value.byteLength !== 18) {
-		throw new Error("AAGUID ASN.1 was wrong size. Should be 18, got " + value.byteLength);
-	}
-
-	const aaguidBuf = new Uint8Array(value);
-	if (aaguidBuf[0] !== 0x04) {
-		throw new Error("AAGUID ASN.1 should start with 0x04 (octet string)");
-	}
-
-	if (aaguidBuf[1] !== 0x10) {
-		throw new Error("AAGUID ASN.1 should have length 16");
-	}
-
-	return aaguidBuf.buffer.slice(2);
 }
 
 function decodeCertificatePolicies(value) {
@@ -645,6 +608,7 @@ const coseLabels = {
 	1: {
 		name: "kty",
 		values: {
+			1: "OKP",
 			2: "EC",
 			3: "RSA",
 		},
@@ -657,9 +621,12 @@ const coseLabels = {
 		name: "alg",
 		values: {
 			"-7": "ECDSA_w_SHA256",
-			"-8": "EdDSA",
+			/* "-8": "EdDSA", */
 			"-35": "ECDSA_w_SHA384",
 			"-36": "ECDSA_w_SHA512",
+			/*"-37": "RSASSA-PSS_w_SHA-256",
+			"-38": "RSASSA-PSS_w_SHA-384",
+			"-39": "RSASSA-PSS_w_SHA-512",*/
 			"-257": "RSASSA-PKCS1-v1_5_w_SHA256",
 			"-258": "RSASSA-PKCS1-v1_5_w_SHA384",
 			"-259": "RSASSA-PKCS1-v1_5_w_SHA512",
@@ -692,6 +659,19 @@ const coseKeyParamList = {
 				1: "P-256",
 				2: "P-384",
 				3: "P-521",
+			},
+		},
+		// value = Buffer
+		"-2": { name: "x" },
+		"-3": { name: "y" },
+		"-4": { name: "d" },
+	},
+	// Octet Key Pair key parameters
+	// defined here: https://datatracker.ietf.org/doc/html/rfc8152#section-13.2
+	OKP: {
+		"-1": {
+			name: "crv",
+			values: {
 				4: "X25519",
 				5: "X448",
 				6: "Ed25519",
@@ -700,7 +680,6 @@ const coseKeyParamList = {
 		},
 		// value = Buffer
 		"-2": { name: "x" },
-		"-3": { name: "y" },
 		"-4": { name: "d" },
 	},
 	// RSA key parameters
@@ -730,12 +709,20 @@ const coseKeyParamList = {
  */
 const algToJWKAlg = {
 	"RSASSA-PKCS1-v1_5_w_SHA256": "RS256",
-	"RSASSA-PKCS1-v1_5_w_SHA384": "RS256",
-	"RSASSA-PKCS1-v1_5_w_SHA512": "RS256",
+	"RSASSA-PKCS1-v1_5_w_SHA384": "RS384",
+	"RSASSA-PKCS1-v1_5_w_SHA512": "RS512",
 	"RSASSA-PKCS1-v1_5_w_SHA1": "RS256",
+	/*
+	PS256-512 is untested 
+	"RSASSA-PSS_w_SHA-256": "PS256",
+	"RSASSA-PSS_w_SHA-384": "PS384",
+	"RSASSA-PSS_w_SHA-512": "PS512",*/
 	"ECDSA_w_SHA256": "ES256",
-	"ECDSA_w_SHA384": "ES256",
-	"ECDSA_w_SHA512": "ES256",
+	"ECDSA_w_SHA384": "ES384",
+	"ECDSA_w_SHA512": "ES512",
+	/*
+	EdDSA is untested and unfinished
+	"EdDSA": "EdDSA" */
 };
 
 /**
@@ -750,13 +737,25 @@ const algorithmInputMap = {
 	"RSASSA-PKCS1-v1_5_w_SHA384": "RSASSA-PKCS1-v1_5",
 	"RSASSA-PKCS1-v1_5_w_SHA512": "RSASSA-PKCS1-v1_5",
 	"RSASSA-PKCS1-v1_5_w_SHA1": "RSASSA-PKCS1-v1_5",
+	/*"RSASSA-PSS_w_SHA-256": "RSASSA-PSS",
+	"RSASSA-PSS_w_SHA-384": "RSASSA-PSS",
+	"RSASSA-PSS_w_SHA-512": "RSASSA-PSS",*/
 	"ECDSA_w_SHA256": "ECDSA",
 	"ECDSA_w_SHA384": "ECDSA",
 	"ECDSA_w_SHA512": "ECDSA",
+	/*"EdDSA": "EdDSA",*/
 
 	/* JWK alg to Webcrypto algorithm name */
 	"RS256": "RSASSA-PKCS1-v1_5",
+	"RS384": "RSASSA-PKCS1-v1_5",
+	"RS512": "RSASSA-PKCS1-v1_5",
+	/*"PS256": "RSASSA-PSS",
+	"PS384": "RSASSA-PSS",
+	"PS512": "RSASSA-PSS",*/
+	"ES384": "ECDSA",
 	"ES256": "ECDSA",
+	"ES512": "ECDSA",
+	/*"EdDSA": "EdDSA",*/
 };
 
 /**
@@ -771,15 +770,22 @@ const inputHashMap = {
 	"RSASSA-PKCS1-v1_5_w_SHA384": "SHA-384",
 	"RSASSA-PKCS1-v1_5_w_SHA512": "SHA-512",
 	"RSASSA-PKCS1-v1_5_w_SHA1": "SHA-1",
+	/*"RSASSA-PSS_w_SHA256": "SHA-256",
+	"RSASSA-PSS_w_SHA384": "SHA-384",
+	"RSASSA-PSS_w_SHA512": "SHA-512",*/
 	"ECDSA_w_SHA256": "SHA-256",
 	"ECDSA_w_SHA384": "SHA-384",
 	"ECDSA_w_SHA512": "SHA-512",
+	/* "EdDSA": "EdDSA", */
 };
 
 /** 
  * Class representing a generic public key, 
  * with utility functions to convert between different formats
  * using Webcrypto
+ * 
+ * @package
+ * 
  */
 class PublicKey {
 
@@ -905,8 +911,12 @@ class PublicKey {
 
 			// Use parsedKey to extract namedCurve if present, else default to P-256
 			const parsedKey = keyInfo.parsedKey;
-			if (parsedKey && parsedKey.namedCurve === "1.2.840.10045.3.1.7") {
+			if (parsedKey && parsedKey.namedCurve === "1.2.840.10045.3.1.7") {  // NIST P-256, secp256r1
 				algorithm.namedCurve = "P-256";
+			} else if (parsedKey && parsedKey.namedCurve === "1.3.132.0.34") {  // NIST P-384, secp384r1
+				algorithm.namedCurve = "P-384";
+			} else if (parsedKey && parsedKey.namedCurve === "1.3.132.0.35") {  // NIST P-512, secp521r1
+				algorithm.namedCurve = "P-512";
 			} else {
 				algorithm.namedCurve = "P-256";
 			}
@@ -961,6 +971,7 @@ class PublicKey {
 
 		// Import jwk with Jose
 		this._original_jwk = jwk;
+
 		const generatedKey = await webcrypto.subtle.importKey(
 			"jwk",
 			jwkCopy,
@@ -1024,7 +1035,6 @@ class PublicKey {
 			}
 			retKey[name] = value;
 		}
-
 		const keyParams = coseKeyParamList[retKey.kty];
 
 		// parse key-specific parameters
@@ -1214,6 +1224,9 @@ class PublicKey {
 
 /** 
  * Utility function to convert a cose algorithm to string
+ * 
+ * @package
+ * 
  * @param {string|number} - Cose algorithm
 */
 function coseAlgToStr(alg) {
@@ -1234,6 +1247,9 @@ function coseAlgToStr(alg) {
 
 /** 
  * Utility function to convert a cose hashing algorithm to string
+ * 
+ * @package
+ * 
  * @param {string|number} - Cose algorithm
  */
 function coseAlgToHashStr(alg) {
