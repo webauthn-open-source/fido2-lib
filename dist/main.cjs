@@ -1979,8 +1979,8 @@ async function validateExpectations() {
 					}
 					if (allowCredentials[index].transports != null && !Array.isArray(allowCredentials[index].transports)) {
 						throw new Error("expected transports of allowCredentials[" + index + "] to be array or null");
-					} else if (allowCredentials[index].transports != null && !allowCredentials[index].transports.every(el => ["usb", "nfc", "ble", "internal"].includes(el))) {
-						throw new Error("expected transports of allowCredentials[" + index + "] to be string with value 'usb', 'nfc', 'ble', 'internal' or null");
+					} else if (allowCredentials[index].transports != null && !allowCredentials[index].transports.every(el => ["usb", "nfc", "ble", "cable", "internal"].includes(el))) {
+						throw new Error("expected transports of allowCredentials[" + index + "] to be string with value 'usb', 'nfc', 'ble', 'cable', 'internal' or null");
 					}
 				}
 			}

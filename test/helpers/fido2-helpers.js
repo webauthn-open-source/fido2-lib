@@ -248,6 +248,20 @@ const challengeResponseAttestationPackedB64UrlMsg = {
 	},
 };
 
+const challengeResponseAttestationPackedWHB64UrlMsg = {
+	rawId:
+		"hlu41IHKwi7WQmD2M6G-l2ekw9cFySKzaMjCdrz3oLw",
+	id:
+		"hlu41IHKwi7WQmD2M6G-l2ekw9cFySKzaMjCdrz3oLw",
+	response: {
+		clientDataJSON:
+			"eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiakdPYVpMem0wdDc1ZEFoVXUxRHRtQWkxdk9MaHFCelR5SHBVX3lNVU1oMFdCN1V3V2JkY1hfZy1qa01ZZG5SWlpaNENDb3VSUTM5VTdaWWZXY09JWnMzMHlUUXVudWJzZ3cyN0V3OEdKa1NieFByZzBvOGxIRGFYOEtvYWVvVVlOUDZER1FMRE1qZjRHUmptbElxNmV2SHF6dEkyR3VVX2NIS215Z0N3WnBJIiwib3JpZ2luIjoiaHR0cHM6Ly81NmsuZ3VydSIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
+		attestationObject:
+			"o2NmbXRmcGFja2VkZ2F0dFN0bXSiY2FsZzkBAGNzaWdZAQBmFatdTuQmnRi7VvFBDp76miMYayh2FwKQ1ixXJIpi2rdhqN4K_t7rnwTkrkRsiw0H7fdIRREPLl-ocVown-2Zq7g22-cSJ6HKo7WbCGgT0LebPr9QKOJjKLdL2RidRbkHnyxwx-O2BjMNhpYu_n_ujgptTEKSO3ATBJqFyMwY41aOH55rQc6F3lJ0q_vEunxXjDYFPKAUtkdfUzHyqHlodZNFQchx9VciQ-K708J5ba5x4SS_NfL-VywAfdmENppbjUwgnPe-soX-P_0oTu3BmyqZtRDgEo1a0_8Ph_CwBwdMElTmemAN2QP6sx-n-7oKHTfwTUtji7dTtNZRbZjHaGF1dGhEYXRhWQFn6MBuQeOuyEGBcZZuWNemhjSKlxExGandXGHuqGYGFoNFAAAAAGAosBex1EwCtLOvza_Ja7IAIIZbuNSBysIu1kJg9jOhvpdnpMPXBckis2jIwna896C8pAEDAzkBACBZAQCwPaCqK6bosK5IgLaKLqnts7z5ch4VDvJtns1Xyyar6B90JL9XvVCjUCASdJTcv47_PrjZhIlWrsWYfHQuBMl2hpg4n6vA3pbOR9_t8AlGjQbcEFBJx2mWbX34s6MDIRMUvMiauWtRc5L7abjjJBg9jpEq4COomNL25PpmQd6if9MjH4wuYZx9L89ejGjSAmMuFELDBsgRyYCMKPLMOLmkq493dNhwjDiryokW35lB1VqZLNUlmORAhYn6Yn5AWFvc26U3acXPcVh0bktQxTCsxWxGVMxwzcHAOtQyAD8x9rzhI65YaIKWNmRtlYPKu_TEPr2IBlLPB7HwgP3tstNhIUMBAAE",
+	},
+};
+
+
 const challengeResponseAttestationTpmB64UrlMsg = {
 	rawId: "hWzdFiPbOMQ5KNBsMhs-Zeh8F0iTHrH63YKkrxJFgjQ",
 	id: "hWzdFiPbOMQ5KNBsMhs-Zeh8F0iTHrH63YKkrxJFgjQ",
@@ -416,6 +430,24 @@ const makeCredentialAttestationPackedResponse = {
 	},
 };
 
+const makeCredentialAttestationPackedResponseWindowsHello = {
+	rawId: base64.toArrayBuffer(
+		challengeResponseAttestationPackedWHB64UrlMsg.rawId,
+		true,
+	),
+	response: {
+		attestationObject: base64.toArrayBuffer(
+			challengeResponseAttestationPackedWHB64UrlMsg.response
+				.attestationObject,
+			true,
+		),
+		clientDataJSON: base64.toArrayBuffer(
+			challengeResponseAttestationPackedWHB64UrlMsg.response.clientDataJSON,
+			true,
+		),
+	},
+};
+
 const makeCredentialAttestationTpmResponse = {
 	rawId: base64.toArrayBuffer(
 		challengeResponseAttestationTpmB64UrlMsg.rawId,
@@ -514,6 +546,7 @@ const lib = {
 	makeCredentialAttestationU2fResponse,
 	makeCredentialAttestationHypersecuU2fResponse,
 	makeCredentialAttestationPackedResponse,
+	makeCredentialAttestationPackedResponseWindowsHello,
 	makeCredentialAttestationTpmResponse,
 	makeCredentialAttestationSafetyNetResponse,
 	assertionResponse,

@@ -53848,10 +53848,11 @@ async function validateExpectations() {
                             "usb",
                             "nfc",
                             "ble",
+                            "cable",
                             "internal"
                         ].includes(el)
                     )) {
-                        throw new Error("expected transports of allowCredentials[" + index + "] to be string with value 'usb', 'nfc', 'ble', 'internal' or null");
+                        throw new Error("expected transports of allowCredentials[" + index + "] to be string with value 'usb', 'nfc', 'ble', 'cable', 'internal' or null");
                     }
                 }
             }

@@ -121,6 +121,7 @@ describe("Fido2AttestationResult", function() {
 			flags: ["UP", "AT"],
 		});
 	});
+
 	it("passes with 'packed' attestation", async function() {
 		let ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationPackedResponse, {
 			origin: "https://webauthn.org",
@@ -144,6 +145,28 @@ describe("Fido2AttestationResult", function() {
 		assert.isTrue(auditInfo.has("fido-aaguid"), "audit info has fido-aaguid");
 		assert.isTrue(auditInfo.has("attestation-type"), "audit info has attestation-type");
 		assert.isTrue(ret.audit.warning.has("attesation-not-validated"), "audit warning has attesation-not-validated");
+	});
+
+	it("passes with 'packed' attestation using Windows Hello", async function() {
+		console.log(h.lib.makeCredentialAttestationPackedResponseWindowsHello);
+		let ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationPackedResponseWindowsHello, {
+			origin: "https://56k.guru",
+			challenge: "jGOaZLzm0t75dAhUu1DtmAi1vOLhqBzTyHpU_yMUMh0WB7UwWbdcX_g-jkMYdnRZZZ4CCouRQ39U7ZYfWcOIZs30yTQunubsgw27Ew8GJkSbxPrg0o8lHDaX8KoaeoUYNP6DGQLDMjf4GRjmlIq6evHqztI2GuU_cHKmygCwZpI",
+			flags: ["UP", "AT"],
+		});
+
+		assert.isObject(ret);
+		assert.strictEqual(ret.authnrData.get("fmt"), "packed");
+		assert.isObject(ret.authnrData.get("alg"));
+		assert.strictEqual(ret.authnrData.get("alg").algName, "RSASSA-PKCS1-v1_5_w_SHA256");
+		assert.strictEqual(ret.authnrData.get("alg").hashAlg, "SHA-256");
+
+		// audit
+		let auditInfo = ret.audit.info;
+		
+		assert.strictEqual(auditInfo.size, 1);
+		assert.isTrue(auditInfo.has("attestation-type"), "audit info has attestation-type");
+		assert.equal(auditInfo.get("attestation-type"), "self");
 	});
 
 	it("passes with 'tpm' attestation", async function() {
