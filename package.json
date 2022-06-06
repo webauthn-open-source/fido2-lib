@@ -1,6 +1,6 @@
 {
 	"name": "fido2-lib",
-	"version": "3.1.7",
+	"version": "3.2.0",
 	"description": "A library for performing FIDO 2.0 / WebAuthn functionality",
 	"type": "module",
 	"main": "dist/main.cjs",
