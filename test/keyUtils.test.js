@@ -65,6 +65,13 @@ describe("key utils", function() {
 				});
 			});
 
+			describe("rsa spki 2048 bits without trailing newline", function() {
+				const k = new PublicKey();
+				it("can import", async () => {
+					await k.fromPem(rsaPublicKey.pem2048);
+				});
+			});
+
 			describe("rsa spki 4096 bits", function() {
 				const k = new PublicKey();
 				it("can import", async () => {
