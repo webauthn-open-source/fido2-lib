@@ -1937,6 +1937,14 @@ const s = function() {
                     rhcloud: o16,
                     render: b,
                     onrender: o16,
+                    code: {
+                        $: 0,
+                        succ: {
+                            builder: o16,
+                            "dev-builder": o16,
+                            "stg-builder": o16
+                        }
+                    },
                     logoip: o16,
                     scrysec: o16,
                     "firewall-gateway": o16,
@@ -8605,7 +8613,8 @@ const s = function() {
             pm: {
                 $: 1,
                 succ: {
-                    own: o16
+                    own: o16,
+                    name: o16
                 }
             },
             pn: {
@@ -9125,7 +9134,12 @@ const s = function() {
             },
             td: s8,
             tel: a15,
-            tf: a15,
+            tf: {
+                $: 1,
+                succ: {
+                    sch: o16
+                }
+            },
             tg: a15,
             th: {
                 $: 1,
@@ -9720,7 +9734,13 @@ const s = function() {
                     me: o16
                 }
             },
-            wf: a15,
+            wf: {
+                $: 1,
+                succ: {
+                    biz: o16,
+                    sch: o16
+                }
+            },
             ws: {
                 $: 1,
                 succ: {
@@ -18745,7 +18765,7 @@ class RelativeDistinguishedNames extends PkiObject {
 RelativeDistinguishedNames.CLASS_NAME = "RelativeDistinguishedNames";
 const TYPE$4 = "type";
 const VALUE$5 = "value";
-function builtInStandardAttributes(parameters = {}, optional = false) {
+function builtInStandardAttributes(parameters = {}, optional) {
     const names = getParametersValue(parameters, "names", {});
     return new Sequence({
         optional,
@@ -18891,7 +18911,7 @@ function builtInStandardAttributes(parameters = {}, optional = false) {
         ]
     });
 }
-function builtInDomainDefinedAttributes(optional = false) {
+function builtInDomainDefinedAttributes(optional) {
     return new Sequence({
         optional,
         value: [
@@ -18900,7 +18920,7 @@ function builtInDomainDefinedAttributes(optional = false) {
         ]
     });
 }
-function extensionAttributes(optional = false) {
+function extensionAttributes(optional) {
     return new Set1({
         optional,
         value: [
@@ -32483,24 +32503,26 @@ class EnvelopedData extends PkiObject {
                 valueHex: wrappedKey
             });
         };
+        const res = [];
         for(let i100 = 0; i100 < this.recipientInfos.length; i100++){
             switch(this.recipientInfos[i100].variant){
                 case 1:
-                    await SubKeyTransRecipientInfo(i100);
+                    res.push(await SubKeyTransRecipientInfo(i100));
                     break;
                 case 2:
-                    await SubKeyAgreeRecipientInfo(i100);
+                    res.push(await SubKeyAgreeRecipientInfo(i100));
                     break;
                 case 3:
-                    await SubKEKRecipientInfo(i100);
+                    res.push(await SubKEKRecipientInfo(i100));
                     break;
                 case 4:
-                    await SubPasswordRecipientinfo(i100);
+                    res.push(await SubPasswordRecipientinfo(i100));
                     break;
                 default:
                     throw new Error(`Unknown recipient type in array with index ${i100}`);
             }
         }
+        return res;
     }
     async decrypt(recipientIndex, parameters, crypto = getCrypto(true)) {
         const decryptionParameters = parameters || {};
@@ -40680,6 +40702,7 @@ function pemToBase64(pem) {
     if (!isPem(pem)) {
         throw new Error("expected PEM string as input");
     }
+    pem = pem.replace(/^\n/, "");
     let pemArr = pem.split("\n");
     pemArr = pemArr.slice(1, pemArr.length - 2);
     return pemArr.join("");
@@ -41949,15 +41972,15 @@ function packedParseFn(attStmt) {
     ret.set("sig", sig);
     return ret;
 }
-function packedValidateFn() {
+async function packedValidateFn() {
     const x5c = this.authnrData.get("x5c");
     const ecdaaKeyId = this.authnrData.get("ecdaaKeyId");
     if (x5c !== undefined && ecdaaKeyId !== undefined) {
         throw new Error("packed attestation: should be 'basic' or 'ecdaa', got both");
     }
-    if (x5c) return packedValidateBasic.call(this);
-    if (ecdaaKeyId) return packedValidateEcdaa.call(this);
-    return packedValidateSurrogate.call(this);
+    if (x5c) return await packedValidateBasic.call(this);
+    if (ecdaaKeyId) return await packedValidateEcdaa.call(this);
+    return await packedValidateSurrogate.call(this);
 }
 async function packedValidateBasic() {
     const { algName , hashAlg ,  } = this.authnrData.get("alg");
@@ -42042,13 +42065,13 @@ async function validateSelfSignature(rawClientData, authenticatorData, sig, hash
     const verify2 = await mod2.verifySignature(publicKeyPem, sig, appendBuffer(authenticatorData, clientDataHash), hashAlg);
     return verify2;
 }
-function packedValidateSurrogate() {
+async function packedValidateSurrogate() {
     const { algName , hashAlg ,  } = this.authnrData.get("alg");
     if (algName === undefined) {
         throw new Error("packed attestation: unknown algorithm " + algName);
     }
-    const res = validateSelfSignature(this.clientData.get("rawClientDataJson"), this.authnrData.get("rawAuthnrData"), this.authnrData.get("sig"), hashAlg, this.authnrData.get("credentialPublicKeyPem"));
-    if (!res) {
+    const res = await validateSelfSignature(this.clientData.get("rawClientDataJson"), this.authnrData.get("rawAuthnrData"), this.authnrData.get("sig"), hashAlg, this.authnrData.get("credentialPublicKeyPem"));
+    if (!res || typeof res !== "boolean") {
         throw new Error("packed attestation signature verification failed");
     }
     this.audit.journal.add("sig");

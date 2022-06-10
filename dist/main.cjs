@@ -1816,6 +1816,9 @@ function pemToBase64(pem) {
 		throw new Error("expected PEM string as input");
 	}
 
+	// Remove trailing \n
+	pem = pem.replace(/^\n/, "");
+
 	// Split on \n
 	let pemArr = pem.split("\n");
 
@@ -3787,7 +3790,7 @@ function packedParseFn(attStmt) {
 	return ret;
 }
 
-function packedValidateFn() {
+async function packedValidateFn() {
 	const x5c = this.authnrData.get("x5c");
 	const ecdaaKeyId = this.authnrData.get("ecdaaKeyId");
 
@@ -3795,9 +3798,9 @@ function packedValidateFn() {
 		throw new Error("packed attestation: should be 'basic' or 'ecdaa', got both");
 	}
 
-	if (x5c) return packedValidateBasic.call(this);
-	if (ecdaaKeyId) return packedValidateEcdaa.call(this);
-	return packedValidateSurrogate.call(this);
+	if (x5c) return await packedValidateBasic.call(this);
+	if (ecdaaKeyId) return await packedValidateEcdaa.call(this);
+	return await packedValidateSurrogate.call(this);
 }
 
 async function packedValidateBasic() {
@@ -3969,7 +3972,7 @@ async function validateSelfSignature(rawClientData, authenticatorData, sig, hash
 	return verify;
 }
 
-function packedValidateSurrogate() {
+async function packedValidateSurrogate() {
 	// see what algorithm we're working with
 	const {
 		algName,
@@ -3983,14 +3986,14 @@ function packedValidateSurrogate() {
 	// from: https://w3c.github.io/webauthn/#packed-attestation
 	// Verify that sig is a valid signature over the concatenation of authenticatorData and clientDataHash using the credential public key with alg.
 
-	const res = validateSelfSignature(
+	const res = await validateSelfSignature(
 		this.clientData.get("rawClientDataJson"),
 		this.authnrData.get("rawAuthnrData"),
 		this.authnrData.get("sig"),
 		hashAlg,
 		this.authnrData.get("credentialPublicKeyPem"),
 	);
-	if (!res) {
+	if (!res || typeof res !== "boolean") {
 		throw new Error("packed attestation signature verification failed");
 	}
 	this.audit.journal.add("sig");
