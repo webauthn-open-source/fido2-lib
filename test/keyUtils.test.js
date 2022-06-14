@@ -177,7 +177,7 @@ describe("key utils", function() {
 				return assert.isRejected(
 					k.fromCose(tools.base64.toArrayBuffer(cosePublicKey.exampleInvalidBase64)),
 					Error,
-					"couldn't parse authenticator.authData.attestationData CBOR: Error: No packed values available",
+					"couldn't parse authenticator.authData.attestationData CBOR: Error:",
 				);
 			});
 		});

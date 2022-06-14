@@ -148,7 +148,6 @@ describe("Fido2AttestationResult", function() {
 	});
 
 	it("passes with 'packed' attestation using Windows Hello", async function() {
-		console.log(h.lib.makeCredentialAttestationPackedResponseWindowsHello);
 		let ret = await Fido2AttestationResult.create(h.lib.makeCredentialAttestationPackedResponseWindowsHello, {
 			origin: "https://56k.guru",
 			challenge: "jGOaZLzm0t75dAhUu1DtmAi1vOLhqBzTyHpU_yMUMh0WB7UwWbdcX_g-jkMYdnRZZZ4CCouRQ39U7ZYfWcOIZs30yTQunubsgw27Ew8GJkSbxPrg0o8lHDaX8KoaeoUYNP6DGQLDMjf4GRjmlIq6evHqztI2GuU_cHKmygCwZpI",
