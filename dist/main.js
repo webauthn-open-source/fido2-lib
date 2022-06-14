@@ -40702,9 +40702,9 @@ function pemToBase64(pem) {
     if (!isPem(pem)) {
         throw new Error("expected PEM string as input");
     }
-    pem = pem.replace(/^\n/, "");
+    pem = pem.replace(/\n$/, "");
     let pemArr = pem.split("\n");
-    pemArr = pemArr.slice(1, pemArr.length - 2);
+    pemArr = pemArr.slice(1, pemArr.length - 1);
     return pemArr.join("");
 }
 const mod3 = {
@@ -41465,9 +41465,6 @@ class PublicKey {
             return this._original_pem;
         } else if (this.getKey()) {
             let pemResult = abToPem("PUBLIC KEY", await mod2.webcrypto.subtle.exportKey("spki", this.getKey()));
-            if (pemResult[pemResult.length - 1] !== "\n") {
-                pemResult += "\n";
-            }
             return pemResult;
         } else {
             throw new Error("No key information available");

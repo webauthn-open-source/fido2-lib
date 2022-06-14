@@ -1087,11 +1087,6 @@ class PublicKey {
 			return this._original_pem;
 		} else if (this.getKey()) {
 			let pemResult = abToPem("PUBLIC KEY",await webcrypto.subtle.exportKey("spki", this.getKey()));
-			
-			// Add trailing \n if missing (Deno only)
-			if (pemResult[pemResult.length - 1] !== "\n") {
-				pemResult += "\n";
-			}
 
 			return pemResult;
 		} else {
@@ -1817,13 +1812,13 @@ function pemToBase64(pem) {
 	}
 
 	// Remove trailing \n
-	pem = pem.replace(/^\n/, "");
+	pem = pem.replace(/\n$/, "");
 
 	// Split on \n
 	let pemArr = pem.split("\n");
 
 	// remove first and last lines
-	pemArr = pemArr.slice(1, pemArr.length - 2);
+	pemArr = pemArr.slice(1, pemArr.length - 1);
 	return pemArr.join("");
 }
 
