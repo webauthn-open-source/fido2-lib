@@ -1,13 +1,13 @@
 {
     "imports": {
-        "tldts": "https://unpkg.com/tldts@5.7.81/dist/index.esm.min.js",
+        "tldts": "https://unpkg.com/tldts@5.7.82/dist/index.esm.min.js",
         "punycode": "https://deno.land/x/punycode@v2.1.1/punycode.js",
         "jose": "https://deno.land/x/jose@v4.8.1/index.ts?module",
         "asn1js": "https://unpkg.com/asn1js@3.0.5?module",
         "cbor-x": "https://deno.land/x/cbor@v1.3.1/index.js?module",
         "std/": "https://deno.land/std@0.135.0/",
         "pkijs": "https://unpkg.com/pkijs@3.0.5?module",
-        "@hexagon/base64": "https://deno.land/x/b64@1.0.19/dist/base64.min.mjs",
+        "@hexagon/base64": "https://deno.land/x/b64@1.0.20/dist/base64.min.mjs",
 
         "sinon": "https://unpkg.com/sinon@14.0.0/pkg/sinon-esm.js",
         "test_suite": "https://deno.land/x/test_suite@0.16.1/mod.ts",
