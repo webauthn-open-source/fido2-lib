@@ -12275,13 +12275,6 @@ crypto.getRandomValues.bind(crypto);
 function isCloudflareWorkers() {
     return typeof WebSocketPair === 'function';
 }
-function isNodeJs() {
-    try {
-        return process.versions.node !== undefined;
-    } catch  {
-        return false;
-    }
-}
 function unusable(name, prop = 'algorithm.name') {
     return new TypeError(`CryptoKey does not support this operation, its ${prop} must be ${name}`);
 }
@@ -12348,11 +12341,6 @@ function checkSigCryptoKey(key, alg, ...usages) {
                 const expected = parseInt(alg.slice(2), 10);
                 const actual = getHashLength(key.algorithm.hash);
                 if (actual !== expected) throw unusable(`SHA-${expected}`, 'algorithm.hash');
-                break;
-            }
-        case isNodeJs() && 'EdDSA':
-            {
-                if (key.algorithm.name !== 'NODE-ED25519' && key.algorithm.name !== 'NODE-ED448') throw unusable('NODE-ED25519 or NODE-ED448');
                 break;
             }
         case isCloudflareWorkers() && 'EdDSA':
@@ -12625,7 +12613,7 @@ function subtleMapping(jwk) {
                 }
                 break;
             }
-        case (isCloudflareWorkers() || isNodeJs()) && 'OKP':
+        case isCloudflareWorkers() && 'OKP':
             if (jwk.alg !== 'EdDSA') {
                 throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
             }
@@ -12634,17 +12622,6 @@ function subtleMapping(jwk) {
                     algorithm = {
                         name: 'NODE-ED25519',
                         namedCurve: 'NODE-ED25519'
-                    };
-                    keyUsages = jwk.d ? [
-                        'sign'
-                    ] : [
-                        'verify'
-                    ];
-                    break;
-                case isNodeJs() && 'Ed448':
-                    algorithm = {
-                        name: 'NODE-ED448',
-                        namedCurve: 'NODE-ED448'
                     };
                     keyUsages = jwk.d ? [
                         'sign'
@@ -12829,7 +12806,7 @@ function subtleDsa(alg, algorithm) {
                 name: 'ECDSA',
                 namedCurve: algorithm.namedCurve
             };
-        case (isCloudflareWorkers() || isNodeJs()) && 'EdDSA':
+        case isCloudflareWorkers() && 'EdDSA':
             const { namedCurve  } = algorithm;
             return {
                 name: namedCurve,
@@ -39812,6 +39789,20 @@ base64.toString = (str, urlMode)=>{
 };
 base64.fromString = (str, urlMode)=>{
     return base64.fromArrayBuffer((new TextEncoder).encode(str), urlMode);
+};
+base64.validate = (encoded, urlMode)=>{
+    if (!(typeof encoded === "string" || encoded instanceof String)) {
+        return false;
+    }
+    try {
+        if (urlMode) {
+            return /^[-A-Za-z0-9\-_]*$/.test(encoded);
+        } else {
+            return /^[-A-Za-z0-9+/]*={0,3}$/.test(encoded);
+        }
+    } catch (_e) {
+        return false;
+    }
 };
 base64.base64 = base64;
 const mod1 = {};
