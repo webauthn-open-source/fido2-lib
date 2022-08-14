@@ -321,7 +321,7 @@ describe("attestation validation", function() {
 					delete attResp.request.rawId;
 					assert.throws(() => {
 						attResp.validateCreateRequest();
-					}, TypeError, "expected 'id' or 'rawId' field of request to be ArrayBuffer, got rawId undefined and id undefined");
+					}, TypeError, "expected 'id' or 'rawId' field of request to be base64 String or ArrayBuffer, got rawId undefined and id undefined");
 				});
 
 				it("throws if id field is non-string", function() {
@@ -329,7 +329,7 @@ describe("attestation validation", function() {
 					delete attResp.request.id;
 					assert.throws(() => {
 						attResp.validateCreateRequest();
-					}, TypeError, "expected 'id' or 'rawId' field of request to be ArrayBuffer, got rawId object and id undefined");
+					}, TypeError, "expected 'id' or 'rawId' field of request to be base64 String or ArrayBuffer, got rawId object and id undefined");
 				});
 
 				it("throws if response.attestationObject is undefined", function() {
@@ -1024,7 +1024,7 @@ describe("assertion validation", function() {
 			delete assnResp.request.rawId;
 			assert.throws(() => {
 				assnResp.validateAssertionResponse();
-			}, TypeError, "expected 'id' or 'rawId' field of request to be ArrayBuffer, got rawId undefined and id undefined");
+			}, TypeError, "expected 'id' or 'rawId' field of request to be base64 String or ArrayBuffer, got rawId undefined and id undefined");
 		});
 
 		it("throws if rawId field is non-string", function() {
@@ -1032,7 +1032,7 @@ describe("assertion validation", function() {
 			delete assnResp.request.id;
 			assert.throws(() => {
 				assnResp.validateAssertionResponse();
-			}, TypeError, "expected 'id' or 'rawId' field of request to be ArrayBuffer, got rawId object and id undefined");
+			}, TypeError, "expected 'id' or 'rawId' field of request to be base64 String or ArrayBuffer, got rawId object and id undefined");
 		});
 
 		it("throws if response.signature is undefined", function() {
