@@ -34,7 +34,7 @@ declare module "fido2-lib" {
   }
 
   interface AuthenticatorSelectionCriteria {
-    attachment?: Attachment;
+    authenticatorAttachment?: Attachment;
     requireResidentKey?: boolean;
     userVerification?: UserVerification;
   }
@@ -51,12 +51,12 @@ declare module "fido2-lib" {
 
   interface PublicKeyCredentialCreationOptions {
     rp: { name: string; id: string; icon?: string };
-    user: { id: string, name: string, displayName: string };
+    user: { id: string; name: string; displayName: string };
     challenge: ArrayBuffer;
     pubKeyCredParams: Array<{ type: "public-key"; alg: number }>;
     timeout?: number;
     attestation?: Attestation;
-    authenticatorSelectionCriteria?: AuthenticatorSelectionCriteria;
+    authenticatorSelection?: AuthenticatorSelectionCriteria;
     rawChallenge?: ArrayBuffer;
     extensions?: any;
   }
