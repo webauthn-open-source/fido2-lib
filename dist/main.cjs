@@ -1005,17 +1005,7 @@ class PublicKey {
 
 		let parsedCose;
 		try {
-			// In the current state, the "cose" parameter can contain not only the actual cose (= public key) but also extensions.
-			// Both are CBOR encoded entries, so you can treat and evaluate the "cose" parameter accordingly.
-			// "fromCose" is called from a context that contains an active AT flag (attestation), so the first CBOR entry is the actual cose.
-			// "tools.cbor.decode" will fail when multiple entries are provided (e.g. cose + at least one extension), so "decodeMultiple" is the sollution.
-			cborX__namespace.decodeMultiple(
-				new Uint8Array(cose),
-				cborObject => {
-					parsedCose = cborObject;
-					return false;
-				}
-			);
+			parsedCose = cborX__namespace.decode(new Uint8Array(cose));
 		} catch (err) {
 			throw new Error(
 				"couldn't parse authenticator.authData.attestationData CBOR: " +
@@ -2905,25 +2895,15 @@ async function parseAuthenticatorData(authnrDataArrayBuffer) {
 			authnrDataBuf.buffer.slice(offset, authnrDataBuf.buffer.byteLength),
 		);
 
-		// TODO: does not only contain the COSE if the buffer contains extensions
 		ret.set("credentialPublicKeyCose", await publicKey.toCose());
 		ret.set("credentialPublicKeyJwk", await publicKey.toJwk());
 		ret.set("credentialPublicKeyPem", await publicKey.toPem());
 	}
 
+	// TODO: parse extensions
 	if (extensions) {
-		const cborObjects = cborX__namespace.decodeMultiple(authnrDataBuf.buffer.slice(offset, authnrDataBuf.buffer.byteLength));
-
-		// skip publicKey if present
-		if (attestation) {
-			cborObjects.shift();
-		}
-
-		if (cborObjects.length === 0) {
-			throw new Error("extensions missing");
-		}
-
-		ret.set("webAuthnExtensions", cborObjects);
+		// extensionStart = offset
+		throw new Error("authenticator extensions not supported");
 	}
 
 	return ret;
@@ -4975,7 +4955,7 @@ class Fido2Lib {
 	 * @param {String} [opts.rpName="Anonymous Service"] The name of the server
 	 * @param {String} [opts.rpIcon] A URL for the service's icon. Can be a [RFC 2397]{@link https://tools.ietf.org/html/rfc2397} data URL.
 	 * @param {Number} [opts.challengeSize=64] The number of bytes to use for the challenge
-	 * @param {Object} [opts.authenticatorSelection] An object describing what types of authenticators are allowed to register with the service.
+	 * @param {Object} [opts.authenticatorSelectionCriteria] An object describing what types of authenticators are allowed to register with the service.
 	 * See [AuthenticatorSelectionCriteria]{@link https://w3.org/TR/webauthn/#authenticatorSelection} in the WebAuthn spec for details.
 	 * @param {String} [opts.authenticatorAttachment] Indicates whether authenticators should be part of the OS ("platform"), or can be roaming authenticators ("cross-platform")
 	 * @param {Boolean} [opts.authenticatorRequireResidentKey] Indicates whether authenticators must store the key internally (true) or if they can use a KDF to generate keys
@@ -5579,13 +5559,13 @@ class Fido2Lib {
 		 * @property {Array} [pubKeyCredParams] A list of PublicKeyCredentialParameters objects, based on the `cryptoParams` that was passed to the constructor.
 		 * @property {Number} [timeout] The amount of time that the call should take before returning an error
 		 * @property {String} [attestation] Whether the client should request attestation from the authenticator or not
-		 * @property {Object} [authenticatorSelection] A object describing which authenticators are preferred for registration
-		 * @property {String} [authenticatorSelection.attachment] What type of attachement is acceptable for new authenticators.
+		 * @property {Object} [authenticatorSelectionCriteria] A object describing which authenticators are preferred for registration
+		 * @property {String} [authenticatorSelectionCriteria.attachment] What type of attachement is acceptable for new authenticators.
 		 * Allowed values are "platform", meaning that the authenticator is embedded in the operating system, or
 		 * "cross-platform", meaning that the authenticator is removeable (e.g. USB, NFC, or BLE).
-		 * @property {Boolean} [authenticatorSelection.requireResidentKey] Indicates whether authenticators must store the keys internally, or if they can
+		 * @property {Boolean} [authenticatorSelectionCriteria.requireResidentKey] Indicates whether authenticators must store the keys internally, or if they can
 		 * store them externally (using a KDF or key wrapping)
-		 * @property {String} [authenticatorSelection.userVerification] Indicates whether user verification is required for authenticators. User verification
+		 * @property {String} [authenticatorSelectionCriteria.userVerification] Indicates whether user verification is required for authenticators. User verification
 		 * means that an authenticator will validate a use through their biometrics (e.g. fingerprint) or knowledge (e.g. PIN). Allowed
 		 * values for `userVerification` are "required", meaning that registration will fail if no authenticator provides user verification;
 		 * "preferred", meaning that if multiple authenticators are available, the one(s) that provide user verification should be used; or
