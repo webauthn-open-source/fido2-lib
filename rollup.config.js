@@ -27,6 +27,7 @@ const tests = [
 	"test/parseBadData.test.js",
 	"test/parseClientData.test.js",
 	"test/parseExpectations.test.js",
+	"test/parseExtensions.test.js",
 	"test/parseNoneAttestationData.test.js",
 	"test/parsePackedAttestationData.test.js",
 	"test/parsePackedSelfAttestationData.test.js",
