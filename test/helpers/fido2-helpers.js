@@ -186,6 +186,20 @@ const challengeResponseAttestationNoneMsgB64Url = {
 	},
 };
 
+const challengeResponseNoneAttestationDataExtensionsMsgB64Url = {
+	response: {
+		attestationObject:
+			"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVkBNkmWDeWIDoxodDQXD2R2YFuP5K65ooYyx5lc87qDHZdjwQAAAAAAAAAAAAAAAAAAAAAAAAAAAKIACKLdXqwahqjNbtNs1piUlonluvxOsF9Feeh9k7qXay5zdrm239cW4WQUD_l5ptTzRLU9bSbghnv0FLaRA7tly7La9_QRKDXwZMsbWajlhKQh2ovYnjh6C37qtyPs151ITDFr-67FRgG0c2dJCoOa2hQB8z0tJYuXrkGMpVk0ZSn1qjfeYxJ1V9BDRsfN7r0lVC8sF_w5OJlSomw64qampRylAQIDJiABIVgguxHN3W6ehp0VWXKaMNie1J82MVJCFZYScau74o17cx8iWCDb1jkTLi7lYZZbgwUwpqAk8QmIiPMTVQUVkhGEyGrKw7kAAWtjcmVkUHJvdGVjdAE",
+	},
+};
+
+const challengeResponseJustExtensionsMsgB64Url = {
+	response: {
+		attestationObject:
+			"o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVkANUmWDeWIDoxodDQXD2R2YFuP5K65ooYyx5lc87qDHZdjgQAAAAC5AAFrY3JlZFByb3RlY3QB",
+	},
+};
+
 const getOptionsRequest = {
 	username: "bubba",
 	displayName: "Bubba Smith",
@@ -484,6 +498,26 @@ const makeCredentialAttestationSafetyNetResponse = {
 	},
 };
 
+const makeNoneAttestationDataExtensionsResponse = {
+	response: {
+		attestationObject: base64.toArrayBuffer(
+			challengeResponseNoneAttestationDataExtensionsMsgB64Url.response
+				.attestationObject,
+			true,
+		),
+	},
+};
+
+const makeJustExtensionsResponse = {
+	response: {
+		attestationObject: base64.toArrayBuffer(
+			challengeResponseJustExtensionsMsgB64Url.response
+				.attestationObject,
+			true,
+		),
+	},
+};
+
 const assertionResponse = {
 	id: assertionResponseMsgB64Url.id,
 	rawId: base64.toArrayBuffer(assertionResponseMsgB64Url.rawId, true),
@@ -549,6 +583,8 @@ const lib = {
 	makeCredentialAttestationPackedResponseWindowsHello,
 	makeCredentialAttestationTpmResponse,
 	makeCredentialAttestationSafetyNetResponse,
+	makeNoneAttestationDataExtensionsResponse,
+	makeJustExtensionsResponse,
 	assertionResponse,
 	assertionResponseWindowsHello,
 	assnPublicKey,

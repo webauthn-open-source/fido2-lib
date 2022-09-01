@@ -4,7 +4,7 @@
 
         "std/": "https://deno.land/std@0.136.0/",
 
-        "@hexagon/base64": "https://deno.land/x/b64@1.1.21/dist/base64.min.mjs",
+        "@hexagon/base64": "https://deno.land/x/b64@1.1.23/dist/base64.min.mjs",
 
         "sinon": "https://unpkg.com/sinon@14.0.0/pkg/sinon-esm.js",
         "test_suite": "https://deno.land/x/test_suite@0.16.1/mod.ts",
