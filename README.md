@@ -150,7 +150,7 @@ As many inner workings have been changed, please verify that your application st
 
 It's recommended to have both Deno (>=1.20) and Node 16-18 available to be able to run all checks and tests.
 
-### Before commiting
+### Before committing
 
 Please run ```npm run lint```, ```npm run test``` and ```deno task test``` before committing, to make sure every test and check passes.
 
