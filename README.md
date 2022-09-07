@@ -158,6 +158,8 @@ See [package.json](/package.json) for available npm scripts, and [deno.jsonc](/d
 
 Make sure to add tests if you add new features.
 
+**Important:** Do not stage/commit `dist/main.js` and `dist/main.cjs`. These are generated and committed automatically by the CI-pipeline.
+
 ### Dependencies
 
 When adding, removing or updating dependencies, start out with npm as usual. Then update `import_map.json` to points to the same versions shown by `npm list`, and run `deno task update-deps` to update the Deno lock-file.
