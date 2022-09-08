@@ -17721,52 +17721,31 @@ class SeqStream {
     getUint16(changeLength = true) {
         const block = this.getBlock(2, changeLength);
         if (block.length < 2) return 0;
-        const value = new Uint16Array(1);
-        const view = new Uint8Array(value.buffer);
-        view[0] = block[1];
-        view[1] = block[0];
-        return value[0];
+        return block[0] << 8 | block[1];
     }
     getInt16(changeLength = true) {
-        const block = this.getBlock(2, changeLength);
-        if (block.length < 2) return 0;
-        const value = new Int16Array(1);
-        const view = new Uint8Array(value.buffer);
-        view[0] = block[1];
-        view[1] = block[0];
-        return value[0];
+        const num = this.getUint16(changeLength);
+        if (num & 32768) {
+            return -(32768 - (num ^ 32768));
+        }
+        return num;
     }
     getUint24(changeLength = true) {
-        const block = this.getBlock(3, changeLength);
+        const block = this.getBlock(4, changeLength);
         if (block.length < 3) return 0;
-        const value = new Uint32Array(1);
-        const view = new Uint8Array(value.buffer);
-        for(let i76 = 3; i76 >= 1; i76--){
-            view[3 - i76] = block[i76 - 1];
-        }
-        return value[0];
+        return block[0] << 16 | block[1] << 8 | block[2];
     }
     getUint32(changeLength = true) {
         const block = this.getBlock(4, changeLength);
-        if (block.length < 4) {
-            return 0;
-        }
-        const value = new Uint32Array(1);
-        const view = new Uint8Array(value.buffer);
-        for(let i77 = 3; i77 >= 0; i77--){
-            view[3 - i77] = block[i77];
-        }
-        return value[0];
+        if (block.length < 4) return 0;
+        return block[0] * 16777216 + (block[1] << 16) + (block[2] << 8) + block[3];
     }
     getInt32(changeLength = true) {
-        const block = this.getBlock(4, changeLength);
-        if (block.length < 4) return 0;
-        const value = new Int32Array(1);
-        const view = new Uint8Array(value.buffer);
-        for(let i78 = 3; i78 >= 0; i78--){
-            view[3 - i78] = block[i78];
+        const num = this.getUint32(changeLength);
+        if (num & 2147483648) {
+            return -(2147483648 - (num ^ 2147483648));
         }
-        return value[0];
+        return num;
     }
     beforeAppend(size) {
         if (this._start + size > this._stream.length) {
@@ -18084,9 +18063,9 @@ class BitStream {
         this.view = new Uint8Array(this.buffer);
         this.bitsCount = (stringLength >> 3) + 1 << 3;
         let byteIndex = 0;
-        for(let i79 = 0; i79 < stringLength; i79++){
-            if (string[i79] == "1") this.view[byteIndex] |= 1 << 7 - i79 % 8;
-            if (i79 && (i79 + 1) % 8 == 0) byteIndex++;
+        for(let i76 = 0; i76 < stringLength; i76++){
+            if (string[i76] == "1") this.view[byteIndex] |= 1 << 7 - i76 % 8;
+            if (i76 && (i76 + 1) % 8 == 0) byteIndex++;
         }
         if (stringLength % 8) this.shiftRight(8 - stringLength % 8);
         this.bitsCount = stringLength;
@@ -18098,7 +18077,7 @@ class BitStream {
             uint32
         ]);
         const view = new Uint8Array(value.buffer);
-        for(let i80 = 3; i80 >= 0; i80--)this.view[i80] = view[3 - i80];
+        for(let i77 = 3; i77 >= 0; i77--)this.view[i77] = view[3 - i77];
         this.bitsCount = 32;
     }
     toString(start, length) {
@@ -18115,8 +18094,8 @@ class BitStream {
             length = this.view.length - start;
         }
         const result = [];
-        for(let i81 = start; i81 < start + length; i81++){
-            result.push(bitsToStringArray[this.view[i81]]);
+        for(let i78 = start; i78 < start + length; i78++){
+            result.push(bitsToStringArray[this.view[i78]]);
         }
         return result.join("").substring((this.view.length << 3) - this.bitsCount);
     }
@@ -18132,9 +18111,9 @@ class BitStream {
         }
         const shiftMask = 255 >> 8 - shift;
         this.view[this.view.length - 1] >>= shift;
-        for(let i82 = this.view.length - 2; i82 >= 0; i82--){
-            this.view[i82 + 1] |= (this.view[i82] & shiftMask) << 8 - shift;
-            this.view[i82] >>= shift;
+        for(let i79 = this.view.length - 2; i79 >= 0; i79--){
+            this.view[i79 + 1] |= (this.view[i79] & shiftMask) << 8 - shift;
+            this.view[i79] >>= shift;
         }
         this.bitsCount -= shift;
         if (this.bitsCount == 0) {
@@ -18228,8 +18207,8 @@ class BitStream {
         }
     }
     reverseBytes() {
-        for(let i83 = 0; i83 < this.view.length; i83++){
-            this.view[i83] = (this.view[i83] * 2050 & 139536 | this.view[i83] * 32800 & 558144) * 65793 >> 16;
+        for(let i80 = 0; i80 < this.view.length; i80++){
+            this.view[i80] = (this.view[i80] * 2050 & 139536 | this.view[i80] * 32800 & 558144) * 65793 >> 16;
         }
         if (this.bitsCount % 8) {
             const currentLength = (this.bitsCount >> 3) + (this.bitsCount % 8 ? 1 : 0);
@@ -18240,8 +18219,8 @@ class BitStream {
         const initialValue = this.toString();
         const initialValueLength = initialValue.length;
         const reversedValue = new Array(initialValueLength);
-        for(let i84 = 0; i84 < initialValueLength; i84++){
-            reversedValue[initialValueLength - 1 - i84] = initialValue[i84];
+        for(let i81 = 0; i81 < initialValueLength; i81++){
+            reversedValue[initialValueLength - 1 - i81] = initialValue[i81];
         }
         this.fromString(reversedValue.join(""));
     }
@@ -18255,8 +18234,8 @@ class BitStream {
         }
         const value = new Uint32Array(1);
         const view = new Uint8Array(value.buffer);
-        for(let i85 = byteLength; i85 >= 0; i85--){
-            view[byteLength - i85] = this.view[i85];
+        for(let i82 = byteLength; i82 >= 0; i82--){
+            view[byteLength - i82] = this.view[i82];
         }
         return value[0];
     }
@@ -18274,9 +18253,9 @@ class BitStream {
             string: this.toString()
         });
         const stringPatterns = new Array(patterns.length);
-        for(let i86 = 0; i86 < patterns.length; i86++){
-            stringPatterns[i86] = new ByteStream({
-                string: patterns[i86].toString()
+        for(let i83 = 0; i83 < patterns.length; i83++){
+            stringPatterns[i83] = new ByteStream({
+                string: patterns[i83].toString()
             });
         }
         return stringStream.findFirstIn(stringPatterns, start, length, backward);
@@ -18286,9 +18265,9 @@ class BitStream {
             string: this.toString()
         });
         const stringPatterns = new Array(patterns.length);
-        for(let i87 = 0; i87 < patterns.length; i87++){
-            stringPatterns[i87] = new ByteStream({
-                string: patterns[i87].toString()
+        for(let i84 = 0; i84 < patterns.length; i84++){
+            stringPatterns[i84] = new ByteStream({
+                string: patterns[i84].toString()
             });
         }
         return stringStream.findAllIn(stringPatterns, start, length);
@@ -18307,9 +18286,9 @@ class BitStream {
             string: this.toString()
         });
         const stringPatterns = new Array(patterns.length);
-        for(let i88 = 0; i88 < patterns.length; i88++){
-            stringPatterns[i88] = new ByteStream({
-                string: patterns[i88].toString()
+        for(let i85 = 0; i85 < patterns.length; i85++){
+            stringPatterns[i85] = new ByteStream({
+                string: patterns[i85].toString()
             });
         }
         return stringStream.findFirstNotIn(stringPatterns, start, length, backward);
@@ -18319,9 +18298,9 @@ class BitStream {
             string: this.toString()
         });
         const stringPatterns = new Array(patterns.length);
-        for(let i89 = 0; i89 < patterns.length; i89++){
-            stringPatterns[i89] = new ByteStream({
-                string: patterns[i89].toString()
+        for(let i86 = 0; i86 < patterns.length; i86++){
+            stringPatterns[i86] = new ByteStream({
+                string: patterns[i86].toString()
             });
         }
         return stringStream.findAllNotIn(stringPatterns, start, length);
@@ -18331,9 +18310,9 @@ class BitStream {
             string: this.toString()
         });
         const stringPatterns = new Array(patterns.length);
-        for(let i90 = 0; i90 < patterns.length; i90++){
-            stringPatterns[i90] = new ByteStream({
-                string: patterns[i90].toString()
+        for(let i87 = 0; i87 < patterns.length; i87++){
+            stringPatterns[i87] = new ByteStream({
+                string: patterns[i87].toString()
             });
         }
         return stringStream.findFirstSequence(stringPatterns, start, length, backward);
@@ -18343,9 +18322,9 @@ class BitStream {
             string: this.toString()
         });
         const stringPatterns = new Array(patterns.length);
-        for(let i91 = 0; i91 < patterns.length; i91++){
-            stringPatterns[i91] = new ByteStream({
-                string: patterns[i91].toString()
+        for(let i88 = 0; i88 < patterns.length; i88++){
+            stringPatterns[i88] = new ByteStream({
+                string: patterns[i88].toString()
             });
         }
         return stringStream.findAllSequences(stringPatterns, start, length);
@@ -18367,9 +18346,9 @@ class BitStream {
             string: this.toString()
         });
         const stringLeftPatterns = new Array(inputLeftPatterns.length);
-        for(let i92 = 0; i92 < inputLeftPatterns.length; i92++){
-            stringLeftPatterns[i92] = new ByteStream({
-                string: inputLeftPatterns[i92].toString()
+        for(let i89 = 0; i89 < inputLeftPatterns.length; i89++){
+            stringLeftPatterns[i89] = new ByteStream({
+                string: inputLeftPatterns[i89].toString()
             });
         }
         const stringRightPatterns = new Array(inputRightPatterns.length);
@@ -18401,9 +18380,9 @@ class BitStream {
             string: this.toString()
         });
         const stringPatterns = new Array(patterns.length);
-        for(let i93 = 0; i93 < patterns.length; i93++){
-            stringPatterns[i93] = new ByteStream({
-                string: patterns[i93].toString()
+        for(let i90 = 0; i90 < patterns.length; i90++){
+            stringPatterns[i90] = new ByteStream({
+                string: patterns[i90].toString()
             });
         }
         return stringStream.skipPatterns(stringPatterns, start, length, backward);
@@ -18413,9 +18392,9 @@ class BitStream {
             string: this.toString()
         });
         const stringPatterns = new Array(patterns.length);
-        for(let i94 = 0; i94 < patterns.length; i94++){
-            stringPatterns[i94] = new ByteStream({
-                string: patterns[i94].toString()
+        for(let i91 = 0; i91 < patterns.length; i91++){
+            stringPatterns[i91] = new ByteStream({
+                string: patterns[i91].toString()
             });
         }
         return stringStream.skipNotPatterns(stringPatterns, start, length, backward);
@@ -18558,15 +18537,15 @@ function stringPrep(inputString) {
     let isSpace = false;
     let cutResult = EMPTY_STRING1;
     const result = inputString.trim();
-    for(let i95 = 0; i95 < result.length; i95++){
-        if (result.charCodeAt(i95) === 32) {
+    for(let i92 = 0; i92 < result.length; i92++){
+        if (result.charCodeAt(i92) === 32) {
             if (isSpace === false) isSpace = true;
         } else {
             if (isSpace) {
                 cutResult += " ";
                 isSpace = false;
             }
-            cutResult += result[i95];
+            cutResult += result[i92];
         }
     }
     return cutResult.toLowerCase();
@@ -23211,7 +23190,7 @@ class EncryptedContentInfo extends PkiObject {
                         const pieceView = new Uint8Array(valueHex, offset, offset + 1024 > valueHex.byteLength ? valueHex.byteLength - offset : 1024);
                         const _array = new ArrayBuffer(pieceView.length);
                         const _view = new Uint8Array(_array);
-                        for(let i96 = 0; i96 < _view.length; i96++)_view[i96] = pieceView[i96];
+                        for(let i93 = 0; i93 < _view.length; i93++)_view[i93] = pieceView[i93];
                         constrString.valueBlock.value.push(new OctetString({
                             valueHex: _array
                         }));
@@ -23824,9 +23803,9 @@ async function makePKCS12B2Key(cryptoEngine, hashAlgorithm, keyLength, password,
     const passwordViewInitial = new Uint8Array(password);
     const passwordTransformed = new ArrayBuffer(password.byteLength * 2 + 2);
     const passwordTransformedView = new Uint8Array(passwordTransformed);
-    for(let i97 = 0; i97 < passwordViewInitial.length; i97++){
-        passwordTransformedView[i97 * 2] = 0;
-        passwordTransformedView[i97 * 2 + 1] = passwordViewInitial[i97];
+    for(let i94 = 0; i94 < passwordViewInitial.length; i94++){
+        passwordTransformedView[i94 * 2] = 0;
+        passwordTransformedView[i94 * 2 + 1] = passwordViewInitial[i94];
     }
     passwordTransformedView[passwordTransformedView.length - 2] = 0;
     passwordTransformedView[passwordTransformedView.length - 1] = 0;
@@ -25674,7 +25653,7 @@ async function kdf(hashFunction, Zbuffer, keydatalen, SharedInfo, crypto = getCr
         if (quotient - maxCounter > 0) maxCounter++;
     }
     const incomingResult = [];
-    for(let i98 = 1; i98 <= maxCounter; i98++)incomingResult.push(await kdfWithCounter(hashFunction, Zbuffer, i98, SharedInfo, crypto));
+    for(let i95 = 1; i95 <= maxCounter; i95++)incomingResult.push(await kdfWithCounter(hashFunction, Zbuffer, i95, SharedInfo, crypto));
     let combinedBuffer = EMPTY_BUFFER1;
     let currentCounter = 1;
     let found = true;
@@ -25694,7 +25673,7 @@ async function kdf(hashFunction, Zbuffer, keydatalen, SharedInfo, crypto = getCr
         const newBuffer = new ArrayBuffer(keydatalen);
         const newView = new Uint8Array(newBuffer);
         const combinedView = new Uint8Array(combinedBuffer);
-        for(let i99 = 0; i99 < keydatalen; i99++)newView[i99] = combinedView[i99];
+        for(let i96 = 0; i96 < keydatalen; i96++)newView[i96] = combinedView[i96];
         return newBuffer;
     }
     return combinedBuffer;
@@ -32541,22 +32520,22 @@ class EnvelopedData extends PkiObject {
             });
         };
         const res = [];
-        for(let i100 = 0; i100 < this.recipientInfos.length; i100++){
-            switch(this.recipientInfos[i100].variant){
+        for(let i97 = 0; i97 < this.recipientInfos.length; i97++){
+            switch(this.recipientInfos[i97].variant){
                 case 1:
-                    res.push(await SubKeyTransRecipientInfo(i100));
+                    res.push(await SubKeyTransRecipientInfo(i97));
                     break;
                 case 2:
-                    res.push(await SubKeyAgreeRecipientInfo(i100));
+                    res.push(await SubKeyAgreeRecipientInfo(i97));
                     break;
                 case 3:
-                    res.push(await SubKEKRecipientInfo(i100));
+                    res.push(await SubKEKRecipientInfo(i97));
                     break;
                 case 4:
-                    res.push(await SubPasswordRecipientinfo(i100));
+                    res.push(await SubPasswordRecipientinfo(i97));
                     break;
                 default:
-                    throw new Error(`Unknown recipient type in array with index ${i100}`);
+                    throw new Error(`Unknown recipient type in array with index ${i97}`);
             }
         }
         return res;
@@ -33734,12 +33713,12 @@ class CertificateChainValidationEngine {
         for (const intermediateCert of validationEngine.certs){
             checkCertificate(intermediateCert);
         }
-        for(let i101 = 0; i101 < result.length; i101++){
+        for(let i98 = 0; i98 < result.length; i98++){
             try {
-                const verificationResult = await certificate.verify(result[i101], crypto);
-                if (verificationResult === false) result.splice(i101, 1);
+                const verificationResult = await certificate.verify(result[i98], crypto);
+                if (verificationResult === false) result.splice(i98, 1);
             } catch (ex) {
-                result.splice(i101, 1);
+                result.splice(i98, 1);
             }
         }
         return result;
@@ -33770,10 +33749,10 @@ class CertificateChainValidationEngine {
             const result = [];
             function checkUnique(array) {
                 let unique = true;
-                for(let i102 = 0; i102 < array.length; i102++){
+                for(let i99 = 0; i99 < array.length; i99++){
                     for(let j = 0; j < array.length; j++){
-                        if (j === i102) continue;
-                        if (array[i102] === array[j]) {
+                        if (j === i99) continue;
+                        if (array[i99] === array[j]) {
                             unique = false;
                             break;
                         }
@@ -33823,19 +33802,19 @@ class CertificateChainValidationEngine {
                     statusMessage: "No CRLs for specific certificate issuer"
                 };
             }
-            for(let i103 = 0; i103 < crls.length; i103++){
-                const crl = crls[i103];
+            for(let i100 = 0; i100 < crls.length; i100++){
+                const crl = crls[i100];
                 if (crl.nextUpdate && crl.nextUpdate.value < this.checkDate) {
                     continue;
                 }
                 for(let j = 0; j < issuerCertificates.length; j++){
                     try {
-                        const result = await crls[i103].verify({
+                        const result = await crls[i100].verify({
                             issuerCertificate: issuerCertificates[j]
                         }, crypto1);
                         if (result) {
                             crlsAndCertificates.push({
-                                crl: crls[i103],
+                                crl: crls[i100],
                                 certificate: issuerCertificates[j]
                             });
                             break;
@@ -33863,8 +33842,8 @@ class CertificateChainValidationEngine {
             if (!hashAlgorithm.hash) {
                 return 1;
             }
-            for(let i104 = 0; i104 < this.ocsps.length; i104++){
-                const ocsp = this.ocsps[i104];
+            for(let i101 = 0; i101 < this.ocsps.length; i101++){
+                const ocsp = this.ocsps[i101];
                 const result = await ocsp.getCertificateStatus(certificate, issuerCertificate, crypto1);
                 if (result.isForCertificate) {
                     if (result.status === 0) return 0;
@@ -33936,8 +33915,8 @@ class CertificateChainValidationEngine {
             };
         }
         const basicCheck = async (path, checkDate)=>{
-            for(let i105 = 0; i105 < path.length; i105++){
-                if (path[i105].notBefore.value > checkDate || path[i105].notAfter.value < checkDate) {
+            for(let i102 = 0; i102 < path.length; i102++){
+                if (path[i102].notBefore.value > checkDate || path[i102].notAfter.value < checkDate) {
                     return {
                         result: false,
                         resultCode: 8,
@@ -33964,14 +33943,14 @@ class CertificateChainValidationEngine {
                 }
             }
             if (this.crls.length !== 0 || this.ocsps.length !== 0) {
-                for(let i106 = 0; i106 < path.length - 1; i106++){
+                for(let i103 = 0; i103 < path.length - 1; i103++){
                     let ocspResult = 2;
                     let crlResult = {
                         status: 0,
                         statusMessage: EMPTY_STRING1
                     };
                     if (this.ocsps.length !== 0) {
-                        ocspResult = await findOCSP(path[i106], path[i106 + 1]);
+                        ocspResult = await findOCSP(path[i103], path[i103 + 1]);
                         switch(ocspResult){
                             case 0:
                                 continue;
@@ -33984,10 +33963,10 @@ class CertificateChainValidationEngine {
                         }
                     }
                     if (this.crls.length !== 0) {
-                        crlResult = await findCRL(path[i106]);
+                        crlResult = await findCRL(path[i103]);
                         if (crlResult.status === 0 && crlResult.result) {
                             for(let j = 0; j < crlResult.result.length; j++){
-                                const isCertificateRevoked = crlResult.result[j].crl.isCertificateRevoked(path[i106]);
+                                const isCertificateRevoked = crlResult.result[j].crl.isCertificateRevoked(path[i103]);
                                 if (isCertificateRevoked) {
                                     return {
                                         result: false,
@@ -34023,7 +34002,7 @@ class CertificateChainValidationEngine {
                         }
                     }
                     if (ocspResult === 2 && crlResult.status === 2 && passedWhenNotRevValues) {
-                        const issuerCertificate = path[i106 + 1];
+                        const issuerCertificate = path[i103 + 1];
                         let extensionFound = false;
                         if (issuerCertificate.extensions) {
                             for (const extension of issuerCertificate.extensions){
@@ -34135,8 +34114,8 @@ class CertificateChainValidationEngine {
             if (nameLen === 0 || constrLen === 0 || nameLen < constrLen) {
                 return false;
             }
-            for(let i107 = 0; i107 < nameLen; i107++){
-                if (nameSplitted[i107].length === 0) {
+            for(let i104 = 0; i104 < nameLen; i104++){
+                if (nameSplitted[i104].length === 0) {
                     return false;
                 }
             }
@@ -34186,9 +34165,9 @@ class CertificateChainValidationEngine {
             const cs = constraintPrepared.split("/");
             if (cs.length > 1) return false;
             if (ns.length > 1) {
-                for(let i108 = 0; i108 < ns.length; i108++){
-                    if (ns[i108].length > 0 && ns[i108].charAt(ns[i108].length - 1) !== ":") {
-                        const nsPort = ns[i108].split(":");
+                for(let i105 = 0; i105 < ns.length; i105++){
+                    if (ns[i105].length > 0 && ns[i105].charAt(ns[i105].length - 1) !== ":") {
+                        const nsPort = ns[i105].split(":");
                         namePrepared = nsPort[0];
                         break;
                     }
@@ -34207,14 +34186,14 @@ class CertificateChainValidationEngine {
             const nameView = name.valueBlock.valueHexView;
             const constraintView = constraint.valueBlock.valueHexView;
             if (nameView.length === 4 && constraintView.length === 8) {
-                for(let i109 = 0; i109 < 4; i109++){
-                    if ((nameView[i109] ^ constraintView[i109]) & constraintView[i109 + 4]) return false;
+                for(let i106 = 0; i106 < 4; i106++){
+                    if ((nameView[i106] ^ constraintView[i106]) & constraintView[i106 + 4]) return false;
                 }
                 return true;
             }
             if (nameView.length === 16 && constraintView.length === 32) {
-                for(let i115 = 0; i115 < 16; i115++){
-                    if ((nameView[i115] ^ constraintView[i115]) & constraintView[i115 + 16]) return false;
+                for(let i107 = 0; i107 < 16; i107++){
+                    if ((nameView[i107] ^ constraintView[i107]) & constraintView[i107 + 16]) return false;
                 }
                 return true;
             }
@@ -34225,11 +34204,11 @@ class CertificateChainValidationEngine {
             if (name.typesAndValues.length < constraint.typesAndValues.length) return false;
             let result = true;
             let nameStart = 0;
-            for(let i116 = 0; i116 < constraint.typesAndValues.length; i116++){
+            for(let i108 = 0; i108 < constraint.typesAndValues.length; i108++){
                 let localResult = false;
                 for(let j = nameStart; j < name.typesAndValues.length; j++){
-                    localResult = name.typesAndValues[j].isEqual(constraint.typesAndValues[i116]);
-                    if (name.typesAndValues[j].type === constraint.typesAndValues[i116].type) result = result && localResult;
+                    localResult = name.typesAndValues[j].isEqual(constraint.typesAndValues[i108]);
+                    if (name.typesAndValues[j].type === constraint.typesAndValues[i108].type) result = result && localResult;
                     if (localResult === true) {
                         if (nameStart === 0 || nameStart === j) {
                             nameStart = j + 1;
@@ -34278,16 +34257,16 @@ class CertificateChainValidationEngine {
             const policyMappings = new Array(this.certs.length - 1);
             const certPolicies = new Array(this.certs.length - 1);
             let explicitPolicyStart = explicitPolicyIndicator ? this.certs.length - 1 : -1;
-            for(let i117 = this.certs.length - 2; i117 >= 0; i117--, pathDepth++){
-                const cert = this.certs[i117];
+            for(let i109 = this.certs.length - 2; i109 >= 0; i109--, pathDepth++){
+                const cert = this.certs[i109];
                 if (cert.extensions) {
                     for(let j = 0; j < cert.extensions.length; j++){
                         const extension = cert.extensions[j];
                         if (extension.extnID === id_CertificatePolicies) {
-                            certPolicies[i117] = extension.parsedValue;
+                            certPolicies[i109] = extension.parsedValue;
                             for(let s3 = 0; s3 < allPolicies.length; s3++){
                                 if (allPolicies[s3] === id_AnyPolicy) {
-                                    delete policiesAndCerts[s3][i117];
+                                    delete policiesAndCerts[s3][i109];
                                     break;
                                 }
                             }
@@ -34303,9 +34282,9 @@ class CertificateChainValidationEngine {
                                 if (policyIndex === -1) {
                                     allPolicies.push(policyId);
                                     const certArray = new Array(this.certs.length - 1);
-                                    certArray[i117] = true;
+                                    certArray[i109] = true;
                                     policiesAndCerts.push(certArray);
-                                } else policiesAndCerts[policyIndex][i117] = true;
+                                } else policiesAndCerts[policyIndex][i109] = true;
                             }
                         }
                         if (extension.extnID === id_PolicyMappings) {
@@ -34316,13 +34295,13 @@ class CertificateChainValidationEngine {
                                     resultMessage: "Policy mapping prohibited"
                                 };
                             }
-                            policyMappings[i117] = extension.parsedValue;
+                            policyMappings[i109] = extension.parsedValue;
                         }
                         if (extension.extnID === id_PolicyConstraints) {
                             if (explicitPolicyIndicator === false) {
                                 if (extension.parsedValue.requireExplicitPolicy === 0) {
                                     explicitPolicyIndicator = true;
-                                    explicitPolicyStart = i117;
+                                    explicitPolicyStart = i109;
                                 } else {
                                     if (pendingConstraints[0] === false) {
                                         pendingConstraints[0] = true;
@@ -34358,14 +34337,14 @@ class CertificateChainValidationEngine {
                                 break;
                             }
                         }
-                        if (policyIndex !== -1) delete policiesAndCerts[0][i117];
+                        if (policyIndex !== -1) delete policiesAndCerts[0][i109];
                     }
                     if (explicitPolicyIndicator === false) {
                         if (pendingConstraints[0] === true) {
                             explicitPolicyPending--;
                             if (explicitPolicyPending === 0) {
                                 explicitPolicyIndicator = true;
-                                explicitPolicyStart = i117;
+                                explicitPolicyStart = i109;
                                 pendingConstraints[0] = false;
                             }
                         }
@@ -34458,10 +34437,10 @@ class CertificateChainValidationEngine {
             else {
                 if (authConstrPolicies.length === 1 && authConstrPolicies[0] === id_AnyPolicy) userConstrPolicies = initialPolicySet;
                 else {
-                    for(let i118 = 0; i118 < authConstrPolicies.length; i118++){
+                    for(let i115 = 0; i115 < authConstrPolicies.length; i115++){
                         for(let j = 0; j < initialPolicySet.length; j++){
-                            if (initialPolicySet[j] === authConstrPolicies[i118] || initialPolicySet[j] === id_AnyPolicy) {
-                                userConstrPolicies.push(authConstrPolicies[i118]);
+                            if (initialPolicySet[j] === authConstrPolicies[i115] || initialPolicySet[j] === id_AnyPolicy) {
+                                userConstrPolicies.push(authConstrPolicies[i115]);
                                 break;
                             }
                         }
@@ -35288,8 +35267,8 @@ class EncapsulatedContentInfo extends PkiObject {
                         const pieceView = new Uint8Array(viewHex, offset, offset + 65536 > viewHex.byteLength ? viewHex.byteLength - offset : 65536);
                         const _array = new ArrayBuffer(pieceView.length);
                         const _view = new Uint8Array(_array);
-                        for(let i119 = 0; i119 < _view.length; i119++){
-                            _view[i119] = pieceView[i119];
+                        for(let i116 = 0; i116 < _view.length; i116++){
+                            _view[i116] = pieceView[i116];
                         }
                         constrString.valueBlock.value.push(new OctetString({
                             valueHex: _array
@@ -37046,7 +37025,7 @@ const CLEAR_PROPS$3 = [
     SIGNED_DATA_SIGNER_INFOS
 ];
 class SignedDataVerifyError extends Error {
-    constructor({ message , code =0 , date =new Date() , signatureVerified =null , signerCertificate =null , signerCertificateVerified =null , timestampSerial =null  }){
+    constructor({ message , code =0 , date =new Date() , signatureVerified =null , signerCertificate =null , signerCertificateVerified =null , timestampSerial =null , certificatePath =[]  }){
         super(message);
         this.name = "SignedDataVerifyError";
         this.date = date;
@@ -37055,6 +37034,7 @@ class SignedDataVerifyError extends Error {
         this.signatureVerified = signatureVerified;
         this.signerCertificate = signerCertificate;
         this.signerCertificateVerified = signerCertificateVerified;
+        this.certificatePath = certificatePath;
     }
 }
 class SignedData extends PkiObject {
@@ -37383,7 +37363,7 @@ class SignedData extends PkiObject {
                         date: checkDate,
                         code: 15,
                         message: "Error during verification: TSTInfo verification is failed",
-                        signatureVerified: null,
+                        signatureVerified: false,
                         signerCertificate: signerCert,
                         timestampSerial,
                         signerCertificateVerified: true
@@ -39273,8 +39253,8 @@ function addExtension(extension) {
     currentExtensions[extension.tag] = extension.decode;
 }
 const mult10 = new Array(147);
-for(let i121 = 0; i121 < 256; i121++){
-    mult10[i121] = +('1e' + Math.floor(45.15 - i121 * 0.30103));
+for(let i118 = 0; i118 < 256; i118++){
+    mult10[i118] = +('1e' + Math.floor(45.15 - i118 * 0.30103));
 }
 let defaultDecoder = new Decoder({
     useRecords: false
@@ -39340,8 +39320,8 @@ class Encoder extends Decoder {
         let sharedPackedObjectMap;
         if (sharedValues1) {
             sharedPackedObjectMap = Object.create(null);
-            for(let i122 = 0, l = sharedValues1.length; i122 < l; i122++){
-                sharedPackedObjectMap[sharedValues1[i122]] = i122;
+            for(let i119 = 0, l = sharedValues1.length; i119 < l; i119++){
+                sharedPackedObjectMap[sharedValues1[i119]] = i119;
             }
         }
         let recordIdsToRemove = [];
@@ -39390,19 +39370,19 @@ class Encoder extends Decoder {
                     let sharedValues = encoder1.sharedValues = sharedData.packedValues;
                     if (sharedValues) {
                         sharedPackedObjectMap = {};
-                        for(let i123 = 0, l = sharedValues.length; i123 < l; i123++)sharedPackedObjectMap[sharedValues[i123]] = i123;
+                        for(let i120 = 0, l = sharedValues.length; i120 < l; i120++)sharedPackedObjectMap[sharedValues[i120]] = i120;
                     }
                 }
                 let sharedStructuresLength = sharedStructures.length;
                 if (sharedStructuresLength > maxSharedStructures && !isSequential) sharedStructuresLength = maxSharedStructures;
                 if (!sharedStructures.transitions) {
                     sharedStructures.transitions = Object.create(null);
-                    for(let i124 = 0; i124 < sharedStructuresLength; i124++){
-                        let keys = sharedStructures[i124];
+                    for(let i121 = 0; i121 < sharedStructuresLength; i121++){
+                        let keys = sharedStructures[i121];
                         if (!keys) continue;
                         let nextTransition, transition = sharedStructures.transitions;
                         for(let j = 0, l = keys.length; j < l; j++){
-                            if (transition[RECORD_SYMBOL] === undefined) transition[RECORD_SYMBOL] = i124;
+                            if (transition[RECORD_SYMBOL] === undefined) transition[RECORD_SYMBOL] = i121;
                             let key = keys[j];
                             nextTransition = transition[key];
                             if (!nextTransition) {
@@ -39410,7 +39390,7 @@ class Encoder extends Decoder {
                             }
                             transition = nextTransition;
                         }
-                        transition[RECORD_SYMBOL] = i124 | 1048576;
+                        transition[RECORD_SYMBOL] = i121 | 1048576;
                     }
                 }
                 if (!isSequential) sharedStructures.nextId = sharedStructuresLength;
@@ -39435,8 +39415,8 @@ class Encoder extends Decoder {
                     writeArrayHeader(0);
                     writeArrayHeader(0);
                     packedObjectMap = Object.create(sharedPackedObjectMap || null);
-                    for(let i125 = 0, l = valuesArray.length; i125 < l; i125++){
-                        packedObjectMap[valuesArray[i125]] = i125;
+                    for(let i122 = 0, l = valuesArray.length; i122 < l; i122++){
+                        packedObjectMap[valuesArray[i122]] = i122;
                     }
                 }
             }
@@ -39470,8 +39450,8 @@ class Encoder extends Decoder {
                         transitionsCount = 0;
                         if (recordIdsToRemove.length > 0) recordIdsToRemove = [];
                     } else if (recordIdsToRemove.length > 0 && !isSequential) {
-                        for(let i126 = 0, l = recordIdsToRemove.length; i126 < l; i126++){
-                            recordIdsToRemove[i126][RECORD_SYMBOL] = undefined;
+                        for(let i123 = 0, l = recordIdsToRemove.length; i123 < l; i123++){
+                            recordIdsToRemove[i123][RECORD_SYMBOL] = undefined;
                         }
                         recordIdsToRemove = [];
                     }
@@ -39570,17 +39550,17 @@ class Encoder extends Decoder {
                 let maxBytes = strLength * 3;
                 if (position1 + maxBytes > safeEnd) target = makeRoom(position1 + maxBytes);
                 if (strLength < 64 || !encodeUtf8) {
-                    let i127, c1, c2, strPosition = position1 + headerSize;
-                    for(i127 = 0; i127 < strLength; i127++){
-                        c1 = value.charCodeAt(i127);
+                    let i124, c1, c2, strPosition = position1 + headerSize;
+                    for(i124 = 0; i124 < strLength; i124++){
+                        c1 = value.charCodeAt(i124);
                         if (c1 < 128) {
                             target[strPosition++] = c1;
                         } else if (c1 < 2048) {
                             target[strPosition++] = c1 >> 6 | 192;
                             target[strPosition++] = c1 & 63 | 128;
-                        } else if ((c1 & 64512) === 55296 && ((c2 = value.charCodeAt(i127 + 1)) & 64512) === 56320) {
+                        } else if ((c1 & 64512) === 55296 && ((c2 = value.charCodeAt(i124 + 1)) & 64512) === 56320) {
                             c1 = 65536 + ((c1 & 1023) << 10) + (c2 & 1023);
-                            i127++;
+                            i124++;
                             target[strPosition++] = c1 >> 18 | 240;
                             target[strPosition++] = c1 >> 12 & 63 | 128;
                             target[strPosition++] = c1 >> 6 & 63 | 128;
@@ -39696,8 +39676,8 @@ class Encoder extends Decoder {
                         } else {
                             writeArrayHeader(length);
                         }
-                        for(let i128 = 0; i128 < length; i128++){
-                            encode1(value[i128]);
+                        for(let i125 = 0; i125 < length; i125++){
+                            encode1(value[i125]);
                         }
                     } else if (constructor === Map) {
                         if (this.mapsAsObjects ? this.useTag259ForMaps !== false : this.useTag259ForMaps) {
@@ -39732,10 +39712,10 @@ class Encoder extends Decoder {
                             }
                         }
                     } else {
-                        for(let i129 = 0, l = extensions.length; i129 < l; i129++){
-                            let extensionClass = extensionClasses[i129];
+                        for(let i126 = 0, l = extensions.length; i126 < l; i126++){
+                            let extensionClass = extensionClasses[i126];
                             if (value instanceof extensionClass) {
-                                let extension = extensions[i129];
+                                let extension = extensions[i126];
                                 let tag = extension.tag;
                                 if (tag == undefined) tag = extension.getTag && extension.getTag.call(this, value);
                                 if (tag < 24) {
@@ -39810,14 +39790,14 @@ class Encoder extends Decoder {
                 position1 += 4;
             }
             if (encoder1.keyMap) {
-                for(let i130 = 0; i130 < length; i130++){
-                    encode1(encodeKey(keys[i130]));
-                    encode1(vals[i130]);
+                for(let i127 = 0; i127 < length; i127++){
+                    encode1(encodeKey(keys[i127]));
+                    encode1(vals[i127]);
                 }
             } else {
-                for(let i131 = 0; i131 < length; i131++){
-                    encode1(keys[i131]);
-                    encode1(vals[i131]);
+                for(let i128 = 0; i128 < length; i128++){
+                    encode1(keys[i128]);
+                    encode1(vals[i128]);
                 }
             }
         } : (object, safePrototype)=>{
@@ -39850,8 +39830,8 @@ class Encoder extends Decoder {
                 keys = Object.keys(object).map((k)=>this.encodeKey(k)
                 );
                 length = keys.length;
-                for(let i132 = 0; i132 < length; i132++){
-                    let key = keys[i132];
+                for(let i129 = 0; i129 < length; i129++){
+                    let key = keys[i129];
                     nextTransition = transition[key];
                     if (!nextTransition) {
                         nextTransition = transition[key] = Object.create(null);
@@ -39899,9 +39879,9 @@ class Encoder extends Decoder {
                     target[position1++] = recordId >> 8 | 224;
                     target[position1++] = recordId & 255;
                     transition = structures.transitions;
-                    for(let i133 = 0; i133 < length; i133++){
+                    for(let i130 = 0; i130 < length; i130++){
                         if (transition[RECORD_SYMBOL] === undefined || transition[RECORD_SYMBOL] & 1048576) transition[RECORD_SYMBOL] = recordId;
-                        transition = transition[keys[i133]];
+                        transition = transition[keys[i130]];
                     }
                     transition[RECORD_SYMBOL] = recordId | 1048576;
                     hasSharedUpdate = true;
@@ -39965,7 +39945,7 @@ class Encoder extends Decoder {
             this.sharedVersion = sharedData.version;
             this.structures.nextId = this.structures.length;
         } else {
-            structuresCopy.forEach((structure, i134)=>this.structures[i134] = structure
+            structuresCopy.forEach((structure, i131)=>this.structures[i131] = structure
             );
         }
         return saveResults;
@@ -40020,8 +40000,8 @@ function findRepetitiveStrings(value, packedValues2) {
         case 'object':
             if (value) {
                 if (value instanceof Array) {
-                    for(let i135 = 0, l = value.length; i135 < l; i135++){
-                        findRepetitiveStrings(value[i135], packedValues2);
+                    for(let i132 = 0, l = value.length; i132 < l; i132++){
+                        findRepetitiveStrings(value[i132], packedValues2);
                     }
                 } else {
                     let includeKeys = !packedValues2.encoder.useRecords;
@@ -40149,8 +40129,8 @@ extensions = [
                 writeArrayHeader(0);
                 writeArrayHeader(0);
                 packedObjectMap = Object.create(sharedPackedObjectMap || null);
-                for(let i136 = 0, l = valuesArray.length; i136 < l; i136++){
-                    packedObjectMap[valuesArray[i136]] = i136;
+                for(let i133 = 0, l = valuesArray.length; i133 < l; i133++){
+                    packedObjectMap[valuesArray[i133]] = i133;
                 }
             }
             if (sharedStructures) {
@@ -40333,14 +40313,14 @@ const mod = function() {
 }();
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", charsUrl = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_", genLookup = (target9)=>{
     let lookupTemp = typeof Uint8Array === "undefined" ? [] : new Uint8Array(256);
-    for(let i137 = 0; i137 < chars.length; i137++){
-        lookupTemp[target9.charCodeAt(i137)] = i137;
+    for(let i134 = 0; i134 < chars.length; i134++){
+        lookupTemp[target9.charCodeAt(i134)] = i134;
     }
     return lookupTemp;
 }, lookup = genLookup(chars), lookupUrl = genLookup(charsUrl);
 let base64 = {};
 base64.toArrayBuffer = (data, urlMode)=>{
-    let bufferLength = data.length * 0.75, len = data.length, i138, p = 0, encoded1, encoded2, encoded3, encoded4;
+    let bufferLength = data.length * 0.75, len = data.length, i135, p = 0, encoded1, encoded2, encoded3, encoded4;
     if (data[data.length - 1] === "=") {
         bufferLength--;
         if (data[data.length - 2] === "=") {
@@ -40348,11 +40328,11 @@ base64.toArrayBuffer = (data, urlMode)=>{
         }
     }
     const arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer), target10 = urlMode ? lookupUrl : lookup;
-    for(i138 = 0; i138 < len; i138 += 4){
-        encoded1 = target10[data.charCodeAt(i138)];
-        encoded2 = target10[data.charCodeAt(i138 + 1)];
-        encoded3 = target10[data.charCodeAt(i138 + 2)];
-        encoded4 = target10[data.charCodeAt(i138 + 3)];
+    for(i135 = 0; i135 < len; i135 += 4){
+        encoded1 = target10[data.charCodeAt(i135)];
+        encoded2 = target10[data.charCodeAt(i135 + 1)];
+        encoded3 = target10[data.charCodeAt(i135 + 2)];
+        encoded4 = target10[data.charCodeAt(i135 + 3)];
         bytes[p++] = encoded1 << 2 | encoded2 >> 4;
         bytes[p++] = (encoded2 & 15) << 4 | encoded3 >> 2;
         bytes[p++] = (encoded3 & 3) << 6 | encoded4 & 63;
@@ -40360,12 +40340,12 @@ base64.toArrayBuffer = (data, urlMode)=>{
     return arraybuffer;
 };
 base64.fromArrayBuffer = (arrBuf, urlMode)=>{
-    let bytes = new Uint8Array(arrBuf), i139, len = bytes.length, result = "", target11 = urlMode ? charsUrl : chars;
-    for(i139 = 0; i139 < len; i139 += 3){
-        result += target11[bytes[i139] >> 2];
-        result += target11[(bytes[i139] & 3) << 4 | bytes[i139 + 1] >> 4];
-        result += target11[(bytes[i139 + 1] & 15) << 2 | bytes[i139 + 2] >> 6];
-        result += target11[bytes[i139 + 2] & 63];
+    let bytes = new Uint8Array(arrBuf), i136, len = bytes.length, result = "", target11 = urlMode ? charsUrl : chars;
+    for(i136 = 0; i136 < len; i136 += 3){
+        result += target11[bytes[i136] >> 2];
+        result += target11[(bytes[i136] & 3) << 4 | bytes[i136 + 1] >> 4];
+        result += target11[(bytes[i136 + 1] & 15) << 2 | bytes[i136 + 2] >> 6];
+        result += target11[bytes[i136 + 2] & 63];
     }
     if (len % 3 === 2) {
         result = result.substring(0, result.length - 1) + (urlMode ? "" : "=");
@@ -40492,8 +40472,8 @@ function coerceToBase64(thing, name) {
 function str2ab(str) {
     const buf = new ArrayBuffer(str.length);
     const bufView = new Uint8Array(buf);
-    for(let i140 = 0, strLen = str.length; i140 < strLen; i140++){
-        bufView[i140] = str.charCodeAt(i140);
+    for(let i137 = 0, strLen = str.length; i137 < strLen; i137++){
+        bufView[i137] = str.charCodeAt(i137);
     }
     return buf;
 }
@@ -40522,8 +40502,8 @@ function arrayBufferEquals(b1, b2) {
     }
     b1 = new Uint8Array(b1);
     b2 = new Uint8Array(b2);
-    for(let i141 = 0; i141 < b1.byteLength; i141++){
-        if (b1[i141] !== b2[i141]) return false;
+    for(let i138 = 0; i138 < b1.byteLength; i138++){
+        if (b1[i138] !== b2[i138]) return false;
     }
     return true;
 }
@@ -40641,8 +40621,8 @@ function validDomainName(value) {
     }
     const labels = ascii.split(".");
     let label;
-    for(let i142 = 0; i142 < labels.length; ++i142){
-        label = labels[i142];
+    for(let i139 = 0; i139 < labels.length; ++i139){
+        label = labels[i139];
         if (!label.length) {
             return false;
         }
@@ -41073,8 +41053,8 @@ function decodeU2FTransportType(u2fRawTransports) {
     const bitCount = 8 - 3 - 1;
     let type = u2fRawTransports >> 3;
     const ret = new Set();
-    for(let i143 = bitCount; i143 >= 0; i143--){
-        if (type & 1) switch(i143){
+    for(let i140 = bitCount; i140 >= 0; i140--){
+        if (type & 1) switch(i140){
             case 0:
                 ret.add("bluetooth-classic");
                 break;
@@ -42509,10 +42489,10 @@ function decodeObjectAttributes(oa) {
         "RESERVED_31", 
     ];
     const ret = new Set();
-    for(let i144 = 0; i144 < 32; i144++){
-        const bit = 1 << i144;
+    for(let i141 = 0; i141 < 32; i141++){
+        const bit = 1 << i141;
         if (oa & bit) {
-            ret.add(attrList[i144]);
+            ret.add(attrList[i141]);
         }
     }
     return ret;
@@ -43836,8 +43816,8 @@ async function validateRpIdHash() {
     }
     rpIdHash = new Uint8Array(rpIdHash);
     createdHash = new Uint8Array(createdHash);
-    for(let i145 = 0; i145 < rpIdHash.byteLength; i145++){
-        if (rpIdHash[i145] !== createdHash[i145]) {
+    for(let i142 = 0; i142 < rpIdHash.byteLength; i142++){
+        if (rpIdHash[i142] !== createdHash[i142]) {
             throw new TypeError("authnrData rpIdHash mismatch");
         }
     }
