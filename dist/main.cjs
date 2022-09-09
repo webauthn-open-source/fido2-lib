@@ -2457,6 +2457,27 @@ async function validatePublicKey() {
 	return true;
 }
 
+function validateExtensions() {
+	const extensions = this.authnrData.get("webAuthnExtensions");
+	const shouldHaveExtensions = this.authnrData.get("flags").has("ED");
+
+	if (shouldHaveExtensions) {
+		if (Array.isArray(extensions) && 
+			extensions.every(item => typeof item === "object")
+		) {
+			this.audit.journal.add("webAuthnExtensions");
+		} else {
+			throw new Error("webAuthnExtensions aren't valid");
+		}
+	} else {
+		if (extensions !== undefined) {
+			throw new Error("unexpected webAuthnExtensions found");
+		}
+	}
+
+	return true;
+}
+
 async function validateUserHandle() {
 	let userHandle = this.authnrData.get("userHandle");
 
@@ -2550,6 +2571,7 @@ function attach(o) {
 		validateAaguid,
 		validateCredId,
 		validatePublicKey,
+		validateExtensions,
 		validateFlags,
 		validateUserHandle,
 		validateCounter,
@@ -2999,6 +3021,7 @@ class Fido2Result {
 		await this.validateRawAuthnrData();
 		await this.validateRpIdHash();
 		await this.validateFlags();
+		await this.validateExtensions();
 	}
 
 	async create(req, exp) {
