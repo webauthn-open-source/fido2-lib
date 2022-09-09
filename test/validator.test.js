@@ -722,6 +722,34 @@ describe("attestation validation", function() {
 				});
 			});
 
+			describe("validateExtensions", function() {
+				// original test data does not contain extensions
+				it("returns true on validation without extensions", async function() {
+					const ret = attResp.validateExtensions();
+					assert.isTrue(ret);
+					assert.isFalse(attResp.audit.journal.has("webAuthnExtensions"));
+				});
+
+				it("returns true on validation with extensions", async function() {
+					attResp.authnrData.get("flags").add("ED");
+					attResp.authnrData.set("webAuthnExtensions", [{ credProtect: 1 }]);
+					const ret = attResp.validateExtensions();
+					assert.isTrue(ret);
+					assert.isTrue(attResp.audit.journal.has("webAuthnExtensions"));
+				});
+
+				it("throws on invalid extensions", async function() {
+					attResp.authnrData.get("flags").add("ED");
+					attResp.authnrData.set("webAuthnExtensions", [42]);
+					assert.throws(() => attResp.validateExtensions(), Error, "webAuthnExtensions aren't valid");
+				});
+
+				it("throws on unexpected extensions", async function() {
+					attResp.authnrData.set("webAuthnExtensions", [{ credProtect: 1 }]);
+					assert.throws(() => attResp.validateExtensions(), Error, "unexpected webAuthnExtensions found");
+				});
+			});
+
 			describe("validateTokenBinding", function() {
 				it("returns true if tokenBinding is undefined", async function() {
 					const ret = await attResp.validateTokenBinding();
@@ -828,6 +856,7 @@ describe("attestation validation", function() {
 					await attResp.validateAaguid();
 					await attResp.validateCredId();
 					await attResp.validatePublicKey();
+					await attResp.validateExtensions();
 					await attResp.validateFlags();
 					await attResp.validateInitialCounter();
 
