@@ -686,7 +686,7 @@ describe("Fido2Lib", function() {
 				response: {
 					clientDataJSON: h.lib.assertionResponse.response.clientDataJSON,
 					authenticatorData: h.lib.assertionResponse.response.authenticatorData,
-					signature: h.lib.assertionResponse.response.signature
+					signature: h.lib.assertionResponse.response.signature,
 				},
 			};
 
