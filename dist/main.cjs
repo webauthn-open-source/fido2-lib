@@ -1277,13 +1277,11 @@ function coseAlgToHashStr(alg) {
 let webcrypto;
 if ((typeof self !== "undefined") && "crypto" in self) {
 	// Always use crypto if available natively (browser / Deno)
-	console.warn("[FIDO2-LIB] Native crypto is enabled");
 	webcrypto = self.crypto;
 
 } else {
 	// Always use node webcrypto if available ( >= 16.0 )
 	if(platformCrypto__namespace && platformCrypto__namespace.webcrypto) {
-		console.warn("[FIDO2-LIB] Native crypto is enabled");
 		webcrypto = platformCrypto__namespace.webcrypto;
 
 	} else {
@@ -2064,7 +2062,7 @@ function validateAssertionResponse() {
 
 	if (typeof req.response.userHandle !== "string" &&
 		!(req.response.userHandle instanceof ArrayBuffer) &&
-		req.response.userHandle !== undefined) {
+		req.response.userHandle !== undefined && req.response.userHandle !== null) {
 		throw new TypeError("expected 'response.userHandle' to be base64 String, ArrayBuffer, or undefined");
 	}
 
@@ -2961,7 +2959,7 @@ async function parseAuthnrAssertionResponse(msg) {
 	}
 
 	let userHandle;
-	if (msg.response.userHandle !== undefined) {
+	if (msg.response.userHandle !== undefined && msg.response.userHandle !== null) {
 		userHandle = coerceToArrayBuffer$1(msg.response.userHandle, "response.userHandle");
 		if (userHandle.byteLength === 0) {
 			userHandle = undefined;

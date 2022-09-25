@@ -40519,11 +40519,9 @@ function b64ToJsObject(b64, desc) {
     return JSON.parse(ab2str(coerceToArrayBuffer(b64, desc)));
 }
 if (typeof self !== "undefined" && "crypto" in self) {
-    console.warn("[FIDO2-LIB] Native crypto is enabled");
     webcrypto = self.crypto;
 } else {
     if (mod1 && mod1.webcrypto) {
-        console.warn("[FIDO2-LIB] Native crypto is enabled");
         webcrypto = mod1.webcrypto;
     } else {
         webcrypto = new Crypto();
@@ -43504,7 +43502,7 @@ async function parseAuthnrAssertionResponse(msg) {
         throw new TypeError("expected response to be Object");
     }
     let userHandle;
-    if (msg.response.userHandle !== undefined) {
+    if (msg.response.userHandle !== undefined && msg.response.userHandle !== null) {
         userHandle = coerceToArrayBuffer(msg.response.userHandle, "response.userHandle");
         if (userHandle.byteLength === 0) {
             userHandle = undefined;
@@ -43672,7 +43670,7 @@ function validateAssertionResponse() {
     if (typeof req.response.signature !== "string" && !(req.response.signature instanceof ArrayBuffer)) {
         throw new TypeError("expected 'response.signature' to be base64 String or ArrayBuffer");
     }
-    if (typeof req.response.userHandle !== "string" && !(req.response.userHandle instanceof ArrayBuffer) && req.response.userHandle !== undefined) {
+    if (typeof req.response.userHandle !== "string" && !(req.response.userHandle instanceof ArrayBuffer) && req.response.userHandle !== undefined && req.response.userHandle !== null) {
         throw new TypeError("expected 'response.userHandle' to be base64 String, ArrayBuffer, or undefined");
     }
     this.audit.validRequest = true;
