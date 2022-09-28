@@ -162,7 +162,7 @@ Make sure to add tests if you add new features.
 
 ### Dependencies
 
-When adding, removing or updating dependencies, start out with npm as usual. Then update `import_map.json` to points to the same versions shown by `npm list`, and run `deno task update-deps` to update the Deno lock-file.
+When adding, removing or updating dependencies, start out with npm as usual. Then update `import_map.json` to the same versions shown by `npm list`, and run `deno task update-deps` to update the Deno lock-file.
 
 ### Pull Request
 

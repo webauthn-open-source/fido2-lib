@@ -4,8 +4,9 @@ import * as chaiAsPromised from "chai-as-promised";
 
 // Helpers
 import * as h from "./helpers/fido2-helpers.js";
-import * as sinon from "sinon";
+import { Stub } from "./helpers/stub.js";
 import { packedSelfAttestationResponse } from "./fixtures/packedSelfAttestationData.js";
+
 
 // Test subject
 import {
@@ -804,14 +805,14 @@ describe("Fido2Lib", function() {
 			}, TypeError, "expected 'validateFn' to be string, got: string");
 		});
 	});
-
+	
 	describe("parseAttestation", function() {
 		let parseStub;
 		let validateStub;
 		beforeEach(function() {
-			parseStub = sinon.stub();
-			validateStub = sinon.stub();
-			Fido2Lib.addAttestationFormat("foo", parseStub, validateStub);
+			parseStub = new Stub();
+			validateStub = new Stub();
+			Fido2Lib.addAttestationFormat("foo", parseStub.stub(), parseStub.stub());
 		});
 
 		afterEach(function() {
@@ -826,20 +827,20 @@ describe("Fido2Lib", function() {
 			const arg = new Map([
 				["test", "yup"],
 			]);
-			parseStub.onCall(0).returns(arg);
+			parseStub.return(arg);
 			const ret = Fido2Lib.parseAttestation("foo", arg);
 			assert.instanceOf(ret, Map);
 			assert.strictEqual(parseStub.callCount, 1);
-			assert.isTrue(parseStub.calledWith(arg));
+			assert.isTrue(parseStub.calledWith.includes(arg));
 		});
 
 		it("success when returning empty map", function() {
 			const arg = new Map();
-			parseStub.onCall(0).returns(arg);
+			parseStub.return(arg);
 			const ret = Fido2Lib.parseAttestation("foo", arg);
 			assert.instanceOf(ret, Map);
 			assert.strictEqual(parseStub.callCount, 1);
-			assert.isTrue(parseStub.calledWith(arg));
+			assert.isTrue(parseStub.calledWith.includes(arg));
 		});
 
 		it("throws if parseFn doesn't return Map", function() {
@@ -872,9 +873,9 @@ describe("Fido2Lib", function() {
 		let validateStub;
 		let fakeRequest;
 		beforeEach(function() {
-			parseStub = sinon.stub();
-			validateStub = sinon.stub();
-			Fido2Lib.addAttestationFormat("foo", parseStub, validateStub);
+			parseStub = new Stub();
+			validateStub = new Stub();
+			Fido2Lib.addAttestationFormat("foo", parseStub.stub(), validateStub.stub());
 			fakeRequest = {
 				authnrData: new Map([
 					["fmt", "foo"],
@@ -892,7 +893,7 @@ describe("Fido2Lib", function() {
 
 		// ToDo: Where does this check for a map?
 		it("returns Map on success", async function() {
-			validateStub.onCall(0).returns(true);
+			validateStub.return(true);
 			const ret = await Fido2Lib.validateAttestation.call(fakeRequest);
 			assert.isTrue(ret);
 			assert.strictEqual(validateStub.callCount, 1);

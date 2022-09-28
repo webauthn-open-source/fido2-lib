@@ -2,8 +2,9 @@
 import * as chai from "chai";
 
 // Helpers
-import * as sinon from "sinon";
+import { Stub } from "./helpers/stub.js";
 import { Fido2Lib } from "../lib/main.js";
+
 const assert = chai.assert;
 
 describe("Fido2Lib extensions", function() {
@@ -290,13 +291,13 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls generator", function() {
-			const genSpy = sinon.stub();
+			const genSpy = new Stub();
 			const extVal = {
 				beer: "good",
 			};
-			genSpy.returns(extVal);
+			genSpy.return(extVal);
 
-			Fido2Lib.addExtension("test", genSpy, fn, fn);
+			Fido2Lib.addExtension("test", genSpy.stub(),fn, fn);
 			mc.enableExtension("test");
 			return mc.attestationOptions()
 				.then((opts) => {
@@ -307,17 +308,17 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls all generators", function() {
-			const genSpy1 = sinon.stub();
+			const genSpy1 = new Stub();
 			const extVal1 = {
 				beer: "good",
 			};
-			genSpy1.returns(extVal1);
-			const genSpy2 = sinon.stub();
+			genSpy1.return(extVal1);
+			const genSpy2 = new Stub();
 			const extVal2 = false;
-			genSpy2.returns(extVal2);
+			genSpy2.return(extVal2);
 
-			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
-			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
+			Fido2Lib.addExtension("test1", genSpy1.stub(),fn, fn);
+			Fido2Lib.addExtension("test2", genSpy2.stub(),fn, fn);
 			mc.enableExtension("test1");
 			mc.enableExtension("test2");
 			return mc.attestationOptions()
@@ -330,17 +331,17 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls all enabled generators", function() {
-			const genSpy1 = sinon.stub();
+			const genSpy1 = new Stub();
 			const extVal1 = {
 				beer: "good",
 			};
-			genSpy1.returns(extVal1);
-			const genSpy2 = sinon.stub();
+			genSpy1.return(extVal1);
+			const genSpy2 = new Stub();
 			const extVal2 = false;
-			genSpy2.returns(extVal2);
+			genSpy2.return(extVal2);
 
-			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
-			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
+			Fido2Lib.addExtension("test1", genSpy1.stub(),fn, fn);
+			Fido2Lib.addExtension("test2", genSpy2.stub(),fn, fn);
 			mc.enableExtension("test1");
 			mc.disableExtension("test2");
 			return mc.attestationOptions()
@@ -353,21 +354,21 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through default options", function() {
-			const genSpy1 = sinon.stub();
+			const genSpy1 = new Stub();
 			const extVal1 = {
 				beer: "good",
 			};
 			const extOpt1 = {
 				foo: "bar",
 			};
-			genSpy1.returns(extVal1);
-			const genSpy2 = sinon.stub();
+			genSpy1.return(extVal1);
+			const genSpy2 = new Stub();
 			const extVal2 = false;
 			const extOpt2 = null;
-			genSpy2.returns(extVal2);
+			genSpy2.return(extVal2);
 
-			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
-			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
+			Fido2Lib.addExtension("test1", genSpy1.stub(),fn, fn);
+			Fido2Lib.addExtension("test2", genSpy2.stub(),fn, fn);
 			mc.enableExtension("test1");
 			mc.setExtensionOptions("test1", extOpt1);
 			mc.enableExtension("test2");
@@ -384,21 +385,21 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through passed-in options", function() {
-			const genSpy1 = sinon.stub();
+			const genSpy1 = new Stub();
 			const extVal1 = {
 				beer: "good",
 			};
 			const extOpt1 = {
 				foo: "bar",
 			};
-			genSpy1.returns(extVal1);
-			const genSpy2 = sinon.stub();
+			genSpy1.return(extVal1);
+			const genSpy2 = new Stub();
 			const extVal2 = false;
 			const extOpt2 = null;
-			genSpy2.returns(extVal2);
+			genSpy2.return(extVal2);
 
-			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
-			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
+			Fido2Lib.addExtension("test1", genSpy1.stub(),fn, fn);
+			Fido2Lib.addExtension("test2", genSpy2.stub(),fn, fn);
 			mc.enableExtension("test1");
 			mc.enableExtension("test2");
 			return mc.attestationOptions({
@@ -426,13 +427,13 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls generator", function() {
-			const genSpy = sinon.stub();
+			const genSpy = new Stub();
 			const extVal = {
 				beer: "good",
 			};
-			genSpy.returns(extVal);
+			genSpy.return(extVal);
 
-			Fido2Lib.addExtension("test", genSpy, fn, fn);
+			Fido2Lib.addExtension("test", genSpy.stub(),fn, fn);
 			mc.enableExtension("test");
 			return mc.assertionOptions()
 				.then((opts) => {
@@ -443,17 +444,17 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls all generators", function() {
-			const genSpy1 = sinon.stub();
+			const genSpy1 = new Stub();
 			const extVal1 = {
 				beer: "good",
 			};
-			genSpy1.returns(extVal1);
-			const genSpy2 = sinon.stub();
+			genSpy1.return(extVal1);
+			const genSpy2 = new Stub();
 			const extVal2 = false;
-			genSpy2.returns(extVal2);
+			genSpy2.return(extVal2);
 
-			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
-			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
+			Fido2Lib.addExtension("test1", genSpy1.stub(),fn, fn);
+			Fido2Lib.addExtension("test2", genSpy2.stub(),fn, fn);
 			mc.enableExtension("test1");
 			mc.enableExtension("test2");
 			return mc.assertionOptions()
@@ -466,17 +467,17 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("calls all enabled generators", function() {
-			const genSpy1 = sinon.stub();
+			const genSpy1 = new Stub();
 			const extVal1 = {
 				beer: "good",
 			};
-			genSpy1.returns(extVal1);
-			const genSpy2 = sinon.stub();
+			genSpy1.return(extVal1);
+			const genSpy2 = new Stub();
 			const extVal2 = false;
-			genSpy2.returns(extVal2);
+			genSpy2.return(extVal2);
 
-			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
-			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
+			Fido2Lib.addExtension("test1", genSpy1.stub(),fn, fn);
+			Fido2Lib.addExtension("test2", genSpy2.stub(),fn, fn);
 			mc.enableExtension("test1");
 			mc.disableExtension("test2");
 			return mc.assertionOptions()
@@ -489,21 +490,21 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through default options", function() {
-			const genSpy1 = sinon.stub();
+			const genSpy1 = new Stub();
 			const extVal1 = {
 				beer: "good",
 			};
 			const extOpt1 = {
 				foo: "bar",
 			};
-			genSpy1.returns(extVal1);
-			const genSpy2 = sinon.stub();
+			genSpy1.return(extVal1);
+			const genSpy2 = new Stub();
 			const extVal2 = false;
 			const extOpt2 = null;
-			genSpy2.returns(extVal2);
+			genSpy2.return(extVal2);
 
-			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
-			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
+			Fido2Lib.addExtension("test1", genSpy1.stub(),fn, fn);
+			Fido2Lib.addExtension("test2", genSpy2.stub(),fn, fn);
 			mc.enableExtension("test1");
 			mc.setExtensionOptions("test1", extOpt1);
 			mc.enableExtension("test2");
@@ -520,21 +521,21 @@ describe("Fido2Lib extensions", function() {
 		});
 
 		it("passes through passed-in options", function() {
-			const genSpy1 = sinon.stub();
+			const genSpy1 = new Stub();
 			const extVal1 = {
 				beer: "good",
 			};
 			const extOpt1 = {
 				foo: "bar",
 			};
-			genSpy1.returns(extVal1);
-			const genSpy2 = sinon.stub();
+			genSpy1.return(extVal1);
+			const genSpy2 = new Stub();
 			const extVal2 = false;
 			const extOpt2 = null;
-			genSpy2.returns(extVal2);
+			genSpy2.return(extVal2);
 
-			Fido2Lib.addExtension("test1", genSpy1, fn, fn);
-			Fido2Lib.addExtension("test2", genSpy2, fn, fn);
+			Fido2Lib.addExtension("test1", genSpy1.stub(),fn, fn);
+			Fido2Lib.addExtension("test2", genSpy2.stub(),fn, fn);
 			mc.enableExtension("test1");
 			mc.enableExtension("test2");
 			return mc.assertionOptions({
