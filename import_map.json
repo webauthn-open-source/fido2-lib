@@ -1,15 +1,14 @@
 {
     "imports": {
-        "tldts": "https://unpkg.com/tldts@5.7.91/dist/index.esm.min.js",
+        "tldts": "https://unpkg.com/tldts@5.7.92/dist/index.esm.min.js",
         "punycode": "https://deno.land/x/punycode@v2.1.1/punycode.js",
-        "jose": "https://deno.land/x/jose@v4.9.2/index.ts?module",
+        "jose": "https://deno.land/x/jose@v4.10.0/index.ts?module",
         "asn1js": "https://unpkg.com/asn1js@3.0.5?module",
         "cbor-x": "https://deno.land/x/cbor@v1.4.0/index.js?module",
         "std/": "https://deno.land/std@0.136.0/",
         "pkijs": "https://unpkg.com/pkijs@3.0.8?module",
-        "@hexagon/base64": "https://deno.land/x/b64@1.1.23/dist/base64.min.mjs",
+        "@hexagon/base64": "https://deno.land/x/b64@1.1.25/dist/base64.min.mjs",
 
-        "sinon": "https://unpkg.com/sinon@14.0.0/pkg/sinon-esm.js",
         "test_suite": "https://deno.land/x/test_suite@0.16.1/mod.ts",
         "chai": "./test/helpers/chai-deno-shim.js",
         "chai-as-promised": "./test/helpers/chai-deno-shim.js",
