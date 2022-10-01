@@ -221,46 +221,59 @@ const s = function() {
     }, d1 = {
         $: 0,
         succ: {
-            dualstack: l2
+            vfs: o16,
+            "webview-assets": o16
         }
     }, g1 = {
         $: 0,
         succ: {
-            s3: o16,
-            dualstack: l2,
-            "s3-website": o16
+            cloud9: d1
         }
     }, h1 = {
         $: 0,
         succ: {
-            apps: o16
+            dualstack: l2,
+            cloud9: d1
         }
     }, k = {
         $: 0,
         succ: {
-            paas: o16
+            s3: o16,
+            dualstack: l2,
+            "s3-website": o16,
+            cloud9: d1
         }
     }, b = {
         $: 0,
         succ: {
-            app: o16
+            apps: o16
         }
     }, p = {
-        $: 2,
+        $: 0,
         succ: {
-            eu: o16
+            paas: o16
         }
     }, y = {
         $: 0,
         succ: {
-            site: o16
+            app: o16
         }
     }, f = {
+        $: 2,
+        succ: {
+            eu: o16
+        }
+    }, v = {
+        $: 0,
+        succ: {
+            site: o16
+        }
+    }, x = {
         $: 0,
         succ: {
             pages: o16
         }
-    }, v = {
+    }, w = {
         $: 1,
         succ: {
             com: a15,
@@ -268,38 +281,38 @@ const s = function() {
             net: a15,
             org: a15
         }
-    }, x = {
+    }, $ = {
         $: 0,
         succ: {
             j: o16
         }
-    }, w = {
+    }, z = {
         $: 0,
         succ: {
             jelastic: o16
         }
-    }, $ = {
+    }, j = {
         $: 0,
         succ: {
             user: o16
         }
-    }, z = {
+    }, q = {
         $: 1,
         succ: {
             ybo: o16
         }
-    }, j = {
+    }, I = {
         $: 0,
         succ: {
             cust: o16,
             reservd: o16
         }
-    }, q = {
+    }, S = {
         $: 0,
         succ: {
             cust: o16
         }
-    }, I = {
+    }, C = {
         $: 1,
         succ: {
             gov: a15,
@@ -309,7 +322,7 @@ const s = function() {
             org: a15,
             net: a15
         }
-    }, S = {
+    }, P = {
         $: 1,
         succ: {
             edu: a15,
@@ -320,45 +333,45 @@ const s = function() {
             info: a15,
             com: a15
         }
-    }, C = {
+    }, A = {
         $: 1,
         succ: {
             gov: a15,
             blogspot: o16
         }
-    }, P = {
+    }, H = {
         $: 1,
         succ: {
             framer: o16
         }
-    }, A = {
+    }, D = {
         $: 1,
         succ: {
             barsy: o16
         }
-    }, H = {
+    }, W = {
         $: 0,
         succ: {
             forgot: o16
         }
-    }, D = {
+    }, L = {
         $: 1,
         succ: {
             gs: a15
         }
-    }, W = {
+    }, O = {
         $: 0,
         succ: {
             nes: a15
         }
-    }, L = {
+    }, B = {
         $: 1,
         succ: {
             k12: a15,
             cc: a15,
             lib: a15
         }
-    }, O = {
+    }, E = {
         $: 1,
         succ: {
             cc: a15,
@@ -1436,7 +1449,8 @@ const s = function() {
                             "us-east-1": {
                                 $: 2,
                                 succ: {
-                                    dualstack: l2
+                                    dualstack: l2,
+                                    cloud9: d1
                                 }
                             },
                             elb: e12,
@@ -1458,18 +1472,18 @@ const s = function() {
                             "s3-us-east-2": o16,
                             "s3-us-west-1": o16,
                             "s3-us-west-2": o16,
-                            "ap-northeast-2": g1,
-                            "ap-south-1": g1,
-                            "ca-central-1": g1,
-                            "eu-central-1": g1,
-                            "eu-west-2": g1,
-                            "eu-west-3": g1,
-                            "us-east-2": g1,
-                            "ap-northeast-1": d1,
-                            "ap-southeast-1": d1,
-                            "ap-southeast-2": d1,
-                            "eu-west-1": d1,
-                            "sa-east-1": d1,
+                            "ap-northeast-2": k,
+                            "ap-south-1": k,
+                            "ca-central-1": k,
+                            "eu-central-1": k,
+                            "eu-west-2": k,
+                            "eu-west-3": k,
+                            "us-east-2": k,
+                            "ap-northeast-1": h1,
+                            "ap-southeast-1": h1,
+                            "ap-southeast-2": h1,
+                            "eu-west-1": h1,
+                            "sa-east-1": h1,
                             "s3-website-us-east-1": o16,
                             "s3-website-us-west-1": o16,
                             "s3-website-us-west-2": o16,
@@ -1477,7 +1491,15 @@ const s = function() {
                             "s3-website-ap-southeast-1": o16,
                             "s3-website-ap-southeast-2": o16,
                             "s3-website-eu-west-1": o16,
-                            "s3-website-sa-east-1": o16
+                            "s3-website-sa-east-1": o16,
+                            "af-south-1": g1,
+                            "ap-east-1": g1,
+                            "ap-northeast-3": g1,
+                            "eu-north-1": g1,
+                            "eu-south-1": g1,
+                            "me-south-1": g1,
+                            "us-west-1": g1,
+                            "us-west-2": g1
                         }
                     },
                     elasticbeanstalk: {
@@ -1741,7 +1763,7 @@ const s = function() {
                         }
                     },
                     onfabrica: o16,
-                    fbsbx: h1,
+                    fbsbx: b,
                     "fastly-terrarium": o16,
                     "fastvps-server": o16,
                     mydobiss: o16,
@@ -1784,7 +1806,7 @@ const s = function() {
                     clicketcloud: o16,
                     dopaas: o16,
                     hidora: o16,
-                    "hosted-by-previder": k,
+                    "hosted-by-previder": p,
                     hosteur: {
                         $: 0,
                         succ: {
@@ -1806,7 +1828,7 @@ const s = function() {
                         }
                     },
                     kilatiron: o16,
-                    massivegrid: k,
+                    massivegrid: p,
                     wafaicloud: {
                         $: 0,
                         succ: {
@@ -1823,7 +1845,7 @@ const s = function() {
                     },
                     ktistory: o16,
                     lpusercontent: o16,
-                    lmpm: b,
+                    lmpm: y,
                     linode: {
                         $: 0,
                         succ: {
@@ -1842,7 +1864,7 @@ const s = function() {
                     barsyonline: o16,
                     mazeplay: o16,
                     miniserver: o16,
-                    meteorapp: p,
+                    meteorapp: f,
                     hostedpi: o16,
                     "mythic-beasts": {
                         $: 0,
@@ -1930,7 +1952,7 @@ const s = function() {
                             xen: o16
                         }
                     },
-                    pythonanywhere: p,
+                    pythonanywhere: f,
                     qualifioapp: o16,
                     qbuser: o16,
                     qa2: o16,
@@ -1940,7 +1962,7 @@ const s = function() {
                     quipelements: e12,
                     rackmaze: o16,
                     rhcloud: o16,
-                    render: b,
+                    render: y,
                     onrender: o16,
                     code: {
                         $: 0,
@@ -1982,7 +2004,7 @@ const s = function() {
                     "temp-dns": o16,
                     dsmynas: o16,
                     familyds: o16,
-                    "tb-hosting": y,
+                    "tb-hosting": v,
                     reservd: o16,
                     thingdustdata: o16,
                     bloxcms: o16,
@@ -1999,7 +2021,7 @@ const s = function() {
                     "reserve-online": o16,
                     hotelwithflight: o16,
                     remotewd: o16,
-                    wiardweb: f,
+                    wiardweb: x,
                     messwithdns: o16,
                     "woltlab-demo": o16,
                     wpenginepowered: {
@@ -2054,7 +2076,7 @@ const s = function() {
                     blogspot: o16
                 }
             },
-            cw: v,
+            cw: w,
             cx: {
                 $: 1,
                 succ: {
@@ -2072,7 +2094,7 @@ const s = function() {
                         $: 1,
                         succ: {
                             blogspot: o16,
-                            scaleforce: x
+                            scaleforce: $
                         }
                     },
                     ekloges: a15,
@@ -2163,7 +2185,7 @@ const s = function() {
                     "hs-heilbronn": {
                         $: 0,
                         succ: {
-                            it: f
+                            it: x
                         }
                     },
                     "dyn-berlin": o16,
@@ -2351,7 +2373,7 @@ const s = function() {
                     airkitapps: o16,
                     mycd: o16,
                     cloudns: o16,
-                    dogado: w,
+                    dogado: z,
                     barsy: o16,
                     wellbeingzone: o16,
                     spdns: o16,
@@ -2951,7 +2973,7 @@ const s = function() {
                     "hasura-app": o16,
                     hostyhosting: o16,
                     moonscale: e12,
-                    beebyte: k,
+                    beebyte: p,
                     beebyteapp: {
                         $: 0,
                         succ: {
@@ -3016,7 +3038,7 @@ const s = function() {
                     shiftedit: o16,
                     "mo-siemens": o16,
                     musician: o16,
-                    lair: h1,
+                    lair: b,
                     stolos: e12,
                     spacekit: o16,
                     utwente: o16,
@@ -3026,10 +3048,10 @@ const s = function() {
                     thingdust: {
                         $: 0,
                         succ: {
-                            dev: j,
-                            disrec: j,
-                            prod: q,
-                            testing: j
+                            dev: I,
+                            disrec: I,
+                            prod: S,
+                            testing: I
                         }
                     },
                     tickets: o16,
@@ -3040,7 +3062,7 @@ const s = function() {
                     virtualserver: o16
                 }
             },
-            iq: I,
+            iq: C,
             ir: {
                 $: 1,
                 succ: {
@@ -3563,7 +3585,7 @@ const s = function() {
                     ne: {
                         $: 1,
                         succ: {
-                            aseinet: $,
+                            aseinet: j,
                             gehirn: o16
                         }
                     },
@@ -5724,7 +5746,7 @@ const s = function() {
                 }
             },
             kh: r6,
-            ki: S,
+            ki: P,
             km: {
                 $: 1,
                 succ: {
@@ -5814,7 +5836,7 @@ const s = function() {
                     org: a15
                 }
             },
-            ky: v,
+            ky: w,
             kz: {
                 $: 1,
                 succ: {
@@ -5904,7 +5926,7 @@ const s = function() {
                     de: o16
                 }
             },
-            lt: C,
+            lt: A,
             lu: s8,
             lv: {
                 $: 1,
@@ -6010,7 +6032,7 @@ const s = function() {
                     myds: o16,
                     synology: o16,
                     tbits: o16,
-                    transip: y,
+                    transip: v,
                     wedeploy: o16,
                     yombo: o16,
                     nohost: o16
@@ -6082,7 +6104,7 @@ const s = function() {
                 }
             },
             mq: a15,
-            mr: C,
+            mr: A,
             ms: {
                 $: 1,
                 succ: {
@@ -6770,8 +6792,8 @@ const s = function() {
             name: {
                 $: 1,
                 succ: {
-                    her: H,
-                    his: H
+                    her: W,
+                    his: W
                 }
             },
             nc: {
@@ -6955,8 +6977,8 @@ const s = function() {
                             "nordeste-idc": o16
                         }
                     },
-                    scaleforce: x,
-                    tsukaeru: w,
+                    scaleforce: $,
+                    tsukaeru: z,
                     kinghost: o16,
                     uni5: o16,
                     krellian: o16,
@@ -7147,27 +7169,27 @@ const s = function() {
                     dep: a15,
                     kommune: a15,
                     herad: a15,
-                    aa: D,
-                    ah: D,
-                    bu: D,
-                    fm: D,
-                    hl: D,
-                    hm: D,
-                    "jan-mayen": D,
-                    mr: D,
-                    nl: D,
-                    nt: D,
-                    of: D,
-                    ol: D,
-                    oslo: D,
-                    rl: D,
-                    sf: D,
-                    st: D,
-                    svalbard: D,
-                    tm: D,
-                    tr: D,
-                    va: D,
-                    vf: D,
+                    aa: L,
+                    ah: L,
+                    bu: L,
+                    fm: L,
+                    hl: L,
+                    hm: L,
+                    "jan-mayen": L,
+                    mr: L,
+                    nl: L,
+                    nt: L,
+                    of: L,
+                    ol: L,
+                    oslo: L,
+                    rl: L,
+                    sf: L,
+                    st: L,
+                    svalbard: L,
+                    tm: L,
+                    tr: L,
+                    va: L,
+                    vf: L,
                     akrehamn: a15,
                     "xn--krehamn-dxa": a15,
                     "åkrehamn": a15,
@@ -7715,8 +7737,8 @@ const s = function() {
                     narviika: a15,
                     naustdal: a15,
                     "nedre-eiker": a15,
-                    akershus: W,
-                    buskerud: W,
+                    akershus: O,
+                    buskerud: O,
                     nesna: a15,
                     nesodden: a15,
                     nesseby: a15,
@@ -8101,7 +8123,7 @@ const s = function() {
                 }
             },
             np: r6,
-            nr: S,
+            nr: P,
             nu: {
                 $: 1,
                 succ: {
@@ -8315,11 +8337,11 @@ const s = function() {
                         $: 0,
                         succ: {
                             cloud: o16,
-                            os: b,
+                            os: y,
                             stg: {
                                 $: 0,
                                 succ: {
-                                    os: b
+                                    os: y
                                 }
                             }
                         }
@@ -8875,7 +8897,7 @@ const s = function() {
                     blogspot: o16,
                     na4u: o16,
                     mircloud: o16,
-                    regruhosting: w,
+                    regruhosting: z,
                     myjino: {
                         $: 2,
                         succ: {
@@ -9174,7 +9196,7 @@ const s = function() {
                 }
             },
             sx: n7,
-            sy: I,
+            sy: C,
             sz: {
                 $: 1,
                 succ: {
@@ -9505,10 +9527,10 @@ const s = function() {
                                 }
                             },
                             blogspot: o16,
-                            layershift: x,
+                            layershift: $,
                             barsy: o16,
                             barsyonline: o16,
-                            retrosnub: q,
+                            retrosnub: S,
                             "nh-serv": o16,
                             "no-ip": o16,
                             wellbeingzone: o16,
@@ -9566,15 +9588,15 @@ const s = function() {
                     isa: a15,
                     kids: a15,
                     nsn: a15,
-                    ak: L,
-                    al: L,
-                    ar: L,
-                    as: L,
-                    az: L,
-                    ca: L,
-                    co: L,
-                    ct: L,
-                    dc: L,
+                    ak: B,
+                    al: B,
+                    ar: B,
+                    as: B,
+                    az: B,
+                    ca: B,
+                    co: B,
+                    ct: B,
+                    dc: B,
                     de: {
                         $: 1,
                         succ: {
@@ -9583,17 +9605,17 @@ const s = function() {
                             lib: o16
                         }
                     },
-                    fl: L,
-                    ga: L,
-                    gu: L,
-                    hi: O,
-                    ia: L,
-                    id: L,
-                    il: L,
-                    in: L,
-                    ks: L,
-                    ky: L,
-                    la: L,
+                    fl: B,
+                    ga: B,
+                    gu: B,
+                    hi: E,
+                    ia: B,
+                    id: B,
+                    il: B,
+                    in: B,
+                    ks: B,
+                    ky: B,
+                    la: B,
                     ma: {
                         $: 1,
                         succ: {
@@ -9609,8 +9631,8 @@ const s = function() {
                             lib: a15
                         }
                     },
-                    md: L,
-                    me: L,
+                    md: B,
+                    me: B,
                     mi: {
                         $: 1,
                         succ: {
@@ -9627,41 +9649,41 @@ const s = function() {
                             washtenaw: a15
                         }
                     },
-                    mn: L,
-                    mo: L,
-                    ms: L,
-                    mt: L,
-                    nc: L,
-                    nd: O,
-                    ne: L,
-                    nh: L,
-                    nj: L,
-                    nm: L,
-                    nv: L,
-                    ny: L,
-                    oh: L,
-                    ok: L,
-                    or: L,
-                    pa: L,
-                    pr: L,
-                    ri: O,
-                    sc: L,
-                    sd: O,
-                    tn: L,
-                    tx: L,
-                    ut: L,
-                    vi: L,
-                    vt: L,
-                    va: L,
-                    wa: L,
-                    wi: L,
+                    mn: B,
+                    mo: B,
+                    ms: B,
+                    mt: B,
+                    nc: B,
+                    nd: E,
+                    ne: B,
+                    nh: B,
+                    nj: B,
+                    nm: B,
+                    nv: B,
+                    ny: B,
+                    oh: B,
+                    ok: B,
+                    or: B,
+                    pa: B,
+                    pr: B,
+                    ri: E,
+                    sc: B,
+                    sd: E,
+                    tn: B,
+                    tx: B,
+                    ut: B,
+                    vi: B,
+                    vt: B,
+                    va: B,
+                    wa: B,
+                    wi: B,
                     wv: {
                         $: 1,
                         succ: {
                             cc: a15
                         }
                     },
-                    wy: L,
+                    wy: B,
                     graphox: o16,
                     cloudns: o16,
                     drud: o16,
@@ -10019,7 +10041,7 @@ const s = function() {
             "xn--mgb2ddes": a15,
             "اليمن": a15,
             xxx: a15,
-            ye: I,
+            ye: C,
             za: {
                 $: 0,
                 succ: {
@@ -10680,7 +10702,7 @@ const s = function() {
             eus: {
                 $: 1,
                 succ: {
-                    party: $
+                    party: j
                 }
             },
             events: {
@@ -10698,7 +10720,7 @@ const s = function() {
             fage: a15,
             fail: a15,
             fairwinds: a15,
-            faith: z,
+            faith: q,
             family: a15,
             fan: a15,
             fans: a15,
@@ -11091,7 +11113,7 @@ const s = function() {
             mba: a15,
             mckinsey: a15,
             med: a15,
-            media: P,
+            media: H,
             meet: a15,
             melbourne: a15,
             meme: a15,
@@ -11103,7 +11125,7 @@ const s = function() {
                     repair: o16
                 }
             },
-            menu: A,
+            menu: D,
             merckmsd: a15,
             miami: a15,
             microsoft: a15,
@@ -11261,7 +11283,7 @@ const s = function() {
             pars: a15,
             partners: a15,
             parts: a15,
-            party: z,
+            party: q,
             passagens: a15,
             pay: a15,
             pccw: a15,
@@ -11273,7 +11295,7 @@ const s = function() {
             phone: a15,
             photo: a15,
             photography: a15,
-            photos: P,
+            photos: H,
             physio: a15,
             pics: a15,
             pictet: a15,
@@ -11318,7 +11340,7 @@ const s = function() {
             protection: a15,
             pru: a15,
             prudential: a15,
-            pub: A,
+            pub: D,
             pwc: a15,
             qpon: a15,
             quebec: a15,
@@ -11346,7 +11368,7 @@ const s = function() {
             republican: a15,
             rest: a15,
             restaurant: a15,
-            review: z,
+            review: q,
             reviews: a15,
             rexroth: a15,
             rich: a15,
@@ -11423,7 +11445,7 @@ const s = function() {
             school: a15,
             schule: a15,
             schwarz: a15,
-            science: z,
+            science: q,
             scot: {
                 $: 1,
                 succ: {
@@ -11558,7 +11580,7 @@ const s = function() {
             sucks: a15,
             supplies: a15,
             supply: a15,
-            support: A,
+            support: D,
             surf: a15,
             surgery: a15,
             suzuki: a15,
@@ -11631,7 +11653,7 @@ const s = function() {
             town: a15,
             toyota: a15,
             toys: a15,
-            trade: z,
+            trade: q,
             trading: a15,
             training: a15,
             travel: a15,
@@ -11692,13 +11714,13 @@ const s = function() {
             weatherchannel: a15,
             webcam: a15,
             weber: a15,
-            website: P,
+            website: H,
             wedding: a15,
             weibo: a15,
             weir: a15,
             whoswho: a15,
             wien: a15,
-            wiki: P,
+            wiki: H,
             williamhill: a15,
             win: {
                 $: 1,
@@ -12270,8 +12292,8 @@ class JOSEError extends Error {
         return 'ERR_JOSE_GENERIC';
     }
     code = 'ERR_JOSE_GENERIC';
-    constructor(message){
-        super(message);
+    constructor(message1){
+        super(message1);
         this.name = this.constructor.name;
         Error.captureStackTrace?.(this, this.constructor);
     }
@@ -12283,8 +12305,8 @@ class JWTClaimValidationFailed extends JOSEError {
     code = 'ERR_JWT_CLAIM_VALIDATION_FAILED';
     claim;
     reason;
-    constructor(message, claim = 'unspecified', reason = 'unspecified'){
-        super(message);
+    constructor(message2, claim = 'unspecified', reason = 'unspecified'){
+        super(message2);
         this.claim = claim;
         this.reason = reason;
     }
@@ -12296,8 +12318,8 @@ class JWTExpired extends JOSEError {
     code = 'ERR_JWT_EXPIRED';
     claim;
     reason;
-    constructor(message, claim = 'unspecified', reason = 'unspecified'){
-        super(message);
+    constructor(message3, claim = 'unspecified', reason = 'unspecified'){
+        super(message3);
         this.claim = claim;
         this.reason = reason;
     }
@@ -12335,7 +12357,7 @@ class JWSSignatureVerificationFailed extends JOSEError {
 }
 crypto.getRandomValues.bind(crypto);
 function isCloudflareWorkers() {
-    return typeof WebSocketPair === 'function';
+    return typeof WebSocketPair !== 'undefined' || typeof navigator !== 'undefined' && navigator.userAgent === 'Cloudflare-Workers' || typeof EdgeRuntime !== 'undefined' && EdgeRuntime === 'vercel';
 }
 function unusable(name, prop = 'algorithm.name') {
     return new TypeError(`CryptoKey does not support this operation, its ${prop} must be ${name}`);
@@ -12410,6 +12432,13 @@ function checkSigCryptoKey(key, alg, ...usages) {
                 if (!isAlgorithm(key.algorithm, 'NODE-ED25519')) throw unusable('NODE-ED25519');
                 break;
             }
+        case 'EdDSA':
+            {
+                if (key.algorithm.name !== 'Ed25519' && key.algorithm.name !== 'Ed448') {
+                    throw unusable('Ed25519 or Ed448');
+                }
+                break;
+            }
         case 'ES256':
         case 'ES384':
         case 'ES512':
@@ -12425,8 +12454,7 @@ function checkSigCryptoKey(key, alg, ...usages) {
     }
     checkUsage(key, usages);
 }
-const __default1 = (actual, ...types1)=>{
-    let msg = 'Key must be ';
+function message(msg, actual, ...types1) {
     if (types1.length > 2) {
         const last = types1.pop();
         msg += `one of type ${types1.join(', ')}, or ${last}.`;
@@ -12445,7 +12473,13 @@ const __default1 = (actual, ...types1)=>{
         }
     }
     return msg;
+}
+const __default1 = (actual, ...types2)=>{
+    return message('Key must be ', actual, ...types2);
 };
+function withAlg(alg, actual, ...types3) {
+    return message(`Key for the ${alg} algorithm must be `, actual, ...types3);
+}
 const types = [
     'CryptoKey'
 ];
@@ -12692,9 +12726,38 @@ function subtleMapping(jwk) {
                     ];
                     break;
                 default:
-                    throw new JOSENotSupported('Invalid or unsupported JWK "crv" (Subtype of Key Pair) Parameter value');
+                    throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
             }
             break;
+        case 'OKP':
+            {
+                switch(jwk.alg){
+                    case 'EdDSA':
+                        algorithm = {
+                            name: jwk.crv
+                        };
+                        keyUsages = jwk.d ? [
+                            'sign'
+                        ] : [
+                            'verify'
+                        ];
+                        break;
+                    case 'ECDH-ES':
+                    case 'ECDH-ES+A128KW':
+                    case 'ECDH-ES+A192KW':
+                    case 'ECDH-ES+A256KW':
+                        algorithm = {
+                            name: jwk.crv
+                        };
+                        keyUsages = jwk.d ? [
+                            'deriveBits'
+                        ] : [];
+                        break;
+                    default:
+                        throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+                }
+                break;
+            }
         default:
             throw new JOSENotSupported('Invalid or unsupported JWK "kty" (Key Type) Parameter value');
     }
@@ -12755,18 +12818,18 @@ async function importJWK(jwk, alg, octAsKeyObject) {
             throw new JOSENotSupported('Unsupported "kty" (Key Type) Parameter value');
     }
 }
-const symmetricTypeCheck = (key)=>{
+const symmetricTypeCheck = (alg, key)=>{
     if (key instanceof Uint8Array) return;
     if (!__default2(key)) {
-        throw new TypeError(__default1(key, ...types, 'Uint8Array'));
+        throw new TypeError(withAlg(alg, key, ...types, 'Uint8Array'));
     }
     if (key.type !== 'secret') {
         throw new TypeError(`${types.join(' or ')} instances for symmetric algorithms must be of type "secret"`);
     }
 };
-const asymmetricTypeCheck = (key, usage)=>{
+const asymmetricTypeCheck = (alg, key, usage)=>{
     if (!__default2(key)) {
-        throw new TypeError(__default1(key, ...types));
+        throw new TypeError(withAlg(alg, key, ...types));
     }
     if (key.type === 'secret') {
         throw new TypeError(`${types.join(' or ')} instances for asymmetric algorithms must not be of type "secret"`);
@@ -12787,9 +12850,9 @@ const asymmetricTypeCheck = (key, usage)=>{
 const checkKeyType = (alg, key, usage)=>{
     const symmetric = alg.startsWith('HS') || alg === 'dir' || alg.startsWith('PBES2') || /^A\d{3}(?:GCM)?KW$/.test(alg);
     if (symmetric) {
-        symmetricTypeCheck(key);
+        symmetricTypeCheck(alg, key);
     } else {
-        asymmetricTypeCheck(key, usage);
+        asymmetricTypeCheck(alg, key, usage);
     }
 };
 function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader, joseHeader) {
@@ -12873,6 +12936,10 @@ function subtleDsa(alg, algorithm) {
             return {
                 name: namedCurve,
                 namedCurve
+            };
+        case 'EdDSA':
+            return {
+                name: algorithm.name
             };
         default:
             throw new JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
@@ -18429,28 +18496,28 @@ class ArgumentError extends TypeError {
         }
         return false;
     }
-    static assert(value, name, ...types2) {
-        for (const type of types2){
+    static assert(value, name, ...types4) {
+        for (const type of types4){
             if (this.isType(value, type)) {
                 return;
             }
         }
-        const typeNames = types2.map((o2)=>o2 instanceof Function && "name" in o2 ? o2.name : `${o2}`
+        const typeNames = types4.map((o2)=>o2 instanceof Function && "name" in o2 ? o2.name : `${o2}`
         );
         throw new ArgumentError(`Parameter '${name}' is not of type ${typeNames.length > 1 ? `(${typeNames.join(" or ")})` : typeNames[0]}`);
     }
 }
 ArgumentError.NAME = "ArgumentError";
 class ParameterError extends TypeError {
-    constructor(field, target1 = null, message){
+    constructor(field, target1 = null, message4){
         super();
         this.name = ParameterError.NAME;
         this.field = field;
         if (target1) {
             this.target = target1;
         }
-        if (message) {
-            this.message = message;
+        if (message4) {
+            this.message = message4;
         } else {
             this.message = `Absent mandatory parameter '${field}' ${target1 ? ` in '${target1}'` : EMPTY_STRING1}`;
         }
@@ -18493,8 +18560,8 @@ class AsnError extends Error {
             throw new AsnError(`Error during parsing of ASN.1 data. Data is not correct for '${target5}'.`);
         }
     }
-    constructor(message){
-        super(message);
+    constructor(message5){
+        super(message5);
         this.name = "AsnError";
     }
 }
@@ -22429,8 +22496,8 @@ class PublicKeyInfo extends PkiObject {
                 throw new Error("Error during initializing object from schema");
             }
         } catch (e1) {
-            const message = e1 instanceof Error ? e1.message : `${e1}`;
-            throw new Error(`Error during exporting public key: ${message}`);
+            const message6 = e1 instanceof Error ? e1.message : `${e1}`;
+            throw new Error(`Error during exporting public key: ${message6}`);
         }
     }
 }
@@ -26099,8 +26166,8 @@ class ExtensionValueFactory {
         return asn1.result;
     }
     static find(id) {
-        const types3 = this.getItems();
-        return types3[id] || null;
+        const types5 = this.getItems();
+        return types5[id] || null;
     }
     static register(id, name, type) {
         this.getItems()[id] = {
@@ -35502,11 +35569,11 @@ class MessageImprint extends PkiObject {
             this.fromSchema(parameters.schema);
         }
     }
-    static async create(hashAlgorithm, message, crypto = getCrypto(true)) {
+    static async create(hashAlgorithm, message7, crypto = getCrypto(true)) {
         const hashAlgorithmOID = crypto.getOIDByAlgorithm({
             name: hashAlgorithm
         }, true, "hashAlgorithm");
-        const hashedMessage = await crypto.digest(hashAlgorithm, message);
+        const hashedMessage = await crypto.digest(hashAlgorithm, message7);
         const res = new MessageImprint({
             hashAlgorithm: new AlgorithmIdentifier({
                 algorithmId: hashAlgorithmOID,
@@ -37025,8 +37092,8 @@ const CLEAR_PROPS$3 = [
     SIGNED_DATA_SIGNER_INFOS
 ];
 class SignedDataVerifyError extends Error {
-    constructor({ message , code =0 , date =new Date() , signatureVerified =null , signerCertificate =null , signerCertificateVerified =null , timestampSerial =null , certificatePath =[]  }){
-        super(message);
+    constructor({ message: message8 , code =0 , date =new Date() , signatureVerified =null , signerCertificate =null , signerCertificateVerified =null , timestampSerial =null , certificatePath =[]  }){
+        super(message8);
         this.name = "SignedDataVerifyError";
         this.date = date;
         this.code = code;
