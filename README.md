@@ -28,7 +28,7 @@ For working examples see [OWASP Single Sign-On](https://github.com/OWASP/SSO_Pro
 * Convenient API for adding more attestation formats
 * Convenient API for adding extensions
 * Metadata service (MDS) support enables authenticator root of trust and authenticator metadata
-* Support for multiple simultaneous metadata services (e.g. FIDO MDS 1 & 2)
+* Support for multiple simultaneous metadata services (e.g. FIDO MDS 1-3)
 * Crypto families: ECDSA, RSA
 * x509 cert parsing, support for FIDO-related extensions, and NIST Public Key Interoperability Test Suite (PKITS) chain validation (from [pki.js](https://github.com/PeculiarVentures/PKI.js/))
 * Returns parsed and validated data, along with extra audit data for risk engines
