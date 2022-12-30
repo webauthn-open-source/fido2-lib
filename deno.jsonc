@@ -18,10 +18,10 @@
   "tasks": {
     
     /* Run deno tests with `deno task test`, using default import map */
-    "test": "deno test --lock=deno-lock.json --ignore=test/dist,test/asn1.test.js test",
+    "test": "deno test --lock=deno-lock.json --ignore=test/dist test",
 
     /* import_map.dist.json redirects ./lib -> ./dist, to make tests use dist/main.js instead of lib/main.js */
-    "test:dist": "deno test --lock=deno-lock.json --importmap=import_map.dist.json --ignore=test/dist,test/asn1.test.js test",
+    "test:dist": "deno test --lock=deno-lock.json --importmap=import_map.dist.json --ignore=test/dist test",
 
     /* Run after changing dependencies */
     "update-deps": "deno cache -r --lock=deno-lock.json --lock-write --importmap=import_map.json test/main.test.js lib/main.js",
