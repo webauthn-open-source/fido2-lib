@@ -40607,13 +40607,19 @@ pkijs.setEngine("newEngine", webcrypto, new pkijs.CryptoEngine({
     crypto: webcrypto,
     subtle: webcrypto.subtle
 }));
+function extractBigNum(fullArray, start, end, expectedLength) {
+    let num = fullArray.slice(start, end);
+    if (num.length !== expectedLength) {
+        num = Array(expectedLength).fill(0).concat(...num).slice(num.length);
+    }
+    return num;
+}
 function derToRaw(signature) {
-    const rStart = signature[4] === 0 ? 5 : 4;
-    const rEnd = rStart + 32;
-    const sStart = signature[rEnd + 2] === 0 ? rEnd + 3 : rEnd + 2;
+    const rEnd = 4 + signature[3];
+    const sStart = rEnd + 2;
     return new Uint8Array([
-        ...signature.slice(rStart, rEnd),
-        ...signature.slice(sStart), 
+        ...extractBigNum(signature, 4, rEnd, 32),
+        ...extractBigNum(signature, sStart, signature.length, 32), 
     ]);
 }
 function checkOrigin(str) {

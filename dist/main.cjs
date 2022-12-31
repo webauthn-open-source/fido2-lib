@@ -1309,17 +1309,25 @@ pkijs.setEngine(
 	}),
 );
 
+function extractBigNum(fullArray, start, end, expectedLength) {
+	let num = fullArray.slice(start, end);
+	if (num.length !== expectedLength){
+		num = Array(expectedLength).fill(0).concat(...num).slice(num.length);
+	}
+	return num;
+}
+
 /*
     Convert signature from DER to raw
     Expects Uint8Array
 */
 function derToRaw(signature) {
-	const rStart = signature[4] === 0 ? 5 : 4;
-	const rEnd = rStart + 32;
-	const sStart = signature[rEnd + 2] === 0 ? rEnd + 3 : rEnd + 2;
+	const rStart = 4;
+	const rEnd = rStart + signature[3];
+	const sStart = rEnd + 2;
 	return new Uint8Array([
-		...signature.slice(rStart, rEnd),
-		...signature.slice(sStart),
+		...extractBigNum(signature, rStart, rEnd, 32),
+		...extractBigNum(signature, sStart, signature.length, 32),
 	]);
 }
 
