@@ -56,8 +56,8 @@ const verifyAssertion = async (signature) => {
 	);
 };
 
-describe("ECDSA ASN.1/Der to Raw converstion", function() {
-	it("can verify a ECDSA signature with r < 32 bytes and s = 32 bytes", async function() {
+describe("ECDSA ASN.1/Der to Raw conversion", function() {
+	it("can verify an ECDSA signature with r < 32 bytes and s = 32 bytes", async function() {
 		// r < 32 bytes | s = 32 bytes
 		const signature = "MEQCHyj3uP1iWNTCw0FpsiTe-e7dulZqWqepuXFmCwRmLBYCIQDQnxAkeQFwX-dmfg8XFz3TIx7wfh0MKw0hTCjc2WgMVw";
 
@@ -65,7 +65,7 @@ describe("ECDSA ASN.1/Der to Raw converstion", function() {
 		assert.strictEqual(result.audit.validRequest, true);
 		assert.strictEqual(result.audit.validExpectations, true);
 	});
-	it("can verify a ECDSA signature with r = 32 bytes and s < 32 bytes", async function() {
+	it("can verify an ECDSA signature with r = 32 bytes and s < 32 bytes", async function() {
 		// r = 32 bytes | s < 32 bytes
 		const signature = "MEMCIGWd6pkFRvBAfse-jGeYfVhlWDKIRyQZyBA32IpdvbMEAh81mQqkXyT2dej9BdABFXdpqR8nzHO1Tq6gfLGjaiX1";
 
@@ -73,7 +73,7 @@ describe("ECDSA ASN.1/Der to Raw converstion", function() {
 		assert.strictEqual(result.audit.validRequest, true);
 		assert.strictEqual(result.audit.validExpectations, true);
 	});
-	it("can verify a ECDSA signature with r < 32 bytes and s < 32 bytes", async function() {
+	it("can verify an ECDSA signature with r < 32 bytes and s < 32 bytes", async function() {
 		// r < 32 bytes | s < 32 bytes
 		const signature = "MEICHxWF148JkFV86_NzU-APP-yhVuUHEiVatHdeD6K6A0ACHwWsMWQo33oSBgJ3aSVeY1di7B_TU4GDAT0l3QtvPYg";
 
@@ -81,7 +81,7 @@ describe("ECDSA ASN.1/Der to Raw converstion", function() {
 		assert.strictEqual(result.audit.validRequest, true);
 		assert.strictEqual(result.audit.validExpectations, true);
 	});
-	it("can verify a ECDSA signature with r = 33 bytes and s < 32 bytes", async function() {
+	it("can verify an ECDSA signature with r = 33 bytes and s < 32 bytes", async function() {
 		// r = 33 bytes | s < 32 bytes
 		const signature = "MEQCIQCw1qPkCZQl1ZGJProqe9MC8rGLAsAHZbAHDe9YNAFRSwIfAvp9Ar5cQm-5ANS3zG0P105PmPRRur6F3i03AiLwBw";
 
@@ -89,7 +89,7 @@ describe("ECDSA ASN.1/Der to Raw converstion", function() {
 		assert.strictEqual(result.audit.validRequest, true);
 		assert.strictEqual(result.audit.validExpectations, true);
 	});
-	it("can verify a ECDSA signature with r < 32 bytes and s = 33 bytes", async function() {
+	it("can verify an ECDSA signature with r < 32 bytes and s = 33 bytes", async function() {
 		// r < 32 bytes | s = 33 bytes
 		const signature = "MEQCHxipYKPnzWezEzFiZWqvJ8Z4-nAJXnFHV4IarB1g818CIQDdVn-OE3uEjRd--Uqj3IA-Zr5RBJor_K9ZCxXuPpalbg";
 
@@ -97,7 +97,7 @@ describe("ECDSA ASN.1/Der to Raw converstion", function() {
 		assert.strictEqual(result.audit.validRequest, true);
 		assert.strictEqual(result.audit.validExpectations, true);
 	});
-	it("can verify a ECDSA signature with r = 32 bytes (0 padded) and s >= 32 bytes", async function() {
+	it("can verify an ECDSA signature with r = 32 bytes (0 padded) and s >= 32 bytes", async function() {
 		// r = 32 (0 padded) | s >= 32 bytes
 		const signature = "MEUCIADqTxqhzztnVk7XXwEeYhlBADK74-he2RsIbvB918TbAiEA4IYFEPc0-3rYRUhZzlWT2oLscUwszPL-9oZOnaFcNZw";
 
@@ -105,7 +105,7 @@ describe("ECDSA ASN.1/Der to Raw converstion", function() {
 		assert.strictEqual(result.audit.validRequest, true);
 		assert.strictEqual(result.audit.validExpectations, true);
 	});
-	it("can verify a ECDSA signature with r >= 32 bytes and s = 32 bytes (0 padded)", async function() {
+	it("can verify an ECDSA signature with r >= 32 bytes and s = 32 bytes (0 padded)", async function() {
 		// r >= 32 bytes | s = 32 (0 padded)
 		const signature = "MEUCIQCAvO4-mEuaX2tYR-AJ8t8vv1AxCqkJgfxIR1XL4yCy8AIgANf3_Cp4LzlzkG4U8VS0WCVrR6_pTBM5mwhUcERNakc";
 
@@ -113,7 +113,7 @@ describe("ECDSA ASN.1/Der to Raw converstion", function() {
 		assert.strictEqual(result.audit.validRequest, true);
 		assert.strictEqual(result.audit.validExpectations, true);
 	});
-	it("can verify a ECDSA signature with r = 30 bytes and s >= 32 bytes", async function() {
+	it("can verify an ECDSA signature with r = 30 bytes and s >= 32 bytes", async function() {
 		// r = 30 bytes | s >= 32 bytes
 		const signature = "MEMCHhCs-kZTCokgrPfb1CaKEznJjqVisSBzMAqv6S24AQIhAOBeIIWXFgOJwA-39dKfzcuG6woJ03tiR0N2ME9Lp206";
 
@@ -121,7 +121,7 @@ describe("ECDSA ASN.1/Der to Raw converstion", function() {
 		assert.strictEqual(result.audit.validRequest, true);
 		assert.strictEqual(result.audit.validExpectations, true);
 	});
-	it("can verify a ECDSA signature with r >= 32 bytes and s < 30 bytes", async function() {
+	it("can verify an ECDSA signature with r >= 32 bytes and s < 30 bytes", async function() {
 		// r >= 32 bytes | s < 30 bytes
 		const signature = "MEECID8aNcMNP3Q-mPSIdPc-ocNyH1vLo_Lh8JgxFXAV7s6DAh0pc_2hHfN6OBPpj_2asyt6I4FBz-ZeVbaGtI9UXQ";
 
