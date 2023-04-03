@@ -38,7 +38,7 @@ describe("parseExpectations", function() {
 		assert.strictEqual(ret.get("challenge"), exp.challenge);
 	});
 
-	it("throws on invalid origin", function() {
+	it("throws on invalid url", function() {
 		const exp = {
 			origin: "asdf",
 			challenge: "4BS1YJKRCeCVoLdfG_b66BuSQ-I2n34WsLFvy62fpIVFjrm32_tFRQixX9U8EBVTriTkreAp-1nDvYboRK9WFg",

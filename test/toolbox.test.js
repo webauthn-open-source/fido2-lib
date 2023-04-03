@@ -29,7 +29,7 @@ describe("toolbox", function() {
 					checkOrigin(undefined);
 				},
 				Error,
-				"Invalid URL",
+				"Empty Origin",
 			);
 		});
 
