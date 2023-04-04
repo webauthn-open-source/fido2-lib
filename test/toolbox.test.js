@@ -63,6 +63,16 @@ describe("toolbox", function() {
 			assert.isTrue(ret);
 		});
 
+		it("allows android facetID", function() {
+			const android = checkOrigin("android:apk-key-hash:foo");
+			assert.strictEqual(android, "android:apk-key-hash:foo");
+		});
+
+		it("allows ios facetId", function() {
+			const ios = checkOrigin("ios:bundle-id:com.bar.id");
+			assert.strictEqual(ios, "ios:bundle-id:com.bar.id");
+		});
+
 		it("throws error if origin contains URL path");
 		it("returns true when origin contains port 443");
 		it("throws when origin is just a domain");
