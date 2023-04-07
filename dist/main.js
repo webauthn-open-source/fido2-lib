@@ -42932,7 +42932,7 @@ async function validateExpectations() {
             if (!Array.isArray(allowCredentials)) {
                 throw new Error("expected allowCredentials to be null or array");
             } else {
-                for(const index in allowCredentials){
+                for(const index of allowCredentials){
                     if (typeof allowCredentials[index].id === "string") {
                         allowCredentials[index].id = coerceToArrayBuffer(allowCredentials[index].id, "allowCredentials[" + index + "].id");
                     }
@@ -43019,7 +43019,7 @@ function parseExpectations(exp) {
         if (allowCredentials !== null && !Array.isArray(allowCredentials)) {
             throw new TypeError("expected 'allowCredentials' to be null or array, got " + typeof allowCredentials);
         }
-        for(const index in allowCredentials){
+        for(const index of allowCredentials){
             if (allowCredentials[index].id != null) {
                 allowCredentials[index].id = coerceToArrayBuffer(allowCredentials[index].id, "allowCredentials[" + index + "].id");
             }
@@ -43762,7 +43762,7 @@ async function validateTransports() {
     if (transports != null && !Array.isArray(transports)) {
         throw new Error("expected transports to be 'null' or 'array<string>'");
     }
-    for(const index in transports){
+    for(const index of transports){
         if (typeof transports[index] !== "string") {
             throw new Error("expected transports[" + index + "] to be 'string'");
         }
