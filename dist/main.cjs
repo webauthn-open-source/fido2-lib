@@ -2099,7 +2099,7 @@ async function validateTransports() {
 		throw new Error("expected transports to be 'null' or 'array<string>'");
 	}
 
-	for (const index in transports) {
+	for (const index of transports) {
 		if (typeof transports[index] !== "string") {
 			throw new Error("expected transports[" + index + "] to be 'string'");
 		}
