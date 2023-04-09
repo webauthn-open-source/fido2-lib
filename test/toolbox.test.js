@@ -33,6 +33,19 @@ describe("toolbox", function() {
 			);
 		});
 
+
+		it("accepts android FacetID", function() {
+			const androidFacetId = "android:apk-key-hash:addf120b430021c36c232c99ef8d926aea2acd6b";
+			const androidOrigin = checkOrigin(androidFacetId);
+			assert.strictEqual(androidFacetId, androidOrigin);
+		});
+
+		it("accepts ios FacetID", function() {
+			const iOSFacetId = "ios:bundle-id:addf120b430021c36c232c99ef8d926aea2acd6b";
+			const iOSOrigin = checkOrigin(iOSFacetId);
+			assert.strictEqual(iOSFacetId, iOSOrigin);
+		});
+
 		it("throws invalid url", function() {
 			assert.throws(
 				() => {
