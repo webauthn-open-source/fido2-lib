@@ -1330,15 +1330,20 @@ function derToRaw(signature) {
 		...extractBigNum(signature, sStart, signature.length, 32),
 	]);
 }
-function isAndroidOrigin(str) {
+function isAndroidFacetId(str) {
 	return str.startsWith("android:apk-key-hash:");
 }
+
+function isIOSFacetId(str) {
+	return str.startsWith("ios:bundle-id:");
+}
+
 
 function checkOrigin(str) {
 	if(!str)
 		throw new Error("Empty Origin");
 
-	if (isAndroidOrigin(str)) {
+	if (isAndroidFacetId(str) || isIOSFacetId(str)) {
 		return str;
 	}
 
