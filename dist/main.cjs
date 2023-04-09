@@ -1330,18 +1330,8 @@ function derToRaw(signature) {
 		...extractBigNum(signature, sStart, signature.length, 32),
 	]);
 }
-function isAndroidOrigin(str) {
-	return str.startsWith("android:apk-key-hash:");
-}
 
 function checkOrigin(str) {
-	if(!str)
-		throw new Error("Empty Origin");
-
-	if (isAndroidOrigin(str)) {
-		return str;
-	}
-
 	const originUrl = new URL(str);
 	const origin = originUrl.origin;
 
