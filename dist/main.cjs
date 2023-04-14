@@ -1330,8 +1330,23 @@ function derToRaw(signature) {
 		...extractBigNum(signature, sStart, signature.length, 32),
 	]);
 }
+function isAndroidFacetId(str) {
+	return str.startsWith("android:apk-key-hash:");
+}
+
+function isIOSFacetId(str) {
+	return str.startsWith("ios:bundle-id:");
+}
+
 
 function checkOrigin(str) {
+	if(!str)
+		throw new Error("Empty Origin");
+
+	if (isAndroidFacetId(str) || isIOSFacetId(str)) {
+		return str;
+	}
+
 	const originUrl = new URL(str);
 	const origin = originUrl.origin;
 
@@ -1980,22 +1995,22 @@ async function validateExpectations() {
 			if (!Array.isArray(allowCredentials)) {
 				throw new Error("expected allowCredentials to be null or array");
 			} else {
-				for (const index in allowCredentials) {
-					if (typeof allowCredentials[index].id === "string") {
-						allowCredentials[index].id = coerceToArrayBuffer$1(allowCredentials[index].id, "allowCredentials[" + index + "].id");
+				allowCredentials.forEach((allowCredential, index) => {
+					if (typeof allowCredential.id === "string") {
+						allowCredential.id = coerceToArrayBuffer$1(allowCredential.id, "allowCredentials[" + index + "].id");
 					}
-					if (allowCredentials[index].id == null || !(allowCredentials[index].id instanceof ArrayBuffer)) {
+					if (allowCredential.id == null || !(allowCredential.id instanceof ArrayBuffer)) {
 						throw new Error("expected id of allowCredentials[" + index + "] to be ArrayBuffer");
 					}
-					if (allowCredentials[index].type == null || allowCredentials[index].type !== "public-key") {
+					if (allowCredential.type == null || allowCredential.type !== "public-key") {
 						throw new Error("expected type of allowCredentials[" + index + "] to be string with value 'public-key'");
 					}
-					if (allowCredentials[index].transports != null && !Array.isArray(allowCredentials[index].transports)) {
+					if (allowCredential.transports != null && !Array.isArray(allowCredential.transports)) {
 						throw new Error("expected transports of allowCredentials[" + index + "] to be array or null");
-					} else if (allowCredentials[index].transports != null && !allowCredentials[index].transports.every(el => ["usb", "nfc", "ble", "cable", "internal"].includes(el))) {
+					} else if (allowCredential.transports != null && !allowCredential.transports.every(el => ["usb", "nfc", "ble", "cable", "internal"].includes(el))) {
 						throw new Error("expected transports of allowCredentials[" + index + "] to be string with value 'usb', 'nfc', 'ble', 'cable', 'internal' or null");
 					}
-				}
+				});
 			}
 		}
 
