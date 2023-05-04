@@ -66,6 +66,26 @@ Get url to the latest version by going to [deno.land/x/fido2/dist/main.js](https
 import { Fido2Lib } from "https://deno.land/x/fido2/dist/main.js";
 ```
 
+#### Add Type Declarations
+
+Firstly, you need to set up a [import map](https://deno.com/manual@v1.33.0/basics/import_maps).
+Put the following lines into your import map.
+
+```json
+{
+  "imports": {
+    "fido2-lib": "https://deno.land/x/fido2/dist/main.js"
+  }
+}
+```
+
+Then you can import the library like this:
+
+```ts
+// @deno-types="https://deno.land/x/fido2/types/main.d.ts"
+import { Fido2Lib } from "fido2-lib";
+```
+
 ## Examples
 
 **Instantiate Library (Complex):**
