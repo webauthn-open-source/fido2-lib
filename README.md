@@ -56,15 +56,36 @@ import { Fido2Lib } from "fido2-lib";
 ### Deno
 
 Import `dist/main.js` from a trusted source. Below is only an example, using the official deno.land repository.
-It is recommended to [enable integrity checking](https://deno.land/manual/linking_to_external_code/integrity_checking). 
-
-Get url to the latest version by going to [deno.land/x/fido2/dist/main.js](https://deno.land/x/fido2/dist/main.js).
+It is recommended to [enable integrity checking](https://deno.land/manual/linking_to_external_code/integrity_checking).
 
 ```js
-// Example url will always redirect to the latest version
-// It is recommended that you use the method mentioned above to get a fixed url
-import { Fido2Lib } from "https://deno.land/x/fido2/dist/main.js";
+import { Fido2Lib } from "https://deno.land/x/fido2@$VERSION/dist/main.js";
 ```
+
+<details>
+  <summary>Add Type Declarations</summary>
+  
+  Firstly, you need to set up a [import map](https://deno.land/manual/basics/import_maps).
+  Put the following lines into your import map.
+
+  ```json
+  {
+    "imports": {
+      "fido2-lib": "https://deno.land/x/fido2@$VERSION/dist/main.js"
+    }
+  }
+  ```
+
+  Then you can import the library like this:
+
+  ```ts
+  // @deno-types="https://deno.land/x/fido2@$VERSION/types/main.d.ts"
+  import { Fido2Lib } from "fido2-lib";
+  ```
+
+</details>
+
+Don't forget to replace `$VERSION` with the specific version. You can find the latest version by checking the redirection of [deno.land/x/fido2/dist/main.js](https://deno.land/x/fido2/dist/main.js) and [deno.land/x/fido2/types/main.d.ts](https://deno.land/x/fido2/types/main.d.ts).
 
 ## Examples
 
