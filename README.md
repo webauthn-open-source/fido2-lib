@@ -66,25 +66,30 @@ Get url to the latest version by going to [deno.land/x/fido2/dist/main.js](https
 import { Fido2Lib } from "https://deno.land/x/fido2/dist/main.js";
 ```
 
-#### Add Type Declarations
+<details>
+  <summary>Add Type Declarations</summary>
+  
+  Firstly, you need to set up a [import map](https://deno.land/manual/basics/import_maps).
+  Put the following lines into your import map.
 
-Firstly, you need to set up a [import map](https://deno.com/manual@v1.33.0/basics/import_maps).
-Put the following lines into your import map.
-
-```json
-{
-  "imports": {
-    "fido2-lib": "https://deno.land/x/fido2/dist/main.js"
+  ```json
+  {
+    "imports": {
+      "fido2-lib": "https://deno.land/x/fido2/dist/main.js"
+    }
   }
-}
-```
+  ```
 
-Then you can import the library like this:
+  Then you can import the library like this:
 
-```ts
-// @deno-types="https://deno.land/x/fido2/types/main.d.ts"
-import { Fido2Lib } from "fido2-lib";
-```
+  ```ts
+  // @deno-types="https://deno.land/x/fido2/types/main.d.ts"
+  import { Fido2Lib } from "fido2-lib";
+  ```
+
+  Don't forget to specify the version. You can find the latest version by checking the redirection of [deno.land/x/fido2/dist/main.js](https://deno.land/x/fido2/dist/main.js) and [deno.land/x/fido2/types/main.d.ts](https://deno.land/x/fido2/types/main.d.ts).
+
+</details>
 
 ## Examples
 
