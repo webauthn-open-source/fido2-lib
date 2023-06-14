@@ -54,7 +54,7 @@ jobs:
           node-version: '18.x'
       - uses: denolib/setup-deno@v2
         with:
-          deno-version: 1.20.1
+          deno-version: '1.x'
       - name: Get current package version
         id: package_version
         uses: martinbeentjes/npm-get-version-action@v1.2.3
