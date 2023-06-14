@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
     <title>MdsCollection - Documentation</title>
-
+    
+    
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
@@ -11,6 +13,9 @@
     <![endif]-->
     <link type="text/css" rel="stylesheet" href="styles/prettify.css">
     <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -21,8 +26,11 @@
 
 <label for="nav-trigger" class="overlay"></label>
 
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.addExtension">addExtension</a></li><li data-type='method'><a href="Fido2Lib.html#.addMdsCollection">addMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.clearMdsCollections">clearMdsCollections</a></li><li data-type='method'><a href="Fido2Lib.html#.createMdsCollection">createMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllExtensions">deleteAllExtensions</a></li><li data-type='method'><a href="Fido2Lib.html#.findMdsEntry">findMdsEntry</a></li><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li><li data-type='method'><a href="Fido2Lib.html#disableExtension">disableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#enableExtension">enableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#setExtensionOptions">setExtensionOptions</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li><li><a href="MdsCollection.html">MdsCollection</a><ul class='methods'><li data-type='method'><a href="MdsCollection.html#addEntry">addEntry</a></li><li data-type='method'><a href="MdsCollection.html#addToc">addToc</a></li><li data-type='method'><a href="MdsCollection.html#findEntry">findEntry</a></li><li data-type='method'><a href="MdsCollection.html#getToc">getToc</a></li><li data-type='method'><a href="MdsCollection.html#validate">validate</a></li></ul></li><li><a href="MdsEntry.html">MdsEntry</a></li><li><a href="PublicKey.html">PublicKey</a><ul class='methods'><li data-type='method'><a href="PublicKey.html#fromCose">fromCose</a></li><li data-type='method'><a href="PublicKey.html#fromCryptoKey">fromCryptoKey</a></li><li data-type='method'><a href="PublicKey.html#fromJWK">fromJWK</a></li><li data-type='method'><a href="PublicKey.html#fromPem">fromPem</a></li><li data-type='method'><a href="PublicKey.html#getAlgorithm">getAlgorithm</a></li><li data-type='method'><a href="PublicKey.html#getKey">getKey</a></li><li data-type='method'><a href="PublicKey.html#setAlgorithm">setAlgorithm</a></li><li data-type='method'><a href="PublicKey.html#toCose">toCose</a></li><li data-type='method'><a href="PublicKey.html#toJwk">toJwk</a></li><li data-type='method'><a href="PublicKey.html#toPem">toPem</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#coseAlgToHashStr">coseAlgToHashStr</a></li><li><a href="global.html#coseAlgToStr">coseAlgToStr</a></li><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
+<nav >
+    
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Fido2AssertionResult.html">Fido2AssertionResult</a></li><li><a href="Fido2AttestationResult.html">Fido2AttestationResult</a></li><li><a href="Fido2Lib.html">Fido2Lib</a><ul class='methods'><li data-type='method'><a href="Fido2Lib.html#assertionOptions">assertionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#assertionResult">assertionResult</a></li><li data-type='method'><a href="Fido2Lib.html#attestationOptions">attestationOptions</a></li><li data-type='method'><a href="Fido2Lib.html#attestationResult">attestationResult</a></li><li data-type='method'><a href="Fido2Lib.html#disableExtension">disableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#enableExtension">enableExtension</a></li><li data-type='method'><a href="Fido2Lib.html#setExtensionOptions">setExtensionOptions</a></li><li data-type='method'><a href="Fido2Lib.html#.addAttestationFormat">addAttestationFormat</a></li><li data-type='method'><a href="Fido2Lib.html#.addExtension">addExtension</a></li><li data-type='method'><a href="Fido2Lib.html#.addMdsCollection">addMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.clearMdsCollections">clearMdsCollections</a></li><li data-type='method'><a href="Fido2Lib.html#.createMdsCollection">createMdsCollection</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllAttestationFormats">deleteAllAttestationFormats</a></li><li data-type='method'><a href="Fido2Lib.html#.deleteAllExtensions">deleteAllExtensions</a></li><li data-type='method'><a href="Fido2Lib.html#.findMdsEntry">findMdsEntry</a></li></ul></li><li><a href="Fido2Result.html">Fido2Result</a></li><li><a href="MdsCollection.html">MdsCollection</a><ul class='methods'><li data-type='method'><a href="MdsCollection.html#addEntry">addEntry</a></li><li data-type='method'><a href="MdsCollection.html#addToc">addToc</a></li><li data-type='method'><a href="MdsCollection.html#findEntry">findEntry</a></li><li data-type='method'><a href="MdsCollection.html#getToc">getToc</a></li><li data-type='method'><a href="MdsCollection.html#validate">validate</a></li></ul></li><li><a href="MdsEntry.html">MdsEntry</a></li><li><a href="PublicKey.html">PublicKey</a><ul class='methods'><li data-type='method'><a href="PublicKey.html#fromCose">fromCose</a></li><li data-type='method'><a href="PublicKey.html#fromCryptoKey">fromCryptoKey</a></li><li data-type='method'><a href="PublicKey.html#fromJWK">fromJWK</a></li><li data-type='method'><a href="PublicKey.html#fromPem">fromPem</a></li><li data-type='method'><a href="PublicKey.html#getAlgorithm">getAlgorithm</a></li><li data-type='method'><a href="PublicKey.html#getKey">getKey</a></li><li data-type='method'><a href="PublicKey.html#setAlgorithm">setAlgorithm</a></li><li data-type='method'><a href="PublicKey.html#toCose">toCose</a></li><li data-type='method'><a href="PublicKey.html#toJwk">toJwk</a></li><li data-type='method'><a href="PublicKey.html#toPem">toPem</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#coseAlgToHashStr">coseAlgToHashStr</a></li><li><a href="global.html#coseAlgToStr">coseAlgToStr</a></li><li><a href="global.html#parseAttestationObject">parseAttestationObject</a></li><li><a href="global.html#parseClientResponse">parseClientResponse</a></li></ul>
+    
 </nav>
 
 <div id="main">
@@ -40,10 +48,12 @@
 <header>
     
         <h2>
-        MdsCollection
+        
+            MdsCollection
+        
         </h2>
         
-            <div class="class-description"><p>A class for managing, validating, and finding metadata that describes authenticators</p>
+            <div class="class-description usertext"><p>A class for managing, validating, and finding metadata that describes authenticators</p>
 <p>This class does not do any of the downloading of the TOC or any of the entries in the TOC,
 but assumes that you can download the data and pass it to this class. This allows for cleverness
 and flexibility in how, when, and what is downloaded -- while at the same time allowing this class
@@ -56,9 +66,10 @@ MDS collection via Fido2Lib#setMdsCollection</p></div>
 </header>
 
 <article>
-    <div class="container-overview">
     
+        <div class="container-overview">
         
+            
 
     
     <h2>Constructor</h2>
@@ -72,6 +83,10 @@ MDS collection via Fido2Lib#setMdsCollection</p></div>
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Creates a new MdsCollection</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -115,19 +130,13 @@ MDS collection via Fido2Lib#setMdsCollection</p></div>
 
 
 
-<div class="description">
-    <p>Creates a new MdsCollection</p>
-</div>
 
 
 
 
 
 
-
-
-
-    <h5>Example</h5>
+    <h5 class="h5-examples">Example</h5>
     
     <pre class="prettyprint"><code>var mc = Fido2Lib.createMdsCollection()
 // download TOC from https://mds.fidoalliance.org ...
@@ -154,7 +163,9 @@ var entry = Fido2Lib.findEntry("4e4e#4005");</code></pre>
 
 
 
-<h5>Returns:</h5>
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -173,19 +184,24 @@ no Table of Contents (TOC) or entries, which must be added through addToc and ad
 <span class="param-type"><a href="MdsCollection.html">MdsCollection</a></span>
 
 
+
     </dd>
 </dl>
 
     
 
 
+
+        
+        </div>
     
-    </div>
+
+    
 
     
 
     
-
+    
     
 
      
@@ -210,6 +226,11 @@ no Table of Contents (TOC) or entries, which must be added through addToc and ad
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Parses and adds a new MDS entry to the collection. The entry will not be available
+through findEntry until validate has been called</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -253,10 +274,6 @@ no Table of Contents (TOC) or entries, which must be added through addToc and ad
 
 
 
-<div class="description">
-    <p>Parses and adds a new MDS entry to the collection. The entry will not be available
-through findEntry until validate has been called</p>
-</div>
 
 
 
@@ -265,10 +282,7 @@ through findEntry until validate has been called</p>
 
 
 
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -302,6 +316,7 @@ through findEntry until validate has been called</p>
 <span class="param-type">String</span>
 
 
+
             
             </td>
 
@@ -332,12 +347,15 @@ the URL that was found in the Table of Contents (TOC)</p></td>
 
 
 
+
+
+
         
             
 
     
 
-    <h4 class="name" id="addToc"><span class="type-signature">(async) </span>addToc<span class="signature">(tocStr, rootCert, crls)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    <h4 class="name" id="addToc"><span class="type-signature type-signature-async">(async) </span>addToc<span class="signature">(tocStr, rootCert, crls)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
 
     
 
@@ -345,6 +363,12 @@ the URL that was found in the Table of Contents (TOC)</p></td>
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates and stores the Table of Contents (TOC) for future reference. This method validates
+the TOC JSON Web Token (JWT) signature, as well as the certificate chain. The certiciate chain
+is validated using the <code>rootCert</code> and <code>crls</code> that are provided.</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -388,11 +412,6 @@ the URL that was found in the Table of Contents (TOC)</p></td>
 
 
 
-<div class="description">
-    <p>Validates and stores the Table of Contents (TOC) for future reference. This method validates
-the TOC JSON Web Token (JWT) signature, as well as the certificate chain. The certiciate chain
-is validated using the <code>rootCert</code> and <code>crls</code> that are provided.</p>
-</div>
 
 
 
@@ -401,10 +420,7 @@ is validated using the <code>rootCert</code> and <code>crls</code> that are prov
 
 
 
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -436,6 +452,7 @@ is validated using the <code>rootCert</code> and <code>crls</code> that are prov
             
                 
 <span class="param-type">String</span>
+
 
 
             
@@ -473,6 +490,7 @@ is validated using the <code>rootCert</code> and <code>crls</code> that are prov
 <span class="param-type">undefined</span>
 
 
+
             
             </td>
 
@@ -499,6 +517,7 @@ If the <code>rootCert</code> is <code>undefined</code>, then the default <a href
 |
 
 <span class="param-type">Array.&lt;ArrayBuffer></span>
+
 
 
             
@@ -530,7 +549,9 @@ provied that the CRL contains valid ASN.1 encoding.</p></td>
 
 
 
-<h5>Returns:</h5>
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -548,10 +569,12 @@ provied that the CRL contains valid ASN.1 encoding.</p></td>
 <span class="param-type">Promise.&lt;Object></span>
 
 
+
     </dd>
 </dl>
 
     
+
 
 
         
@@ -567,6 +590,11 @@ provied that the CRL contains valid ASN.1 encoding.</p></td>
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Looks up an entry by AAID, AAGUID, or attestationCertificateKeyIdentifiers.
+Only entries that have been validated will be found.</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -610,10 +638,6 @@ provied that the CRL contains valid ASN.1 encoding.</p></td>
 
 
 
-<div class="description">
-    <p>Looks up an entry by AAID, AAGUID, or attestationCertificateKeyIdentifiers.
-Only entries that have been validated will be found.</p>
-</div>
 
 
 
@@ -622,10 +646,7 @@ Only entries that have been validated will be found.</p>
 
 
 
-
-
-
-    <h5>Parameters:</h5>
+    <h5 class="h5-parameters">Parameters:</h5>
     
 
 <table class="params">
@@ -662,6 +683,7 @@ Only entries that have been validated will be found.</p>
 <span class="param-type">ArrayBuffer</span>
 
 
+
             
             </td>
 
@@ -689,7 +711,9 @@ Only entries that have been validated will be found.</p>
 
 
 
-<h5>Returns:</h5>
+
+
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -710,10 +734,12 @@ Only entries that have been validated will be found.</p>
 <span class="param-type">null</span>
 
 
+
     </dd>
 </dl>
 
     
+
 
 
         
@@ -729,6 +755,10 @@ Only entries that have been validated will be found.</p>
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Returns the parsed and validated Table of Contents object from getToc</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -772,9 +802,6 @@ Only entries that have been validated will be found.</p>
 
 
 
-<div class="description">
-    <p>Returns the parsed and validated Table of Contents object from getToc</p>
-</div>
 
 
 
@@ -797,8 +824,7 @@ Only entries that have been validated will be found.</p>
 
 
 
-
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -820,10 +846,12 @@ or <code>null</code> if no TOC has been provided yet.</p>
 <span class="param-type">null</span>
 
 
+
     </dd>
 </dl>
 
     
+
 
 
         
@@ -831,7 +859,7 @@ or <code>null</code> if no TOC has been provided yet.</p>
 
     
 
-    <h4 class="name" id="validate"><span class="type-signature">(async) </span>validate<span class="signature">()</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="validate"><span class="type-signature type-signature-async">(async) </span>validate<span class="signature">()</span><span class="type-signature"> &rarr; {Promise}</span></h4>
 
     
 
@@ -839,6 +867,11 @@ or <code>null</code> if no TOC has been provided yet.</p>
 
 
 <dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Validates all entries that have been added. Note that <a href="MdsCollection.html#findEntry">MdsCollection#findEntry</a>
+will not find an <a href="MdsEntry.html">MdsEntry</a> until it has been validated.</p></li></ul></dd>
+    
 
     
     <dt class="tag-source">Source:</dt>
@@ -882,10 +915,6 @@ or <code>null</code> if no TOC has been provided yet.</p>
 
 
 
-<div class="description">
-    <p>Validates all entries that have been added. Note that <a href="MdsCollection.html#findEntry">MdsCollection#findEntry</a>
-will not find an <a href="MdsEntry.html">MdsEntry</a> until it has been validated.</p>
-</div>
 
 
 
@@ -906,26 +935,26 @@ will not find an <a href="MdsEntry.html">MdsEntry</a> until it has been validate
 
 
 
-
-<h5>Throws:</h5>
+<h5 class="h5-throws">Throws:</h5>
 
         
 
 <dl>
     <dt>
-        <div class="param-desc">
+        <div class="param-desc usertext">
         <p>If a validation error occurs</p>
         </div>
     </dt>
     <dd></dd>
     <dt>
-        <dl>
+        <dl class="param-type">
             <dt>
                 Type
             </dt>
             <dd>
                 
 <span class="param-type">Error</span>
+
 
 
             </dd>
@@ -938,7 +967,7 @@ will not find an <a href="MdsEntry.html">MdsEntry</a> until it has been validate
     
 
 
-<h5>Returns:</h5>
+<h5 class="h5-returns">Returns:</h5>
 
         
 <div class="param-desc">
@@ -956,10 +985,12 @@ will not find an <a href="MdsEntry.html">MdsEntry</a> until it has been validate
 <span class="param-type">Promise</span>
 
 
+
     </dd>
 </dl>
 
     
+
 
 
         
@@ -975,15 +1006,21 @@ will not find an <a href="MdsEntry.html">MdsEntry</a> until it has been validate
 
 
 
+    
+    
 </div>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.11</a> on Fri May 05 2023 13:45:36 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Wed Jun 14 2023 10:53:24 GMT+0200 (Central European Summer Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
 <script src="scripts/linenumber.js"></script>
+
+
+
 </body>
 </html>
