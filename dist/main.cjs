@@ -1,7 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 var tldts = require('tldts');
 var punycode = require('punycode');
 var jose = require('jose');
@@ -12,10 +10,7 @@ var base64 = require('@hexagon/base64');
 var platformCrypto = require('crypto');
 var peculiarCrypto = require('@peculiar/webcrypto');
 
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-function _interopNamespace(e) {
-	if (e && e.__esModule) return e;
+function _interopNamespaceDefault(e) {
 	var n = Object.create(null);
 	if (e) {
 		Object.keys(e).forEach(function (k) {
@@ -28,15 +23,13 @@ function _interopNamespace(e) {
 			}
 		});
 	}
-	n["default"] = e;
+	n.default = e;
 	return Object.freeze(n);
 }
 
-var punycode__default = /*#__PURE__*/_interopDefaultLegacy(punycode);
-var cborX__namespace = /*#__PURE__*/_interopNamespace(cborX);
-var base64__default = /*#__PURE__*/_interopDefaultLegacy(base64);
-var platformCrypto__namespace = /*#__PURE__*/_interopNamespace(platformCrypto);
-var peculiarCrypto__namespace = /*#__PURE__*/_interopNamespace(peculiarCrypto);
+var cborX__namespace = /*#__PURE__*/_interopNamespaceDefault(cborX);
+var platformCrypto__namespace = /*#__PURE__*/_interopNamespaceDefault(platformCrypto);
+var peculiarCrypto__namespace = /*#__PURE__*/_interopNamespaceDefault(peculiarCrypto);
 
 class Certificate {
 	constructor(cert) {
@@ -1436,7 +1429,7 @@ function validEtldPlusOne(value) {
 
 function validDomainName(value) {
 	// Before we can validate we need to take care of IDNs with unicode chars.
-	const ascii = punycode__default["default"].toASCII(value);
+	const ascii = punycode.toASCII(value);
 
 	if (ascii.length < 1) {
 		// return 'DOMAIN_TOO_SHORT';
@@ -1601,7 +1594,7 @@ async function getEmbeddedJwk(jwsHeader, alg) {
 
 var toolbox = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	base64: base64__default["default"],
+	base64: base64,
 	cbor: cborX__namespace,
 	checkDomainOrUrl: checkDomainOrUrl,
 	checkOrigin: checkOrigin,
@@ -1711,7 +1704,7 @@ function coerceToArrayBuffer$1(buf, name) {
 		// base64 to base64url
 		buf = buf.replace(/\+/g, "-").replace(/\//g, "_").replace("=", "");
 		// base64 to Buffer
-		buf = base64__default["default"].toArrayBuffer(buf, true);
+		buf = base64.toArrayBuffer(buf, true);
 	}
 
 	// Extract typed array from Array
@@ -1745,7 +1738,7 @@ function coerceToBase64(thing, name) {
 
 	if (typeof thing !== "string") {
 		try {
-			thing = base64__default["default"].fromArrayBuffer(
+			thing = base64.fromArrayBuffer(
 				coerceToArrayBuffer$1(thing, name),
 			);
 		} catch (_err) {
@@ -1777,7 +1770,7 @@ function coerceToBase64Url(thing, name) {
 
 	if (typeof thing !== "string") {
 		try {
-			thing = base64__default["default"].fromArrayBuffer(
+			thing = base64.fromArrayBuffer(
 				coerceToArrayBuffer$1(thing, name),
 				true,
 			);
@@ -1826,7 +1819,7 @@ function b64ToJsObject(b64, desc) {
 }
 
 function jsObjectToB64(obj) {
-	return base64__default["default"].fromString(
+	return base64.fromString(
 		JSON.stringify(obj).replace(/[\u{0080}-\u{FFFF}]/gu, ""),
 	);
 }
@@ -1855,13 +1848,13 @@ function pemToBase64(pem) {
 
 var utils = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	arrayBufferEquals: arrayBufferEquals,
+	ab2str: ab2str,
 	abToBuf: abToBuf$1,
 	abToHex: abToHex,
 	abToInt: abToInt,
 	abToPem: abToPem,
-	ab2str: ab2str,
 	appendBuffer: appendBuffer$1,
+	arrayBufferEquals: arrayBufferEquals,
 	b64ToJsObject: b64ToJsObject,
 	coerceToArrayBuffer: coerceToArrayBuffer$1,
 	coerceToBase64: coerceToBase64,
@@ -3686,7 +3679,7 @@ class MdsCollection {
 
 		return this.entryList.get(id.replace(/-/g, "")) ||
 			this.entryList.get(
-				abToHex(base64__default["default"].toArrayBuffer(id, true)).replace(/-/g, ""),
+				abToHex(base64.toArrayBuffer(id, true)).replace(/-/g, ""),
 			) || null;
 	}
 }
@@ -4274,7 +4267,7 @@ async function androidSafetyNetValidateFn() {
 	// create hash of the concatenation
 	const hash = await hashDigest(concatenated);
 
-	const nonce = base64__default["default"].fromArrayBuffer(hash);
+	const nonce = base64.fromArrayBuffer(hash);
 
 	// check result
 	if(nonce!==parsedJws.payload.nonce){
