@@ -1,6 +1,21 @@
 /// <reference types="node" />
 
+import {JWTPayload} from "jose/dist/types/types";
+
 declare module "fido2-lib" {
+
+  class MdsEntry{
+    constructor(mdsEntry: Object, tocEntry: Object)
+  }
+
+  class MdsCollection{
+    constructor(collectionName: string);
+    addToc(tocStr: string, rootCert: string, crls: string[] |  ArrayBuffer[]): Promise<JWTPayload>
+    getToc(): Promise<JWTPayload | null>
+    addEntry(entryStr: string): void
+    validate() : Promise<void>
+    findEntry(id: string | ArrayBuffer): MdsEntry | null
+  }
   class Fido2Lib {
     constructor(opts?: Fido2LibOptions);
 
@@ -18,6 +33,11 @@ declare module "fido2-lib" {
       res: AssertionResult,
       expected: ExpectedAssertionResult
     ): Promise<Fido2AssertionResult>;
+
+    static createMdsCollection(collectionName: string): MdsCollection
+    static addMdsCollection(mdsCollection: MdsCollection) : Promise<void>
+    static clearMdsCollections() : void
+    static findMdsEntry(id: string): MdsEntry[]
   }
 
   interface Fido2LibOptions {
@@ -143,4 +163,6 @@ declare module "fido2-lib" {
     request: AttestationResult;
     audit: Audit;
   }
+
+
 }
