@@ -116,12 +116,12 @@ describe("cert utils", function() {
 		describe("getSerial", function() {
 			it("returns correct serial for attestation", function() {
 				const cert = new Certificate(h.certs.yubiKeyAttestation);
-				const serial = cert.getSerial();
+				const serial = cert.getSerial("v2");
 				assert.strictEqual(serial, "1432534688");
 			});
 			it("returns correct serial for root", function() {
 				const cert = new Certificate(h.certs.yubicoRoot);
-				const serial = cert.getSerial();
+				const serial = cert.getSerial("v2");
 				assert.strictEqual(
 					serial,
 					"457200631",
