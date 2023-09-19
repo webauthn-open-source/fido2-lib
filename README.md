@@ -1,7 +1,8 @@
 [![Node/Deno CI](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml/badge.svg)](https://github.com/webauthn-open-source/fido2-lib/actions/workflows/test.yml)
 [![Code Coverage](https://codecov.io/gh/webauthn-open-source/fido2-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/webauthn-open-source/fido2-lib)
 [![Known Vulnerabilities](https://snyk.io/test/github/webauthn-open-source/fido2-lib/badge.svg?targetFile=package.json)](https://snyk.io/test/github/webauthn-open-source/fido2-lib?targetFile=package.json) 
-[![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib)
+[![npm version](https://badge.fury.io/js/fido2-lib.svg)](https://badge.fury.io/js/fido2-lib) [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/webauthn-open-source/fido2-lib/badge)](https://securityscorecards.dev/viewer/?uri=github.com/webauthn-open-source/fido2-lib)
+
 
 ## Overview
 
