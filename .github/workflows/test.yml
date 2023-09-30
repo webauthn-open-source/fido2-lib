@@ -8,11 +8,10 @@ on:
 jobs:
   test_deno:
     runs-on: ubuntu-latest
-
+    permissions: read-all
     strategy:
       matrix:
         deno-version: ["v1.x"]
-
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
@@ -30,10 +29,11 @@ jobs:
 
   test_node:
     runs-on: ${{ matrix.os }}
+    permissions: read-all
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        node-version: [16.x, 18.x]
+        node-version: [18.x, 20.x]
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
