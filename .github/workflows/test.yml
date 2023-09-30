@@ -14,10 +14,15 @@ jobs:
         deno-version: ["v1.x"]
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
       - name: Git Checkout Deno Module
-        uses: actions/checkout@v2
+        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Use Deno Version ${{ matrix.deno-version }}
-        uses: denolib/setup-deno@v2
+        uses: denolib/setup-deno@4df079f84f6c4ef488b04806df9af59e51d09bfb # v2.3.0
         with:
           deno-version: ${{ matrix.deno-version }}
       - name: Test Module
@@ -30,9 +35,14 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
         node-version: [16.x, 18.x]
     steps:
-      - uses: actions/checkout@v2
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1.4.6
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
@@ -46,18 +56,23 @@ jobs:
     needs: [test_node,test_deno]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Harden Runner
+        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1.4.6
         with:
           node-version: '18.x'
-      - uses: denolib/setup-deno@v2
+      - uses: denolib/setup-deno@4df079f84f6c4ef488b04806df9af59e51d09bfb # v2.3.0
         with:
           deno-version: '1.x'
       - name: Get current package version
         id: package_version
-        uses: martinbeentjes/npm-get-version-action@v1.2.3
+        uses: martinbeentjes/npm-get-version-action@7aa1d82604bb2dbe377a64ca35e692e6fe333c9c # v1.2.3
       - run: deno task build
       - run: npm ci
       - run: npm run build
@@ -65,14 +80,14 @@ jobs:
       - run: git config --global user.email "https://mailhide.io/e/Wno7k"
       - name: Check if tag already exists
         id: tag_exists
-        uses: mukunku/tag-exists-action@v1.0.0
+        uses: mukunku/tag-exists-action@f8003af57c02ede2638326be67523df10cf6b10a # v1.0.0
         with: 
             tag: "${{ steps.package_version.outputs.current-version}}"
         env:
             GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Git Auto Commit Deno Artifacts
         if: steps.tag_exists.outputs.exists == 'false'
-        uses: stefanzweifel/git-auto-commit-action@v4.14.1
+        uses: stefanzweifel/git-auto-commit-action@49620cd3ed21ee620a48530e81dba0d139c9cb80 # v4.14.1
         with:
           commit_message: "[skip_ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
           tagging_message: "${{ steps.package_version.outputs.current-version}}"
@@ -81,6 +96,6 @@ jobs:
       - run: npm run publish-docs
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: JS-DevTools/npm-publish@v1
+      - uses: JS-DevTools/npm-publish@0f451a94170d1699fd50710966d48fb26194d939 # v1.4.3
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
