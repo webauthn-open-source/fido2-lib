@@ -5,10 +5,11 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions: read-all
+
 jobs:
   test_deno:
     runs-on: ubuntu-latest
-    permissions: read-all
     strategy:
       matrix:
         deno-version: ["v1.x"]
@@ -29,7 +30,6 @@ jobs:
 
   test_node:
     runs-on: ${{ matrix.os }}
-    permissions: read-all
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -39,7 +39,6 @@ jobs:
         uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
         with:
           egress-policy: audit
-
       - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1.4.6
@@ -55,12 +54,14 @@ jobs:
     if: github.ref == 'refs/heads/master' && needs.test_node.result == 'success' && needs.test_deno.result == 'success'
     needs: [test_node,test_deno]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
         with:
           egress-policy: audit
-
       - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
         with:
           fetch-depth: 0
