@@ -116,15 +116,15 @@ describe("cert utils", function() {
 		describe("getSerial", function() {
 			it("returns correct serial for attestation", function() {
 				const cert = new Certificate(h.certs.yubiKeyAttestation);
-				const serial = cert.getSerial();
-				assert.strictEqual(serial, "Yubico U2F EE Serial 1432534688");
+				const serial = cert.getSerial("v2");
+				assert.strictEqual(serial, "1432534688");
 			});
 			it("returns correct serial for root", function() {
 				const cert = new Certificate(h.certs.yubicoRoot);
-				const serial = cert.getSerial();
+				const serial = cert.getSerial("v2");
 				assert.strictEqual(
 					serial,
-					"Yubico U2F Root CA Serial 457200631",
+					"457200631",
 				);
 			});
 		});
