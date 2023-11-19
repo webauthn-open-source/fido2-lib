@@ -59,7 +59,7 @@ function i(a) {
     }
     return n - i - 1 <= 63 && 45 !== e;
 }
-const e = function({ allowIcannDomains: a = !0 , allowPrivateDomains: o = !1 , detectIp: i = !0 , extractHostname: e = !0 , mixedInputs: n = !0 , validHosts: s = null , validateHostname: r = !0  }) {
+const e = function({ allowIcannDomains: a = !0, allowPrivateDomains: o = !1, detectIp: i = !0, extractHostname: e = !0, mixedInputs: n = !0, validHosts: s = null, validateHostname: r = !0 }) {
     return {
         allowIcannDomains: a,
         allowPrivateDomains: o,
@@ -72,7 +72,7 @@ const e = function({ allowIcannDomains: a = !0 , allowPrivateDomains: o = !1 , d
 }({});
 function n(o, n, s, r, t) {
     const l = function(a) {
-        return void 0 === a ? e : function({ allowIcannDomains: a = !0 , allowPrivateDomains: o = !1 , detectIp: i = !0 , extractHostname: e = !0 , mixedInputs: n = !0 , validHosts: s = null , validateHostname: r = !0  }) {
+        return void 0 === a ? e : function({ allowIcannDomains: a = !0, allowPrivateDomains: o = !1, detectIp: i = !0, extractHostname: e = !0, mixedInputs: n = !0, validHosts: s = null, validateHostname: r = !0 }) {
             return {
                 allowIcannDomains: a,
                 allowPrivateDomains: o,
@@ -11811,7 +11811,7 @@ const isCryptoKey = (key)=>key instanceof CryptoKey;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 function concat(...buffers) {
-    const size = buffers.reduce((acc, { length  })=>acc + length, 0);
+    const size = buffers.reduce((acc, { length })=>acc + length, 0);
     const buf = new Uint8Array(size);
     let i = 0;
     buffers.forEach((buffer)=>{
@@ -12090,7 +12090,7 @@ function isObject(input) {
 }
 const __default3 = (alg, key)=>{
     if (alg.startsWith('RS') || alg.startsWith('PS')) {
-        const { modulusLength  } = key.algorithm;
+        const { modulusLength } = key.algorithm;
         if (typeof modulusLength !== 'number' || modulusLength < 2048) {
             throw new TypeError(`${alg} requires key modulusLength to be 2048 bits or larger`);
         }
@@ -12314,7 +12314,7 @@ const parse = async (jwk)=>{
     if (!jwk.alg) {
         throw new TypeError('"alg" argument is required when "jwk.alg" is not present');
     }
-    const { algorithm , keyUsages  } = subtleMapping(jwk);
+    const { algorithm, keyUsages } = subtleMapping(jwk);
     const rest = [
         algorithm,
         jwk.ext ?? false,
@@ -12558,7 +12558,7 @@ async function flattenedVerify(jws, key, options) {
             throw new JWSInvalid('The "b64" (base64url-encode payload) Header Parameter must be a boolean');
         }
     }
-    const { alg  } = joseHeader;
+    const { alg } = joseHeader;
     if (typeof alg !== 'string' || !alg) {
         throw new JWSInvalid('JWS "alg" (Algorithm) Header Parameter missing or invalid');
     }
@@ -12617,7 +12617,7 @@ async function compactVerify(jws, key, options) {
     if (typeof jws !== 'string') {
         throw new JWSInvalid('Compact JWS must be a string or Uint8Array');
     }
-    const { 0: protectedHeader , 1: payload , 2: signature , length  } = jws.split('.');
+    const { 0: protectedHeader, 1: payload, 2: signature, length } = jws.split('.');
     if (length !== 3) {
         throw new JWSInvalid('Invalid Compact JWS');
     }
@@ -12693,7 +12693,7 @@ const checkAudiencePresence = (audPayload, audOption)=>{
     return false;
 };
 const __default6 = (protectedHeader, encodedPayload, options = {})=>{
-    const { typ  } = options;
+    const { typ } = options;
     if (typ && (typeof protectedHeader.typ !== 'string' || normalizeTyp(protectedHeader.typ) !== normalizeTyp(typ))) {
         throw new JWTClaimValidationFailed('unexpected "typ" JWT header value', 'typ', 'check_failed');
     }
@@ -12704,7 +12704,7 @@ const __default6 = (protectedHeader, encodedPayload, options = {})=>{
     if (!isObject(payload)) {
         throw new JWTInvalid('JWT Claims Set must be a top-level JSON object');
     }
-    const { requiredClaims =[] , issuer , subject , audience , maxTokenAge  } = options;
+    const { requiredClaims = [], issuer, subject, audience, maxTokenAge } = options;
     if (maxTokenAge !== undefined) requiredClaims.push('iat');
     if (audience !== undefined) requiredClaims.push('aud');
     if (subject !== undefined) requiredClaims.push('sub');
@@ -12741,7 +12741,7 @@ const __default6 = (protectedHeader, encodedPayload, options = {})=>{
         default:
             throw new TypeError('Invalid clockTolerance option type');
     }
-    const { currentDate  } = options;
+    const { currentDate } = options;
     const now = __default4(currentDate || new Date());
     if ((payload.iat !== undefined || maxTokenAge) && typeof payload.iat !== 'number') {
         throw new JWTClaimValidationFailed('"iat" claim must be a number', 'iat', 'invalid');
@@ -12827,7 +12827,7 @@ class LocalJWKSet {
         this._jwks = clone(jwks);
     }
     async getKey(protectedHeader, token) {
-        const { alg , kid  } = {
+        const { alg, kid } = {
             ...protectedHeader,
             ...token?.header
         };
@@ -12867,12 +12867,12 @@ class LocalJWKSet {
             }
             return candidate;
         });
-        const { 0: jwk , length  } = candidates;
+        const { 0: jwk, length } = candidates;
         if (length === 0) {
             throw new JWKSNoMatchingKey();
         } else if (length !== 1) {
             const error = new JWKSMultipleMatchingKeys();
-            const { _cached  } = this;
+            const { _cached } = this;
             error[Symbol.asyncIterator] = async function*() {
                 for (const jwk of candidates){
                     try {
@@ -12940,7 +12940,10 @@ class BufferSourceConverter {
         if (data.byteLength === data.buffer.byteLength) {
             return data.buffer;
         }
-        return this.toUint8Array(data).slice().buffer;
+        if (data.byteOffset === 0 && data.byteLength === data.buffer.byteLength) {
+            return data.buffer;
+        }
+        return this.toUint8Array(data.buffer).slice(data.byteOffset, data.byteOffset + data.byteLength).buffer;
     }
     static toUint8Array(data) {
         return this.toView(data, Uint8Array);
@@ -12977,28 +12980,39 @@ class BufferSourceConverter {
         return true;
     }
     static concat(...args) {
-        if (Array.isArray(args[0])) {
-            const buffers = args[0];
-            let size = 0;
-            for (const buffer of buffers){
-                size += buffer.byteLength;
-            }
-            const res = new Uint8Array(size);
-            let offset = 0;
-            for (const buffer of buffers){
-                const view = this.toUint8Array(buffer);
-                res.set(view, offset);
-                offset += view.length;
-            }
-            if (args[1]) {
-                return this.toView(res, args[1]);
-            }
-            return res.buffer;
+        let buffers;
+        if (Array.isArray(args[0]) && !(args[1] instanceof Function)) {
+            buffers = args[0];
+        } else if (Array.isArray(args[0]) && args[1] instanceof Function) {
+            buffers = args[0];
         } else {
-            return this.concat(args);
+            if (args[args.length - 1] instanceof Function) {
+                buffers = args.slice(0, args.length - 1);
+            } else {
+                buffers = args;
+            }
         }
+        let size = 0;
+        for (const buffer of buffers){
+            size += buffer.byteLength;
+        }
+        const res = new Uint8Array(size);
+        let offset = 0;
+        for (const buffer of buffers){
+            const view = this.toUint8Array(buffer);
+            res.set(view, offset);
+            offset += view.length;
+        }
+        if (args[args.length - 1] instanceof Function) {
+            return this.toView(res, args[args.length - 1]);
+        }
+        return res.buffer;
     }
 }
+const STRING_TYPE = "string";
+const HEX_REGEX = /^[0-9a-f]+$/i;
+const BASE64_REGEX = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+const BASE64URL_REGEX = /^[a-zA-Z0-9-_]+$/;
 class Utf8Converter {
     static fromString(text) {
         const s = unescape(encodeURIComponent(text));
@@ -13040,13 +13054,13 @@ class Utf16Converter {
 }
 class Convert {
     static isHex(data) {
-        return typeof data === "string" && /^[a-z0-9]+$/i.test(data);
+        return typeof data === STRING_TYPE && HEX_REGEX.test(data);
     }
     static isBase64(data) {
-        return typeof data === "string" && /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(data);
+        return typeof data === STRING_TYPE && BASE64_REGEX.test(data);
     }
     static isBase64Url(data) {
-        return typeof data === "string" && /^[a-zA-Z0-9-_]+$/i.test(data);
+        return typeof data === STRING_TYPE && BASE64URL_REGEX.test(data);
     }
     static ToString(buffer, enc = "utf8") {
         const buf = BufferSourceConverter.toUint8Array(buffer);
@@ -13180,14 +13194,16 @@ class Convert {
     }
     static ToHex(buffer) {
         const buf = BufferSourceConverter.toUint8Array(buffer);
-        const splitter = "";
-        const res = [];
+        let result = "";
         const len = buf.length;
         for(let i = 0; i < len; i++){
-            const __char = buf[i].toString(16).padStart(2, "0");
-            res.push(__char);
+            const __byte = buf[i];
+            if (__byte < 16) {
+                result += "0";
+            }
+            result += __byte.toString(16);
         }
-        return res.join(splitter);
+        return result;
     }
     static FromHex(hexString) {
         let formatted = this.formatString(hexString);
@@ -13653,7 +13669,7 @@ function HexBlock(BaseClass) {
     }, _a.NAME = "hexBlock", _a;
 }
 class LocalBaseBlock {
-    constructor({ blockLength =0 , error =EMPTY_STRING , warnings =[] , valueBeforeDecode =EMPTY_VIEW  } = {}){
+    constructor({ blockLength = 0, error = EMPTY_STRING, warnings = [], valueBeforeDecode = EMPTY_VIEW } = {}){
         this.blockLength = blockLength;
         this.error = error;
         this.warnings = warnings;
@@ -13689,7 +13705,7 @@ class ValueBlock extends LocalBaseBlock {
 }
 ValueBlock.NAME = "valueBlock";
 class LocalIdentificationBlock extends HexBlock(LocalBaseBlock) {
-    constructor({ idBlock ={}  } = {}){
+    constructor({ idBlock = {} } = {}){
         var _a, _b, _c, _d;
         super();
         if (idBlock) {
@@ -13851,7 +13867,7 @@ class LocalIdentificationBlock extends HexBlock(LocalBaseBlock) {
 }
 LocalIdentificationBlock.NAME = "identificationBlock";
 class LocalLengthBlock extends LocalBaseBlock {
-    constructor({ lenBlock ={}  } = {}){
+    constructor({ lenBlock = {} } = {}){
         var _a, _b, _c;
         super();
         this.isIndefiniteForm = (_a = lenBlock.isIndefiniteForm) !== null && _a !== void 0 ? _a : false;
@@ -13945,7 +13961,7 @@ class LocalLengthBlock extends LocalBaseBlock {
 LocalLengthBlock.NAME = "lengthBlock";
 const typeStore = {};
 class BaseBlock extends LocalBaseBlock {
-    constructor({ name =EMPTY_STRING , optional =false , primitiveSchema , ...parameters } = {}, valueBlockType){
+    constructor({ name = EMPTY_STRING, optional = false, primitiveSchema, ...parameters } = {}, valueBlockType){
         super(parameters);
         this.name = name;
         this.optional = optional;
@@ -14037,7 +14053,7 @@ function prepareIndefiniteForm(baseBlock) {
     return !!baseBlock.lenBlock.isIndefiniteForm;
 }
 class BaseStringBlock extends BaseBlock {
-    constructor({ value =EMPTY_STRING , ...parameters } = {}, stringValueBlockType){
+    constructor({ value = EMPTY_STRING, ...parameters } = {}, stringValueBlockType){
         super(parameters, stringValueBlockType);
         if (value) {
             this.fromString(value);
@@ -14067,7 +14083,7 @@ class BaseStringBlock extends BaseBlock {
 }
 BaseStringBlock.NAME = "BaseStringBlock";
 class LocalPrimitiveValueBlock extends HexBlock(ValueBlock) {
-    constructor({ isHexOnly =true , ...parameters } = {}){
+    constructor({ isHexOnly = true, ...parameters } = {}){
         super(parameters);
         this.isHexOnly = isHexOnly;
     }
@@ -14306,7 +14322,7 @@ function checkLen(indefiniteLength, length) {
     return length;
 }
 class LocalConstructedValueBlock extends ValueBlock {
-    constructor({ value =[] , isIndefiniteForm =false , ...parameters } = {}){
+    constructor({ value = [], isIndefiniteForm = false, ...parameters } = {}){
         super(parameters);
         this.value = value;
         this.isIndefiniteForm = isIndefiniteForm;
@@ -14463,7 +14479,7 @@ _a$t = Null;
 })();
 Null.NAME = "NULL";
 class LocalBooleanValueBlock extends HexBlock(ValueBlock) {
-    constructor({ value , ...parameters } = {}){
+    constructor({ value, ...parameters } = {}){
         super(parameters);
         if (parameters.valueHex) {
             this.valueHexView = BufferSourceConverter.toUint8Array(parameters.valueHex);
@@ -14531,7 +14547,7 @@ _a$s = Boolean1;
 })();
 Boolean1.NAME = "BOOLEAN";
 class LocalOctetStringValueBlock extends HexBlock(LocalConstructedValueBlock) {
-    constructor({ isConstructed =false , ...parameters } = {}){
+    constructor({ isConstructed = false, ...parameters } = {}){
         super(parameters);
         this.isConstructed = isConstructed;
     }
@@ -14576,7 +14592,7 @@ class LocalOctetStringValueBlock extends HexBlock(LocalConstructedValueBlock) {
 LocalOctetStringValueBlock.NAME = "OctetStringValueBlock";
 var _a$r;
 class OctetString extends BaseBlock {
-    constructor({ idBlock ={} , lenBlock ={} , ...parameters } = {}){
+    constructor({ idBlock = {}, lenBlock = {}, ...parameters } = {}){
         var _b, _c;
         (_b = parameters.isConstructed) !== null && _b !== void 0 ? _b : parameters.isConstructed = !!((_c = parameters.value) === null || _c === void 0 ? void 0 : _c.length);
         super({
@@ -14642,7 +14658,7 @@ _a$r = OctetString;
 })();
 OctetString.NAME = OCTET_STRING_NAME;
 class LocalBitStringValueBlock extends HexBlock(LocalConstructedValueBlock) {
-    constructor({ unusedBits =0 , isConstructed =false , ...parameters } = {}){
+    constructor({ unusedBits = 0, isConstructed = false, ...parameters } = {}){
         super(parameters);
         this.unusedBits = unusedBits;
         this.isConstructed = isConstructed;
@@ -14731,7 +14747,7 @@ class LocalBitStringValueBlock extends HexBlock(LocalConstructedValueBlock) {
 LocalBitStringValueBlock.NAME = "BitStringValueBlock";
 var _a$q;
 class BitString extends BaseBlock {
-    constructor({ idBlock ={} , lenBlock ={} , ...parameters } = {}){
+    constructor({ idBlock = {}, lenBlock = {}, ...parameters } = {}){
         var _b, _c;
         (_b = parameters.isConstructed) !== null && _b !== void 0 ? _b : parameters.isConstructed = !!((_c = parameters.value) === null || _c === void 0 ? void 0 : _c.length);
         super({
@@ -14866,7 +14882,7 @@ function viewSub(first, second) {
     return firstViewCopy.slice();
 }
 class LocalIntegerValueBlock extends HexBlock(ValueBlock) {
-    constructor({ value , ...parameters } = {}){
+    constructor({ value, ...parameters } = {}){
         super(parameters);
         this._valueDec = 0;
         if (parameters.valueHex) {
@@ -15067,7 +15083,7 @@ _a$n = Enumerated;
 })();
 Enumerated.NAME = "ENUMERATED";
 class LocalSidValueBlock extends HexBlock(ValueBlock) {
-    constructor({ valueDec =-1 , isFirstSid =false , ...parameters } = {}){
+    constructor({ valueDec = -1, isFirstSid = false, ...parameters } = {}){
         super(parameters);
         this.valueDec = valueDec;
         this.isFirstSid = isFirstSid;
@@ -15170,7 +15186,7 @@ class LocalSidValueBlock extends HexBlock(ValueBlock) {
 }
 LocalSidValueBlock.NAME = "sidBlock";
 class LocalObjectIdentifierValueBlock extends ValueBlock {
-    constructor({ value =EMPTY_STRING , ...parameters } = {}){
+    constructor({ value = EMPTY_STRING, ...parameters } = {}){
         super(parameters);
         this.value = [];
         if (value) {
@@ -15312,7 +15328,7 @@ _a$m = ObjectIdentifier;
 })();
 ObjectIdentifier.NAME = "OBJECT IDENTIFIER";
 class LocalRelativeSidValueBlock extends HexBlock(LocalBaseBlock) {
-    constructor({ valueDec =0 , ...parameters } = {}){
+    constructor({ valueDec = 0, ...parameters } = {}){
         super(parameters);
         this.valueDec = valueDec;
     }
@@ -15382,7 +15398,7 @@ class LocalRelativeSidValueBlock extends HexBlock(LocalBaseBlock) {
 }
 LocalRelativeSidValueBlock.NAME = "relativeSidBlock";
 class LocalRelativeObjectIdentifierValueBlock extends ValueBlock {
-    constructor({ value =EMPTY_STRING , ...parameters } = {}){
+    constructor({ value = EMPTY_STRING, ...parameters } = {}){
         super(parameters);
         this.value = [];
         if (value) {
@@ -15756,7 +15772,7 @@ _a$7 = CharacterString;
 CharacterString.NAME = "CharacterString";
 var _a$6;
 class UTCTime extends VisibleString {
-    constructor({ value , valueDate , ...parameters } = {}){
+    constructor({ value, valueDate, ...parameters } = {}){
         super(parameters);
         this.year = 0;
         this.month = 0;
@@ -16080,26 +16096,26 @@ _a = TIME;
 })();
 TIME.NAME = "TIME";
 class Any {
-    constructor({ name =EMPTY_STRING , optional =false  } = {}){
+    constructor({ name = EMPTY_STRING, optional = false } = {}){
         this.name = name;
         this.optional = optional;
     }
 }
 class Choice extends Any {
-    constructor({ value =[] , ...parameters } = {}){
+    constructor({ value = [], ...parameters } = {}){
         super(parameters);
         this.value = value;
     }
 }
 class Repeated extends Any {
-    constructor({ value =new Any() , local =false , ...parameters } = {}){
+    constructor({ value = new Any(), local = false, ...parameters } = {}){
         super(parameters);
         this.value = value;
         this.local = local;
     }
 }
 class RawData {
-    constructor({ data =EMPTY_VIEW  } = {}){
+    constructor({ data = EMPTY_VIEW } = {}){
         this.dataView = BufferSourceConverter.toUint8Array(data);
     }
     get data() {
@@ -16626,7 +16642,7 @@ class ByteStream {
         return true;
     }
     findPattern(pattern, start_, length_, backward_) {
-        const { start , length , backward  } = this.prepareFindParameters(start_, length_, backward_);
+        const { start, length, backward } = this.prepareFindParameters(start_, length_, backward_);
         const patternLength = pattern.length;
         if (patternLength > length) {
             return -1;
@@ -16649,7 +16665,7 @@ class ByteStream {
         return -1;
     }
     findFirstIn(patterns, start_, length_, backward_) {
-        const { start , length , backward  } = this.prepareFindParameters(start_, length_, backward_);
+        const { start, length, backward } = this.prepareFindParameters(start_, length_, backward_);
         const result = {
             id: -1,
             position: backward ? 0 : start + length,
@@ -16675,7 +16691,7 @@ class ByteStream {
         return result;
     }
     findAllIn(patterns, start_, length_) {
-        let { start , length  } = this.prepareFindParameters(start_, length_);
+        let { start, length } = this.prepareFindParameters(start_, length_);
         const result = [];
         let patternFound = {
             id: -1,
@@ -16696,7 +16712,7 @@ class ByteStream {
         return result;
     }
     findAllPatternIn(pattern, start_, length_) {
-        const { start , length  } = this.prepareFindParameters(start_, length_);
+        const { start, length } = this.prepareFindParameters(start_, length_);
         const result = [];
         const patternLength = pattern.length;
         if (patternLength > length) {
@@ -16720,7 +16736,7 @@ class ByteStream {
         return result;
     }
     findFirstNotIn(patterns, start_, length_, backward_) {
-        let { start , length , backward  } = this.prepareFindParameters(start_, length_, backward_);
+        let { start, length, backward } = this.prepareFindParameters(start_, length_, backward_);
         const result = {
             left: {
                 id: -1,
@@ -16771,7 +16787,7 @@ class ByteStream {
         return result;
     }
     findAllNotIn(patterns, start_, length_) {
-        let { start , length  } = this.prepareFindParameters(start_, length_);
+        let { start, length } = this.prepareFindParameters(start_, length_);
         const result = [];
         let patternFound = {
             left: {
@@ -16803,7 +16819,7 @@ class ByteStream {
         return result;
     }
     findFirstSequence(patterns, start_, length_, backward_) {
-        let { start , length , backward  } = this.prepareFindParameters(start_, length_, backward_);
+        let { start, length, backward } = this.prepareFindParameters(start_, length_, backward_);
         const firstIn = this.skipNotPatterns(patterns, start, length, backward);
         if (firstIn == -1) {
             return {
@@ -16828,7 +16844,7 @@ class ByteStream {
         };
     }
     findAllSequences(patterns, start_, length_) {
-        let { start , length  } = this.prepareFindParameters(start_, length_);
+        let { start, length } = this.prepareFindParameters(start_, length_);
         const result = [];
         let patternFound = {
             position: start,
@@ -16850,7 +16866,7 @@ class ByteStream {
     findPairedPatterns(leftPattern, rightPattern, start_, length_) {
         const result = [];
         if (leftPattern.isEqual(rightPattern)) return result;
-        const { start , length  } = this.prepareFindParameters(start_, length_);
+        const { start, length } = this.prepareFindParameters(start_, length_);
         let currentPositionLeft = 0;
         const leftPatterns = this.findAllPatternIn(leftPattern, start, length);
         if (!Array.isArray(leftPatterns) || leftPatterns.length == 0) {
@@ -16894,7 +16910,7 @@ class ByteStream {
         return result;
     }
     findPairedArrays(inputLeftPatterns, inputRightPatterns, start_, length_) {
-        const { start , length  } = this.prepareFindParameters(start_, length_);
+        const { start, length } = this.prepareFindParameters(start_, length_);
         const result = [];
         let currentPositionLeft = 0;
         const leftPatterns = this.findAllIn(inputLeftPatterns, start, length);
@@ -16942,7 +16958,7 @@ class ByteStream {
             searchPatternPositions: [],
             replacePatternPositions: []
         };
-        const { start , length  } = this.prepareFindParameters(start_, length_);
+        const { start, length } = this.prepareFindParameters(start_, length_);
         if (findAllResult == null) {
             result = this.findAllIn([
                 searchPattern
@@ -16972,7 +16988,7 @@ class ByteStream {
         return output;
     }
     skipPatterns(patterns, start_, length_, backward_) {
-        const { start , length , backward  } = this.prepareFindParameters(start_, length_, backward_);
+        const { start, length, backward } = this.prepareFindParameters(start_, length_, backward_);
         let result = start;
         for(let k = 0; k < patterns.length; k++){
             const patternLength = patterns[k].length;
@@ -16998,7 +17014,7 @@ class ByteStream {
         return result;
     }
     skipNotPatterns(patterns, start_, length_, backward_) {
-        const { start , length , backward  } = this.prepareFindParameters(start_, length_, backward_);
+        const { start, length, backward } = this.prepareFindParameters(start_, length_, backward_);
         let result = -1;
         for(let i = 0; i < length; i++){
             for(let k = 0; k < patterns.length; k++){
@@ -27579,7 +27595,7 @@ class CertificateRevocationList extends PkiObject {
             throw new Error("Need to provide a private key for signing");
         }
         const signatureParameters = await crypto1.getSignatureParameters(privateKey, hashAlgorithm);
-        const { parameters  } = signatureParameters;
+        const { parameters } = signatureParameters;
         this.signature = signatureParameters.signatureAlgorithm;
         this.signatureAlgorithm = signatureParameters.signatureAlgorithm;
         this.tbsView = new Uint8Array(this.encodeTBS().toBER());
@@ -36005,7 +36021,7 @@ const CLEAR_PROPS$3 = [
     SIGNED_DATA_SIGNER_INFOS
 ];
 class SignedDataVerifyError extends Error {
-    constructor({ message , code =0 , date =new Date() , signatureVerified =null , signerCertificate =null , signerCertificateVerified =null , timestampSerial =null , certificatePath =[]  }){
+    constructor({ message, code = 0, date = new Date(), signatureVerified = null, signerCertificate = null, signerCertificateVerified = null, timestampSerial = null, certificatePath = [] }){
         super(message);
         this.name = "SignedDataVerifyError";
         this.date = date;
@@ -36235,7 +36251,7 @@ class SignedData extends PkiObject {
         }
         return res;
     }
-    async verify({ signer =-1 , data =EMPTY_BUFFER1 , trustedCerts =[] , checkDate =new Date() , checkChain =false , passedWhenNotRevValues =false , extendedMode =false , findOrigin =null , findIssuer =null  } = {}, crypto1 = getCrypto(true)) {
+    async verify({ signer = -1, data = EMPTY_BUFFER1, trustedCerts = [], checkDate = new Date(), checkChain = false, passedWhenNotRevValues = false, extendedMode = false, findOrigin = null, findIssuer = null } = {}, crypto1 = getCrypto(true)) {
         let signerCert = null;
         let timestampSerial = null;
         try {
@@ -39335,7 +39351,7 @@ let defaultEncoder = new Encoder({
 const encode1 = defaultEncoder.encode;
 const encodeAsIterable = defaultEncoder.encodeAsIterable;
 const encodeAsAsyncIterable = defaultEncoder.encodeAsAsyncIterable;
-const { NEVER , ALWAYS , DECIMAL_ROUND , DECIMAL_FIT  } = FLOAT32_OPTIONS;
+const { NEVER, ALWAYS, DECIMAL_ROUND, DECIMAL_FIT } = FLOAT32_OPTIONS;
 const REUSE_BUFFER_MODE = 512;
 const RESET_BUFFER_MODE = 1024;
 const THROW_ON_ITERABLE = 2048;
@@ -39934,21 +39950,20 @@ class Certificate1 {
         this.info = new Map();
     }
     getCommonName() {
+        return this.searchForCommonName(this._cert.subject.typesAndValues);
+    }
+    searchForCommonName(attributes) {
         const X509_COMMON_NAME_KEY = "2.5.4.3";
-        let commonName = "";
-        const subjectAttributes = this._cert.subject.typesAndValues;
-        for(let index = 0; index < subjectAttributes.length; index++){
-            const attribute = subjectAttributes[index];
-            if (attribute.type === X509_COMMON_NAME_KEY) {
-                commonName = attribute.value.valueBlock.value;
-                break;
+        for (const attr of attributes){
+            if (attr.type === X509_COMMON_NAME_KEY) {
+                return attr.value.valueBlock.value;
             }
         }
-        return commonName;
+        return "";
     }
     verify() {
-        const issuerSerial = this.getIssuer();
-        const issuerCert = CertManager.getCertBySerial(issuerSerial);
+        const issuerCommonName = this.getIssuer();
+        const issuerCert = CertManager.getCertByCommonName(issuerCommonName);
         const _issuerCert = issuerCert ? issuerCert._cert : undefined;
         return this._cert.verify(_issuerCert).catch((err)=>{
             if (typeof err === "string") {
@@ -39967,10 +39982,15 @@ class Certificate1 {
         return publicKeyJwk;
     }
     getIssuer() {
-        return this._cert.issuer.typesAndValues[0].value.valueBlock.value;
+        return this.searchForCommonName(this._cert.issuer.typesAndValues);
     }
-    getSerial() {
-        return this._cert.subject.typesAndValues[0].value.valueBlock.value;
+    getSerial(compatibility) {
+        if (compatibility === undefined) {
+            console.warn("[DEPRECATION WARNING] Please use getSerial(\"v2\").");
+        } else if (compatibility === "v1") {
+            console.warn("[DEPRECATION WARNING] Please migrate to getSerial(\"v2\") which will return just the serial number.");
+        }
+        return compatibility === "v2" ? this._cert.serialNumber.valueBlock.toString() : this.getCommonName();
     }
     getVersion() {
         return this._cert.version + 1;
@@ -40268,7 +40288,7 @@ function decodeAuthorityInfoAccess(v) {
     }
     const retMap = new Map();
     v.accessDescriptions.forEach((desc)=>{
-        const { id , value  } = resolveOid(desc.accessMethod, desc.accessLocation);
+        const { id, value } = resolveOid(desc.accessMethod, desc.accessLocation);
         retMap.set(id, value);
     });
     return retMap;
@@ -40293,7 +40313,7 @@ function decodeGeneralName(type, v) {
             }
             nameList = new Map();
             v.forEach((val)=>{
-                const { id , value  } = resolveOid(val.type, decodeValue(val.value));
+                const { id, value } = resolveOid(val.type, decodeValue(val.value));
                 nameList.set(id, value);
             });
             return {
@@ -40332,8 +40352,8 @@ const certMap = new Map();
 class CertManager {
     static addCert(certBuf) {
         const cert = new Certificate1(certBuf);
-        const serial = cert.getSerial();
-        certMap.set(serial, cert);
+        const commonName = cert.getCommonName();
+        certMap.set(commonName, cert);
         return true;
     }
     static getCerts() {
@@ -40342,7 +40362,11 @@ class CertManager {
         ]);
     }
     static getCertBySerial(serial) {
+        console.warn("[DEPRECATION WARNING] Please use CertManager.getCertByCommonName(commonName).");
         return certMap.get(serial);
+    }
+    static getCertByCommonName(commonName) {
+        return certMap.get(commonName);
     }
     static removeAll() {
         certMap.clear();
@@ -41157,7 +41181,7 @@ async function packedValidateFn() {
     return await packedValidateSurrogate.call(this);
 }
 async function packedValidateBasic() {
-    const { algName , hashAlg  } = this.authnrData.get("alg");
+    const { algName, hashAlg } = this.authnrData.get("alg");
     if (algName === undefined) {
         throw new Error("packed attestation: unknown algorithm " + algName);
     }
@@ -41236,7 +41260,7 @@ async function validateSelfSignature(rawClientData, authenticatorData, sig, hash
     return verify;
 }
 async function packedValidateSurrogate() {
-    const { algName , hashAlg  } = this.authnrData.get("alg");
+    const { algName, hashAlg } = this.authnrData.get("alg");
     if (algName === undefined) {
         throw new Error("packed attestation: unknown algorithm " + algName);
     }
@@ -41627,7 +41651,7 @@ function getSizedElement(dv, offset) {
     };
 }
 function getTpm2bName(dvIn, oIn) {
-    const { offset , dv  } = getSizedElement(dvIn, oIn);
+    const { offset, dv } = getSizedElement(dvIn, oIn);
     const hashType = algIdToStr(dv.getUint16(0));
     const nameHash = dv.buffer.slice(2);
     return {
@@ -41879,7 +41903,7 @@ const appleAttestation = {
     parseFn: appleParseFn,
     validateFn: appleValidateFn
 };
-const { coerceToArrayBuffer: coerceToArrayBuffer1 , abToBuf: abToBuf1 , tools , appendBuffer: appendBuffer1  } = mod3;
+const { coerceToArrayBuffer: coerceToArrayBuffer1, abToBuf: abToBuf1, tools, appendBuffer: appendBuffer1 } = mod3;
 const lockSym = Symbol();
 async function validateExpectations() {
     let req = this.requiredExpectations;

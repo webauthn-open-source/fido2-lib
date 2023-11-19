@@ -64,25 +64,24 @@ class Certificate {
 	}
 
 	getCommonName() {
+		return this.searchForCommonName(this._cert.subject.typesAndValues);
+	}
+
+	searchForCommonName(attributes) {
 		const X509_COMMON_NAME_KEY = "2.5.4.3";
-
-		let commonName = ""; // Default in case no subject is found
-
-		// Search the subject's attributes for the common name of the certificate
-		const subjectAttributes = this._cert.subject.typesAndValues;
-		for (let index = 0; index < subjectAttributes.length; index++) {
-			const attribute = subjectAttributes[index];
-			if (attribute.type === X509_COMMON_NAME_KEY) {
-				commonName = attribute.value.valueBlock.value;
-				break;
+		// Search the attributes for the common name of the certificate
+		for (const attr of attributes) {
+			if (attr.type === X509_COMMON_NAME_KEY) {
+				return attr.value.valueBlock.value;
 			}
 		}
-		return commonName;
+		// Return empty string if not found
+		return "";
 	}
 
 	verify() {
-		const issuerSerial = this.getIssuer();
-		const issuerCert = CertManager.getCertBySerial(issuerSerial);
+		const issuerCommonName = this.getIssuer();
+		const issuerCert = CertManager.getCertByCommonName(issuerCommonName);
 		const _issuerCert = issuerCert ? issuerCert._cert : undefined;
 		return this._cert.verify(_issuerCert)
 			.catch((err) => {
@@ -110,11 +109,19 @@ class Certificate {
 	}
 
 	getIssuer() {
-		return this._cert.issuer.typesAndValues[0].value.valueBlock.value;
+		return this.searchForCommonName(this._cert.issuer.typesAndValues);
 	}
 
-	getSerial() {
-		return this._cert.subject.typesAndValues[0].value.valueBlock.value;
+	getSerial(compatibility) {
+		if (compatibility === undefined) {
+			console.warn("[DEPRECATION WARNING] Please use getSerial(\"v2\").");
+		} else if (compatibility === "v1") {
+			console.warn("[DEPRECATION WARNING] Please migrate to getSerial(\"v2\") which will return just the serial number.");
+		}
+
+		return (compatibility === "v2") 
+			? this._cert.serialNumber.valueBlock.toString()
+			: this.getCommonName();
 	}
 
 	getVersion() {
@@ -511,8 +518,8 @@ const certMap = new Map();
 class CertManager {
 	static addCert(certBuf) {
 		const cert = new Certificate(certBuf);
-		const serial = cert.getSerial();
-		certMap.set(serial, cert);
+		const commonName = cert.getCommonName();
+		certMap.set(commonName, cert);
 
 		return true;
 	}
@@ -522,7 +529,12 @@ class CertManager {
 	}
 
 	static getCertBySerial(serial) {
+		console.warn("[DEPRECATION WARNING] Please use CertManager.getCertByCommonName(commonName).");
 		return certMap.get(serial);
+	}
+
+	static getCertByCommonName(commonName) {
+		return certMap.get(commonName);
 	}
 
 	static removeAll() {
