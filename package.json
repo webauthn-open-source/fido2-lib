@@ -49,12 +49,14 @@
 	},
 	"dependencies": {
 		"@hexagon/base64": "~1.1.26",
-		"@peculiar/webcrypto": "~1.4.3",
 		"asn1js": "~3.0.2",
 		"cbor-x": "~1.5.3",
 		"jose": "^4.14.4",
 		"pkijs": "~3.0.15",
 		"tldts": "~6.0.5"
+	},
+	"optionalDependencies": {
+		"@peculiar/webcrypto": "~1.4.3"
 	},
 	"eslintConfig": {
 		"root": true,
