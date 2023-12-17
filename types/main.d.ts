@@ -1,8 +1,9 @@
 /// <reference types="node" />
 
-import {JWTPayload} from "jose/dist/types/types";
-
 declare module "fido2-lib" {
+  // Type imports in ambient module should use import(),
+  // see https://stackoverflow.com/questions/39040108
+  type JWTPayload = import("jose/dist/types/types").JWTPayload;
 
   class MdsEntry{
     constructor(mdsEntry: Object, tocEntry: Object)
