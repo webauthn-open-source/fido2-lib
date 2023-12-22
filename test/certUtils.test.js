@@ -29,6 +29,12 @@ describe("cert utils", function() {
 				assert.isObject(cert._cert);
 			});
 
+			it("can decode base64 encoded cert", function() {
+				const cert = new Certificate(h.certs.truUCert);
+				assert.instanceOf(cert, Certificate);
+				assert.isObject(cert._cert);
+			});
+
 			it("throws if no arg to constructor", function() {
 				assert.throws(() => {
 					new Certificate();
