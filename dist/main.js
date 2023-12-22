@@ -39926,11 +39926,15 @@ const mod3 = {
 };
 class Certificate1 {
     constructor(cert){
+        let decoded;
         if (typeof cert === "string" || cert instanceof String) {
-            cert = cert.replace(/\r/g, "");
+            cert = cert.replace(/\r/g, "").trim();
+            decoded = ab2str(coerceToArrayBuffer(cert, "certificate"));
         }
         if (isPem(cert)) {
             cert = pemToBase64(cert);
+        } else if (decoded && isPem(decoded)) {
+            cert = pemToBase64(decoded);
         }
         if (typeof cert === "string" || cert instanceof String) {
             cert = cert.replace(/\n/g, "");

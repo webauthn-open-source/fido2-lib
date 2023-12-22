@@ -33,16 +33,20 @@ var peculiarCrypto__namespace = /*#__PURE__*/_interopNamespaceDefault(peculiarCr
 
 class Certificate {
 	constructor(cert) {
-		
+		let decoded;
+
 		// Clean up base64 string
 		if (typeof cert === "string" || cert instanceof String) {
-			cert = cert.replace(/\r/g, "");
+			cert = cert.replace(/\r/g, "").trim();
+			decoded = ab2str(coerceToArrayBuffer$1(cert, "certificate"));
 		}
 
 		if (isPem(cert)) {
 			cert = pemToBase64(cert);
+		} else if (decoded && isPem(decoded)) {
+			cert = pemToBase64(decoded);
 		}
-		
+
 		// Clean up certificate
 		if (typeof cert === "string" || cert instanceof String) {
 			cert = cert.replace(/\n/g, "");
