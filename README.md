@@ -112,7 +112,7 @@ const f2l = new Fido2Lib({
 ``` js
 const registrationOptions = await f2l.attestationOptions();
 
-// make sure to add registrationOptions.user.id
+// make sure to add registrationOptions.user.id and registrationOptions.user.name
 // save the challenge in the session information...
 // send registrationOptions to client and pass them in to `navigator.credentials.create()`...
 // get response back from client (clientAttestationResponse)
