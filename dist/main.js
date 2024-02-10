@@ -40014,8 +40014,10 @@ class Certificate1 {
         for (const ext of this._cert.extensions){
             let kv;
             let v = ext.parsedValue || ext.extnValue;
-            if (v.valueBlock) v = decodeValue(v.valueBlock);
             try {
+                if (v.valueBlock) {
+                    v = decodeValue(v.valueBlock);
+                }
                 kv = resolveOid(ext.extnID, v);
             } catch (err) {
                 if (ext.critical === false) {
@@ -40176,6 +40178,8 @@ function resolveOid(id, value) {
 function decodeValue(valueBlock) {
     const blockType = Object.getPrototypeOf(valueBlock).constructor.name;
     switch(blockType){
+        case "LocalIntegerValueBlock":
+            return valueBlock.valueDec;
         case "LocalOctetStringValueBlock":
             return valueBlock.valueHex;
         case "LocalUtf8StringValueBlock":
