@@ -189,6 +189,11 @@ describe("cert utils", function() {
 				assert.isTrue(u2fTransports.has("usb"));
 			});
 
+			it("does not throw for non-critical extensions, when unknown extension types are included", function() {
+				const cert = new Certificate(h.certs.certificateWithIntegerExtension);
+				const extensions = cert.getExtensions();
+			});
+
 			it("returns correct extensions for root", function() {
 				const cert = new Certificate(h.certs.yubicoRoot);
 				const extensions = cert.getExtensions();
