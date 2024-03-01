@@ -43,27 +43,30 @@ const tests = [
 ];
 
 function surpressWarnings(message, warn) {
-	if (message.code === "CIRCULAR_DEPENDENCY") return;
-	warn(message);
+  if (message.code === "CIRCULAR_DEPENDENCY") return;
+  warn(message);
 }
 
 export default [
-	{
-		input: "lib/main.js",
-		external: [...externals],
-		output: {
-			file: "dist/main.cjs",
-			format: "cjs",
-		},
-		onwarn: surpressWarnings,
-	},
-	{
-		input: [...tests],
-		external: [...externals,...devExternals],
-		output: {
-			dir: "test/dist/",
-			format: "cjs",
-		},
-		onwarn: surpressWarnings,
-	},
+  {
+    input: "lib/main.js",
+    external: [...externals],
+    output: {
+      file: "dist/main.cjs",
+      format: "cjs",
+      paths: {
+        'punycode': 'punycode/', 
+      }
+    },
+    onwarn: surpressWarnings,
+  },
+  {
+    input: [...tests],
+    external: [...externals,...devExternals],
+    output: {
+      dir: "test/dist/",
+      format: "cjs",
+    },
+    onwarn: surpressWarnings,
+  },
 ];
