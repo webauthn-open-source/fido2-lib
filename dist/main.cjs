@@ -1,7 +1,7 @@
 'use strict';
 
 var tldts = require('tldts');
-var punycode = require('punycode');
+var punycode = require('punycode.js');
 var jose = require('jose');
 var pkijs$1 = require('pkijs');
 var asn1js = require('asn1js');
