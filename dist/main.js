@@ -3,125 +3,125 @@
 // This code was bundled using `deno bundle` and it's not recommended to edit it manually
 
 function a(a, o) {
-    let i = 0, e = a.length, n = !1;
+    let e = 0, i = a.length, n = !1;
     if (!o) {
         if (a.startsWith("data:")) return null;
-        for(; i < a.length && a.charCodeAt(i) <= 32;)i += 1;
-        for(; e > i + 1 && a.charCodeAt(e - 1) <= 32;)e -= 1;
-        if (47 === a.charCodeAt(i) && 47 === a.charCodeAt(i + 1)) i += 2;
+        for(; e < a.length && a.charCodeAt(e) <= 32;)e += 1;
+        for(; i > e + 1 && a.charCodeAt(i - 1) <= 32;)i -= 1;
+        if (47 === a.charCodeAt(e) && 47 === a.charCodeAt(e + 1)) e += 2;
         else {
-            const o = a.indexOf(":/", i);
+            const o = a.indexOf(":/", e);
             if (-1 !== o) {
-                const e = o - i, n = a.charCodeAt(i), s = a.charCodeAt(i + 1), r = a.charCodeAt(i + 2), t = a.charCodeAt(i + 3), l = a.charCodeAt(i + 4);
-                if (5 === e && 104 === n && 116 === s && 116 === r && 112 === t && 115 === l) ;
-                else if (4 === e && 104 === n && 116 === s && 116 === r && 112 === t) ;
-                else if (3 === e && 119 === n && 115 === s && 115 === r) ;
-                else if (2 === e && 119 === n && 115 === s) ;
-                else for(let e = i; e < o; e += 1){
-                    const o = 32 | a.charCodeAt(e);
+                const i = o - e, n = a.charCodeAt(e), s = a.charCodeAt(e + 1), t = a.charCodeAt(e + 2), r = a.charCodeAt(e + 3), u = a.charCodeAt(e + 4);
+                if (5 === i && 104 === n && 116 === s && 116 === t && 112 === r && 115 === u) ;
+                else if (4 === i && 104 === n && 116 === s && 116 === t && 112 === r) ;
+                else if (3 === i && 119 === n && 115 === s && 115 === t) ;
+                else if (2 === i && 119 === n && 115 === s) ;
+                else for(let i = e; i < o; i += 1){
+                    const o = 32 | a.charCodeAt(i);
                     if (!(o >= 97 && o <= 122 || o >= 48 && o <= 57 || 46 === o || 45 === o || 43 === o)) return null;
                 }
-                for(i = o + 2; 47 === a.charCodeAt(i);)i += 1;
+                for(e = o + 2; 47 === a.charCodeAt(e);)e += 1;
             }
         }
-        let o = -1, s = -1, r = -1;
-        for(let t = i; t < e; t += 1){
-            const i = a.charCodeAt(t);
-            if (35 === i || 47 === i || 63 === i) {
-                e = t;
+        let o = -1, s = -1, t = -1;
+        for(let r = e; r < i; r += 1){
+            const e = a.charCodeAt(r);
+            if (35 === e || 47 === e || 63 === e) {
+                i = r;
                 break;
             }
-            64 === i ? o = t : 93 === i ? s = t : 58 === i ? r = t : i >= 65 && i <= 90 && (n = !0);
+            64 === e ? o = r : 93 === e ? s = r : 58 === e ? t = r : e >= 65 && e <= 90 && (n = !0);
         }
-        if (-1 !== o && o > i && o < e && (i = o + 1), 91 === a.charCodeAt(i)) return -1 !== s ? a.slice(i + 1, s).toLowerCase() : null;
-        -1 !== r && r > i && r < e && (e = r);
+        if (-1 !== o && o > e && o < i && (e = o + 1), 91 === a.charCodeAt(e)) return -1 !== s ? a.slice(e + 1, s).toLowerCase() : null;
+        -1 !== t && t > e && t < i && (i = t);
     }
-    for(; e > i + 1 && 46 === a.charCodeAt(e - 1);)e -= 1;
-    const s = 0 !== i || e !== a.length ? a.slice(i, e) : a;
+    for(; i > e + 1 && 46 === a.charCodeAt(i - 1);)i -= 1;
+    const s = 0 !== e || i !== a.length ? a.slice(e, i) : a;
     return n ? s.toLowerCase() : s;
 }
 function o(a) {
     return a >= 97 && a <= 122 || a >= 48 && a <= 57 || a > 127;
 }
-function i(a) {
+function e(a) {
     if (a.length > 255) return !1;
     if (0 === a.length) return !1;
     if (!o(a.charCodeAt(0)) && 46 !== a.charCodeAt(0) && 95 !== a.charCodeAt(0)) return !1;
-    let i = -1, e = -1;
+    let e = -1, i = -1;
     const n = a.length;
     for(let s = 0; s < n; s += 1){
         const n = a.charCodeAt(s);
         if (46 === n) {
-            if (s - i > 64 || 46 === e || 45 === e || 95 === e) return !1;
-            i = s;
+            if (s - e > 64 || 46 === i || 45 === i || 95 === i) return !1;
+            e = s;
         } else if (!o(n) && 45 !== n && 95 !== n) return !1;
-        e = n;
+        i = n;
     }
-    return n - i - 1 <= 63 && 45 !== e;
+    return n - e - 1 <= 63 && 45 !== i;
 }
-const e = function({ allowIcannDomains: a = !0, allowPrivateDomains: o = !1, detectIp: i = !0, extractHostname: e = !0, mixedInputs: n = !0, validHosts: s = null, validateHostname: r = !0 }) {
+const i = function({ allowIcannDomains: a = !0, allowPrivateDomains: o = !1, detectIp: e = !0, extractHostname: i = !0, mixedInputs: n = !0, validHosts: s = null, validateHostname: t = !0 }) {
     return {
         allowIcannDomains: a,
         allowPrivateDomains: o,
-        detectIp: i,
-        extractHostname: e,
+        detectIp: e,
+        extractHostname: i,
         mixedInputs: n,
         validHosts: s,
-        validateHostname: r
+        validateHostname: t
     };
 }({});
-function n(o, n, s, r, t) {
-    const l = function(a) {
-        return void 0 === a ? e : function({ allowIcannDomains: a = !0, allowPrivateDomains: o = !1, detectIp: i = !0, extractHostname: e = !0, mixedInputs: n = !0, validHosts: s = null, validateHostname: r = !0 }) {
+function n(o, n, s, t, r) {
+    const u = function(a) {
+        return void 0 === a ? i : function({ allowIcannDomains: a = !0, allowPrivateDomains: o = !1, detectIp: e = !0, extractHostname: i = !0, mixedInputs: n = !0, validHosts: s = null, validateHostname: t = !0 }) {
             return {
                 allowIcannDomains: a,
                 allowPrivateDomains: o,
-                detectIp: i,
-                extractHostname: e,
+                detectIp: e,
+                extractHostname: i,
                 mixedInputs: n,
                 validHosts: s,
-                validateHostname: r
+                validateHostname: t
             };
         }(a);
-    }(r);
-    return "string" != typeof o ? t : (l.extractHostname ? l.mixedInputs ? t.hostname = a(o, i(o)) : t.hostname = a(o, !1) : t.hostname = o, 0 === n || null === t.hostname || l.detectIp && (t.isIp = function(a) {
+    }(t);
+    return "string" != typeof o ? r : (u.extractHostname ? u.mixedInputs ? r.hostname = a(o, e(o)) : r.hostname = a(o, !1) : r.hostname = o, 0 === n || null === r.hostname || u.detectIp && (r.isIp = function(a) {
         if (a.length < 3) return !1;
-        let o = a.startsWith("[") ? 1 : 0, i = a.length;
-        if ("]" === a[i - 1] && (i -= 1), i - o > 39) return !1;
-        let e = !1;
-        for(; o < i; o += 1){
-            const i = a.charCodeAt(o);
-            if (58 === i) e = !0;
-            else if (!(i >= 48 && i <= 57 || i >= 97 && i <= 102 || i >= 65 && i <= 90)) return !1;
+        let o = a.startsWith("[") ? 1 : 0, e = a.length;
+        if ("]" === a[e - 1] && (e -= 1), e - o > 39) return !1;
+        let i = !1;
+        for(; o < e; o += 1){
+            const e = a.charCodeAt(o);
+            if (58 === e) i = !0;
+            else if (!(e >= 48 && e <= 57 || e >= 97 && e <= 102 || e >= 65 && e <= 90)) return !1;
         }
-        return e;
-    }(m = t.hostname) || function(a) {
+        return i;
+    }(l = r.hostname) || function(a) {
         if (a.length < 7) return !1;
         if (a.length > 15) return !1;
         let o = 0;
-        for(let i = 0; i < a.length; i += 1){
-            const e = a.charCodeAt(i);
-            if (46 === e) o += 1;
-            else if (e < 48 || e > 57) return !1;
+        for(let e = 0; e < a.length; e += 1){
+            const i = a.charCodeAt(e);
+            if (46 === i) o += 1;
+            else if (i < 48 || i > 57) return !1;
         }
         return 3 === o && 46 !== a.charCodeAt(0) && 46 !== a.charCodeAt(a.length - 1);
-    }(m), t.isIp) ? t : l.validateHostname && l.extractHostname && !i(t.hostname) ? (t.hostname = null, t) : (s(t.hostname, l, t), 2 === n || null === t.publicSuffix ? t : (t.domain = function(a, o, i) {
-        if (null !== i.validHosts) {
-            const a = i.validHosts;
-            for (const i of a)if (function(a, o) {
+    }(l), r.isIp) ? r : u.validateHostname && u.extractHostname && !e(r.hostname) ? (r.hostname = null, r) : (s(r.hostname, u, r), 2 === n || null === r.publicSuffix ? r : (r.domain = function(a, o, e) {
+        if (null !== e.validHosts) {
+            const a = e.validHosts;
+            for (const e of a)if (function(a, o) {
                 return !!a.endsWith(o) && (a.length === o.length || "." === a[a.length - o.length - 1]);
-            }(o, i)) return i;
+            }(o, e)) return e;
         }
-        let e = 0;
-        if (o.startsWith(".")) for(; e < o.length && "." === o[e];)e += 1;
-        return a.length === o.length - e ? null : function(a, o) {
-            const i = a.length - o.length - 2, e = a.lastIndexOf(".", i);
-            return -1 === e ? a : a.slice(e + 1);
+        let i = 0;
+        if (o.startsWith(".")) for(; i < o.length && "." === o[i];)i += 1;
+        return a.length === o.length - i ? null : function(a, o) {
+            const e = a.length - o.length - 2, i = a.lastIndexOf(".", e);
+            return -1 === i ? a : a.slice(i + 1);
         }(o, a);
-    }(t.publicSuffix, t.hostname, l), 3 === n || null === t.domain ? t : (t.subdomain = function(a, o) {
+    }(r.publicSuffix, r.hostname, u), 3 === n || null === r.domain ? r : (r.subdomain = function(a, o) {
         return o.length === a.length ? "" : a.slice(0, -o.length - 1);
-    }(t.hostname, t.domain), 4 === n || (t.domainWithoutSuffix = (u = t.domain, c = t.publicSuffix, u.slice(0, -c.length - 1))), t))));
-    var m, u, c;
+    }(r.hostname, r.domain), 4 === n || (r.domainWithoutSuffix = (m = r.domain, c = r.publicSuffix, m.slice(0, -c.length - 1))), r))));
+    var l, m, c;
 }
 const s = function() {
     const a = [
@@ -156,14 +156,14 @@ const s = function() {
             ]
         }
     ];
-}(), r = function() {
+}(), t = function() {
     const a = [
         1,
         {}
     ], o = [
         2,
         {}
-    ], i = [
+    ], e = [
         1,
         {
             gov: a,
@@ -172,7 +172,7 @@ const s = function() {
             net: a,
             edu: a
         }
-    ], e = [
+    ], i = [
         0,
         {
             "*": o
@@ -187,97 +187,246 @@ const s = function() {
         {
             gov: a
         }
-    ], r = [
-        0,
-        {
-            "*": a
-        }
     ], t = [
         0,
         {
-            cloud: o
+            notebook: o,
+            studio: o
         }
-    ], l = [
-        1,
+    ], r = [
+        0,
         {
-            co: o
-        }
-    ], m = [
-        2,
-        {
-            nodes: o
+            notebook: o
         }
     ], u = [
         0,
         {
-            s3: o
+            notebook: o,
+            "notebook-fips": o,
+            studio: o
+        }
+    ], l = [
+        0,
+        {
+            notebook: o,
+            "notebook-fips": o,
+            studio: o,
+            "studio-fips": o
+        }
+    ], m = [
+        0,
+        {
+            "*": a
         }
     ], c = [
         0,
         {
-            direct: o
+            cloud: o
         }
     ], d = [
+        1,
+        {
+            co: o
+        }
+    ], g = [
+        2,
+        {
+            nodes: o
+        }
+    ], k = [
+        0,
+        {
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-website": o
+        }
+    ], h = [
+        0,
+        {
+            s3: o,
+            "s3-accesspoint": o
+        }
+    ], p = [
+        0,
+        {
+            "execute-api": o,
+            "emrappui-prod": o,
+            "emrnotebooks-prod": o,
+            "emrstudio-prod": o,
+            dualstack: h,
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-object-lambda": o,
+            "s3-website": o
+        }
+    ], b = [
+        0,
+        {
+            direct: o
+        }
+    ], y = [
         2,
         {
             id: o
         }
-    ], g = [
+    ], f = [
+        0,
+        {
+            "webview-assets": o
+        }
+    ], v = [
         0,
         {
             vfs: o,
             "webview-assets": o
         }
-    ], k = [
+    ], w = [
         0,
         {
-            cloud9: g
-        }
-    ], h = [
-        0,
-        {
-            dualstack: u,
-            cloud9: g
-        }
-    ], b = [
-        0,
-        {
-            dualstack: u,
+            "execute-api": o,
+            "emrappui-prod": o,
+            "emrnotebooks-prod": o,
+            "emrstudio-prod": o,
+            dualstack: k,
             s3: o,
+            "s3-accesspoint": o,
+            "s3-object-lambda": o,
             "s3-website": o,
-            cloud9: g
-        }
-    ], p = [
-        0,
-        {
-            apps: o
-        }
-    ], y = [
-        0,
-        {
-            paas: o
-        }
-    ], f = [
-        0,
-        {
-            app: o
-        }
-    ], v = [
-        2,
-        {
-            eu: o
+            "aws-cloud9": f,
+            cloud9: v
         }
     ], x = [
         0,
         {
+            "execute-api": o,
+            "emrappui-prod": o,
+            "emrnotebooks-prod": o,
+            "emrstudio-prod": o,
+            dualstack: h,
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-object-lambda": o,
+            "s3-website": o,
+            "aws-cloud9": f,
+            cloud9: v
+        }
+    ], z = [
+        0,
+        {
+            "execute-api": o,
+            "emrappui-prod": o,
+            "emrnotebooks-prod": o,
+            "emrstudio-prod": o,
+            dualstack: k,
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-object-lambda": o,
+            "s3-website": o,
+            "analytics-gateway": o,
+            "aws-cloud9": f,
+            cloud9: v
+        }
+    ], j = [
+        0,
+        {
+            "execute-api": o,
+            dualstack: h,
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-object-lambda": o,
+            "s3-website": o
+        }
+    ], q = [
+        0,
+        {
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-accesspoint-fips": o,
+            "s3-fips": o,
+            "s3-website": o
+        }
+    ], I = [
+        0,
+        {
+            "execute-api": o,
+            "emrappui-prod": o,
+            "emrnotebooks-prod": o,
+            "emrstudio-prod": o,
+            dualstack: q,
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-accesspoint-fips": o,
+            "s3-fips": o,
+            "s3-object-lambda": o,
+            "s3-website": o,
+            "aws-cloud9": f,
+            cloud9: v
+        }
+    ], S = [
+        0,
+        {
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-accesspoint-fips": o,
+            "s3-fips": o
+        }
+    ], C = [
+        0,
+        {
+            "execute-api": o,
+            "emrappui-prod": o,
+            "emrnotebooks-prod": o,
+            "emrstudio-prod": o,
+            dualstack: S,
+            s3: o,
+            "s3-accesspoint": o,
+            "s3-accesspoint-fips": o,
+            "s3-fips": o,
+            "s3-object-lambda": o,
+            "s3-website": o
+        }
+    ], A = [
+        0,
+        {
+            auth: o
+        }
+    ], P = [
+        0,
+        {
+            auth: o,
+            "auth-fips": o
+        }
+    ], H = [
+        0,
+        {
+            apps: o
+        }
+    ], W = [
+        0,
+        {
+            paas: o
+        }
+    ], D = [
+        0,
+        {
+            app: o
+        }
+    ], O = [
+        2,
+        {
+            eu: o
+        }
+    ], L = [
+        0,
+        {
             site: o
         }
-    ], w = [
+    ], B = [
         0,
         {
             pages: o
         }
-    ], z = [
+    ], E = [
         1,
         {
             com: a,
@@ -285,38 +434,38 @@ const s = function() {
             net: a,
             org: a
         }
-    ], j = [
+    ], F = [
         0,
         {
             j: o
         }
-    ], q = [
+    ], G = [
         0,
         {
             jelastic: o
         }
-    ], I = [
+    ], J = [
         0,
         {
             user: o
         }
-    ], S = [
+    ], K = [
         1,
         {
             ybo: o
         }
-    ], C = [
+    ], M = [
         0,
         {
             cust: o,
             reservd: o
         }
-    ], A = [
+    ], N = [
         0,
         {
             cust: o
         }
-    ], P = [
+    ], Q = [
         1,
         {
             gov: a,
@@ -326,7 +475,12 @@ const s = function() {
             org: a,
             net: a
         }
-    ], H = [
+    ], R = [
+        0,
+        {
+            s3: o
+        }
+    ], T = [
         1,
         {
             edu: a,
@@ -337,45 +491,45 @@ const s = function() {
             info: a,
             com: a
         }
-    ], W = [
+    ], U = [
         1,
         {
             gov: a,
             blogspot: o
         }
-    ], D = [
+    ], V = [
         1,
         {
             framer: o
         }
-    ], L = [
+    ], X = [
         1,
         {
             barsy: o
         }
-    ], O = [
+    ], Y = [
         0,
         {
             forgot: o
         }
-    ], B = [
+    ], Z = [
         1,
         {
             gs: a
         }
-    ], E = [
+    ], $ = [
         0,
         {
             nes: a
         }
-    ], F = [
+    ], _ = [
         1,
         {
             k12: a,
             cc: a,
             lib: a
         }
-    ], G = [
+    ], aa = [
         1,
         {
             cc: a,
@@ -507,7 +661,7 @@ const s = function() {
                     works: a
                 }
             ],
-            af: i,
+            af: e,
             ag: [
                 1,
                 {
@@ -625,8 +779,8 @@ const s = function() {
                         0,
                         {
                             "*": o,
-                            ex: e,
-                            in: e
+                            ex: i,
+                            in: i
                         }
                     ],
                     futurehosting: o,
@@ -634,8 +788,8 @@ const s = function() {
                     ortsinfo: [
                         0,
                         {
-                            ex: e,
-                            kunden: e
+                            ex: i,
+                            kunden: i
                         }
                     ],
                     biz: o,
@@ -775,14 +929,14 @@ const s = function() {
                     tv: a
                 }
             ],
-            bd: r,
+            bd: m,
             be: [
                 1,
                 {
                     ac: a,
                     webhosting: o,
                     blogspot: o,
-                    interhostsolutions: t,
+                    interhostsolutions: c,
                     kuleuven: [
                         0,
                         {
@@ -791,7 +945,7 @@ const s = function() {
                     ],
                     "123website": o,
                     myspreadshop: o,
-                    transurl: e
+                    transurl: i
                 }
             ],
             bf: s,
@@ -838,7 +992,7 @@ const s = function() {
                     barsy: o
                 }
             ],
-            bh: i,
+            bh: e,
             bi: [
                 1,
                 {
@@ -895,7 +1049,7 @@ const s = function() {
                     blogspot: o
                 }
             ],
-            bm: i,
+            bm: e,
             bn: [
                 1,
                 {
@@ -989,17 +1143,6 @@ const s = function() {
                         1,
                         {
                             blogspot: o,
-                            virtualcloud: [
-                                0,
-                                {
-                                    scale: [
-                                        0,
-                                        {
-                                            users: o
-                                        }
-                                    ]
-                                }
-                            ],
                             simplesite: o
                         }
                     ],
@@ -1126,7 +1269,7 @@ const s = function() {
                     natal: a,
                     net: a,
                     niteroi: a,
-                    nom: r,
+                    nom: m,
                     not: a,
                     ntr: a,
                     odo: a,
@@ -1189,7 +1332,7 @@ const s = function() {
                     we: o
                 }
             ],
-            bt: i,
+            bt: e,
             bv: a,
             bw: [
                 1,
@@ -1240,7 +1383,7 @@ const s = function() {
                     yk: a,
                     gc: a,
                     barsy: o,
-                    awdev: e,
+                    awdev: i,
                     co: o,
                     blogspot: o,
                     "no-ip": o,
@@ -1296,7 +1439,7 @@ const s = function() {
                         0,
                         {
                             "*": o,
-                            svc: e
+                            svc: i
                         }
                     ],
                     "12hp": o,
@@ -1328,7 +1471,7 @@ const s = function() {
                     nl: o
                 }
             ],
-            ck: r,
+            ck: m,
             cl: [
                 1,
                 {
@@ -1358,8 +1501,30 @@ const s = function() {
                             amazonaws: [
                                 0,
                                 {
-                                    compute: e,
-                                    "cn-north-1": u,
+                                    "cn-north-1": [
+                                        0,
+                                        {
+                                            "execute-api": o,
+                                            "emrappui-prod": o,
+                                            "emrnotebooks-prod": o,
+                                            "emrstudio-prod": o,
+                                            dualstack: k,
+                                            s3: o,
+                                            "s3-accesspoint": o,
+                                            "s3-deprecated": o,
+                                            "s3-object-lambda": o,
+                                            "s3-website": o
+                                        }
+                                    ],
+                                    "cn-northwest-1": p,
+                                    compute: i,
+                                    airflow: [
+                                        0,
+                                        {
+                                            "cn-north-1": i,
+                                            "cn-northwest-1": i
+                                        }
+                                    ],
                                     eb: [
                                         0,
                                         {
@@ -1367,7 +1532,14 @@ const s = function() {
                                             "cn-northwest-1": o
                                         }
                                     ],
-                                    elb: e
+                                    elb: i
+                                }
+                            ],
+                            sagemaker: [
+                                0,
+                                {
+                                    "cn-north-1": t,
+                                    "cn-northwest-1": t
                                 }
                             ]
                         }
@@ -1419,7 +1591,7 @@ const s = function() {
                     tw: a,
                     "canva-apps": o,
                     instantcloud: o,
-                    quickconnect: c
+                    quickconnect: b
                 }
             ],
             co: [
@@ -1440,24 +1612,26 @@ const s = function() {
                     web: a,
                     carrd: o,
                     crd: o,
-                    otap: e,
+                    otap: i,
                     leadpages: o,
                     lpages: o,
                     mypi: o,
                     n4t: o,
-                    firewalledreplit: d,
-                    repl: d,
+                    firewalledreplit: y,
+                    repl: y,
                     supabase: o
                 }
             ],
             com: [
                 1,
                 {
-                    devcdnaccesso: e,
+                    a2hosted: o,
+                    cpserver: o,
+                    devcdnaccesso: i,
                     adobeaemcloud: [
                         2,
                         {
-                            dev: e
+                            dev: i
                         }
                     ],
                     airkitapps: o,
@@ -1467,40 +1641,194 @@ const s = function() {
                     amazonaws: [
                         0,
                         {
-                            compute: e,
-                            "compute-1": e,
+                            "af-south-1": w,
+                            "ap-east-1": x,
+                            "ap-northeast-1": z,
+                            "ap-northeast-2": z,
+                            "ap-northeast-3": w,
+                            "ap-south-1": z,
+                            "ap-south-2": j,
+                            "ap-southeast-1": z,
+                            "ap-southeast-2": z,
+                            "ap-southeast-3": p,
+                            "ap-southeast-4": j,
+                            "ca-central-1": I,
+                            "ca-west-1": [
+                                0,
+                                {
+                                    "execute-api": o,
+                                    dualstack: q,
+                                    s3: o,
+                                    "s3-accesspoint": o,
+                                    "s3-accesspoint-fips": o,
+                                    "s3-fips": o,
+                                    "s3-website": o
+                                }
+                            ],
+                            "eu-central-1": z,
+                            "eu-central-2": j,
+                            "eu-north-1": x,
+                            "eu-south-1": w,
+                            "eu-south-2": j,
+                            "eu-west-1": [
+                                0,
+                                {
+                                    "execute-api": o,
+                                    "emrappui-prod": o,
+                                    "emrnotebooks-prod": o,
+                                    "emrstudio-prod": o,
+                                    dualstack: k,
+                                    s3: o,
+                                    "s3-accesspoint": o,
+                                    "s3-deprecated": o,
+                                    "s3-object-lambda": o,
+                                    "s3-website": o,
+                                    "analytics-gateway": o,
+                                    "aws-cloud9": f,
+                                    cloud9: v
+                                }
+                            ],
+                            "eu-west-2": x,
+                            "eu-west-3": w,
+                            "il-central-1": [
+                                0,
+                                {
+                                    "execute-api": o,
+                                    dualstack: h,
+                                    s3: o,
+                                    "s3-accesspoint": o,
+                                    "s3-object-lambda": o,
+                                    "s3-website": o,
+                                    "aws-cloud9": f,
+                                    cloud9: [
+                                        0,
+                                        {
+                                            vfs: o
+                                        }
+                                    ]
+                                }
+                            ],
+                            "me-central-1": p,
+                            "me-south-1": x,
+                            "sa-east-1": w,
                             "us-east-1": [
                                 2,
                                 {
-                                    dualstack: u,
-                                    cloud9: g
+                                    "execute-api": o,
+                                    "emrappui-prod": o,
+                                    "emrnotebooks-prod": o,
+                                    "emrstudio-prod": o,
+                                    dualstack: q,
+                                    s3: o,
+                                    "s3-accesspoint": o,
+                                    "s3-accesspoint-fips": o,
+                                    "s3-deprecated": o,
+                                    "s3-fips": o,
+                                    "s3-object-lambda": o,
+                                    "s3-website": o,
+                                    "analytics-gateway": o,
+                                    "aws-cloud9": f,
+                                    cloud9: v
                                 }
                             ],
-                            "ap-northeast-1": h,
-                            "ap-northeast-2": b,
-                            "ap-south-1": b,
-                            "ap-southeast-1": h,
-                            "ap-southeast-2": h,
-                            "ca-central-1": b,
-                            "eu-central-1": b,
-                            "eu-west-1": h,
-                            "eu-west-2": b,
-                            "eu-west-3": b,
+                            "us-east-2": [
+                                0,
+                                {
+                                    "execute-api": o,
+                                    "emrappui-prod": o,
+                                    "emrnotebooks-prod": o,
+                                    "emrstudio-prod": o,
+                                    dualstack: S,
+                                    s3: o,
+                                    "s3-accesspoint": o,
+                                    "s3-accesspoint-fips": o,
+                                    "s3-deprecated": o,
+                                    "s3-fips": o,
+                                    "s3-object-lambda": o,
+                                    "s3-website": o,
+                                    "analytics-gateway": o,
+                                    "aws-cloud9": f,
+                                    cloud9: v
+                                }
+                            ],
+                            "us-gov-east-1": C,
+                            "us-gov-west-1": C,
+                            "us-west-1": I,
+                            "us-west-2": [
+                                0,
+                                {
+                                    "execute-api": o,
+                                    "emrappui-prod": o,
+                                    "emrnotebooks-prod": o,
+                                    "emrstudio-prod": o,
+                                    dualstack: q,
+                                    s3: o,
+                                    "s3-accesspoint": o,
+                                    "s3-accesspoint-fips": o,
+                                    "s3-deprecated": o,
+                                    "s3-fips": o,
+                                    "s3-object-lambda": o,
+                                    "s3-website": o,
+                                    "analytics-gateway": o,
+                                    "aws-cloud9": f,
+                                    cloud9: v
+                                }
+                            ],
+                            compute: i,
+                            "compute-1": i,
+                            airflow: [
+                                0,
+                                {
+                                    "ap-northeast-1": i,
+                                    "ap-northeast-2": i,
+                                    "ap-south-1": i,
+                                    "ap-southeast-1": i,
+                                    "ap-southeast-2": i,
+                                    "ca-central-1": i,
+                                    "eu-central-1": i,
+                                    "eu-north-1": i,
+                                    "eu-west-1": i,
+                                    "eu-west-2": i,
+                                    "eu-west-3": i,
+                                    "sa-east-1": i,
+                                    "us-east-1": i,
+                                    "us-east-2": i,
+                                    "us-west-2": i
+                                }
+                            ],
                             s3: o,
+                            "s3-1": o,
+                            "s3-ap-east-1": o,
                             "s3-ap-northeast-1": o,
                             "s3-ap-northeast-2": o,
+                            "s3-ap-northeast-3": o,
                             "s3-ap-south-1": o,
                             "s3-ap-southeast-1": o,
                             "s3-ap-southeast-2": o,
                             "s3-ca-central-1": o,
                             "s3-eu-central-1": o,
+                            "s3-eu-north-1": o,
                             "s3-eu-west-1": o,
                             "s3-eu-west-2": o,
                             "s3-eu-west-3": o,
                             "s3-external-1": o,
+                            "s3-fips-us-gov-east-1": o,
                             "s3-fips-us-gov-west-1": o,
+                            "s3-global": [
+                                0,
+                                {
+                                    accesspoint: [
+                                        0,
+                                        {
+                                            mrap: o
+                                        }
+                                    ]
+                                }
+                            ],
+                            "s3-me-south-1": o,
                             "s3-sa-east-1": o,
                             "s3-us-east-2": o,
+                            "s3-us-gov-east-1": o,
                             "s3-us-gov-west-1": o,
                             "s3-us-west-1": o,
                             "s3-us-west-2": o,
@@ -1510,38 +1838,72 @@ const s = function() {
                             "s3-website-eu-west-1": o,
                             "s3-website-sa-east-1": o,
                             "s3-website-us-east-1": o,
+                            "s3-website-us-gov-west-1": o,
                             "s3-website-us-west-1": o,
                             "s3-website-us-west-2": o,
-                            "sa-east-1": h,
-                            "us-east-2": b,
-                            "af-south-1": k,
-                            "ap-east-1": k,
-                            "ap-northeast-3": k,
-                            "eu-north-1": k,
-                            "eu-south-1": k,
-                            "me-south-1": k,
-                            "us-west-1": k,
-                            "us-west-2": k,
-                            elb: e
+                            elb: i
                         }
                     ],
+                    amazoncognito: [
+                        0,
+                        {
+                            "af-south-1": A,
+                            "ap-northeast-1": A,
+                            "ap-northeast-2": A,
+                            "ap-northeast-3": A,
+                            "ap-south-1": A,
+                            "ap-southeast-1": A,
+                            "ap-southeast-2": A,
+                            "ap-southeast-3": A,
+                            "ca-central-1": A,
+                            "eu-central-1": A,
+                            "eu-north-1": A,
+                            "eu-south-1": A,
+                            "eu-west-1": A,
+                            "eu-west-2": A,
+                            "eu-west-3": A,
+                            "il-central-1": A,
+                            "me-south-1": A,
+                            "sa-east-1": A,
+                            "us-east-1": P,
+                            "us-east-2": P,
+                            "us-gov-west-1": [
+                                0,
+                                {
+                                    "auth-fips": o
+                                }
+                            ],
+                            "us-west-1": P,
+                            "us-west-2": P
+                        }
+                    ],
+                    amplifyapp: i,
+                    awsapprunner: i,
                     elasticbeanstalk: [
                         2,
                         {
+                            "af-south-1": o,
+                            "ap-east-1": o,
                             "ap-northeast-1": o,
                             "ap-northeast-2": o,
                             "ap-northeast-3": o,
                             "ap-south-1": o,
                             "ap-southeast-1": o,
                             "ap-southeast-2": o,
+                            "ap-southeast-3": o,
                             "ca-central-1": o,
                             "eu-central-1": o,
+                            "eu-north-1": o,
+                            "eu-south-1": o,
                             "eu-west-1": o,
                             "eu-west-2": o,
                             "eu-west-3": o,
+                            "il-central-1": o,
+                            "me-south-1": o,
                             "sa-east-1": o,
                             "us-east-1": o,
                             "us-east-2": o,
+                            "us-gov-east-1": o,
                             "us-gov-west-1": o,
                             "us-west-1": o,
                             "us-west-2": o
@@ -1586,15 +1948,17 @@ const s = function() {
                     "cf-ipfs": o,
                     "cloudflare-ipfs": o,
                     trycloudflare: o,
+                    cprapid: i,
                     "customer-oci": [
                         0,
                         {
                             "*": o,
-                            oci: e,
-                            ocp: e,
-                            ocs: e
+                            oci: i,
+                            ocp: i,
+                            ocs: i
                         }
                     ],
+                    "cyclic-app": o,
                     dattolocal: o,
                     dattorelay: o,
                     dattoweb: o,
@@ -1763,7 +2127,7 @@ const s = function() {
                     "space-to-rent": o,
                     "teaches-yoga": o,
                     writesthisblog: o,
-                    digitaloceanspaces: e,
+                    digitaloceanspaces: i,
                     ddnsfree: o,
                     ddnsgeek: o,
                     giize: o,
@@ -1789,7 +2153,6 @@ const s = function() {
                         }
                     ],
                     onfabrica: o,
-                    fbsbx: p,
                     "fastly-edge": o,
                     "fastly-terrarium": o,
                     "fastvps-server": o,
@@ -1801,14 +2164,15 @@ const s = function() {
                     "freebox-os": o,
                     freeboxos: o,
                     freemyip: o,
+                    aliases121: o,
                     gentapps: o,
                     gentlentapis: o,
                     githubusercontent: o,
-                    "0emm": e,
+                    "0emm": i,
                     appspot: [
                         2,
                         {
-                            r: e
+                            r: i
                         }
                     ],
                     codespot: o,
@@ -1829,10 +2193,8 @@ const s = function() {
                     wpmucdn: o,
                     pixolino: o,
                     amscompute: o,
-                    clicketcloud: o,
                     dopaas: o,
-                    hidora: o,
-                    "hosted-by-previder": y,
+                    "hosted-by-previder": W,
                     hosteur: [
                         0,
                         {
@@ -1854,7 +2216,7 @@ const s = function() {
                         }
                     ],
                     kilatiron: o,
-                    massivegrid: y,
+                    massivegrid: W,
                     wafaicloud: [
                         0,
                         {
@@ -1866,20 +2228,20 @@ const s = function() {
                     joyent: [
                         0,
                         {
-                            cns: e
+                            cns: i
                         }
                     ],
                     ktistory: o,
                     lpusercontent: o,
-                    lmpm: f,
+                    lmpm: D,
                     linode: [
                         0,
                         {
                             members: o,
-                            nodebalancer: e
+                            nodebalancer: i
                         }
                     ],
-                    linodeobjects: e,
+                    linodeobjects: i,
                     linodeusercontent: [
                         0,
                         {
@@ -1890,7 +2252,15 @@ const s = function() {
                     barsyonline: o,
                     mazeplay: o,
                     miniserver: o,
-                    meteorapp: v,
+                    atmeta: o,
+                    fbsbx: H,
+                    meteorapp: O,
+                    azure: [
+                        0,
+                        {
+                            cloudapp: i
+                        }
+                    ],
                     hostedpi: o,
                     "mythic-beasts": [
                         0,
@@ -1908,7 +2278,7 @@ const s = function() {
                             yali: o
                         }
                     ],
-                    nospamproxy: t,
+                    nospamproxy: c,
                     "4u": o,
                     nfshost: o,
                     "001www": o,
@@ -1968,8 +2338,9 @@ const s = function() {
                     pgfog: o,
                     pagefrontapp: o,
                     pagexl: o,
-                    paywhirl: e,
+                    paywhirl: i,
                     gotpantheon: o,
+                    upsunapp: o,
                     "platter-app": o,
                     pleskns: o,
                     "postman-echo": o,
@@ -1979,7 +2350,7 @@ const s = function() {
                             xen: o
                         }
                     ],
-                    pythonanywhere: v,
+                    pythonanywhere: O,
                     qualifioapp: o,
                     ladesk: o,
                     qbuser: o,
@@ -1987,10 +2358,10 @@ const s = function() {
                     "dev-myqnapcloud": o,
                     "alpha-myqnapcloud": o,
                     myqnapcloud: o,
-                    quipelements: e,
+                    quipelements: i,
                     rackmaze: o,
                     rhcloud: o,
-                    render: f,
+                    render: D,
                     onrender: o,
                     "180r": o,
                     dojin: o,
@@ -2000,9 +2371,30 @@ const s = function() {
                     code: [
                         0,
                         {
-                            builder: e,
-                            "dev-builder": e,
-                            "stg-builder": e
+                            builder: i,
+                            "dev-builder": i,
+                            "stg-builder": i
+                        }
+                    ],
+                    salesforce: [
+                        0,
+                        {
+                            platform: [
+                                0,
+                                {
+                                    "code-builder-stg": [
+                                        0,
+                                        {
+                                            test: [
+                                                0,
+                                                {
+                                                    "001": i
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ],
                     logoip: o,
@@ -2038,7 +2430,7 @@ const s = function() {
                     dsmynas: o,
                     familyds: o,
                     mytabit: o,
-                    "tb-hosting": x,
+                    "tb-hosting": L,
                     reservd: o,
                     thingdustdata: o,
                     bloxcms: o,
@@ -2051,12 +2443,12 @@ const s = function() {
                     ],
                     hk: o,
                     it: o,
-                    vultrobjects: e,
+                    vultrobjects: i,
                     wafflecell: o,
                     "reserve-online": o,
                     hotelwithflight: o,
                     remotewd: o,
-                    wiardweb: w,
+                    wiardweb: B,
                     messwithdns: o,
                     "woltlab-demo": o,
                     wpenginepowered: [
@@ -2111,7 +2503,7 @@ const s = function() {
                     blogspot: o
                 }
             ],
-            cw: z,
+            cw: E,
             cx: [
                 1,
                 {
@@ -2129,7 +2521,7 @@ const s = function() {
                         1,
                         {
                             blogspot: o,
-                            scaleforce: j
+                            scaleforce: F
                         }
                     ],
                     ekloges: a,
@@ -2153,7 +2545,7 @@ const s = function() {
                     metacentrum: [
                         0,
                         {
-                            cloud: e,
+                            cloud: i,
                             custom: o
                         }
                     ],
@@ -2210,7 +2602,7 @@ const s = function() {
                         }
                     ],
                     "myhome-server": o,
-                    frusky: e,
+                    frusky: i,
                     goip: o,
                     blogspot: o,
                     "xn--gnstigbestellen-zvb": o,
@@ -2220,7 +2612,7 @@ const s = function() {
                     "hs-heilbronn": [
                         0,
                         {
-                            it: w
+                            it: B
                         }
                     ],
                     "dyn-berlin": o,
@@ -2268,7 +2660,7 @@ const s = function() {
                     "syno-ds": o,
                     "synology-diskstation": o,
                     "synology-ds": o,
-                    uberspace: e,
+                    uberspace: i,
                     virtualuser: o,
                     "virtual-user": o,
                     "community-pro": o,
@@ -2289,7 +2681,7 @@ const s = function() {
                     myspreadshop: o
                 }
             ],
-            dm: i,
+            dm: e,
             do: [
                 1,
                 {
@@ -2379,7 +2771,7 @@ const s = function() {
                     sci: a
                 }
             ],
-            er: r,
+            er: m,
             es: [
                 1,
                 {
@@ -2411,11 +2803,11 @@ const s = function() {
                     airkitapps: o,
                     mycd: o,
                     cloudns: o,
-                    dogado: q,
+                    dogado: G,
                     barsy: o,
                     wellbeingzone: o,
                     spdns: o,
-                    transurl: e,
+                    transurl: i,
                     diskstation: o
                 }
             ],
@@ -2461,7 +2853,7 @@ const s = function() {
                     pro: a
                 }
             ],
-            fk: r,
+            fk: m,
             fm: [
                 1,
                 {
@@ -2470,7 +2862,7 @@ const s = function() {
                     net: a,
                     org: a,
                     radio: o,
-                    user: e
+                    user: i
                 }
             ],
             fo: a,
@@ -2483,21 +2875,10 @@ const s = function() {
                     nom: a,
                     prd: a,
                     tm: a,
-                    aeroport: a,
-                    avocat: a,
                     avoues: a,
                     cci: a,
-                    chambagri: a,
-                    "chirurgiens-dentistes": a,
-                    "experts-comptables": a,
-                    "geometre-expert": a,
                     greta: a,
                     "huissier-justice": a,
-                    medecin: a,
-                    notaires: a,
-                    pharmacien: a,
-                    port: a,
-                    veterinaire: a,
                     "en-root": o,
                     "fbx-os": o,
                     fbxos: o,
@@ -2509,6 +2890,16 @@ const s = function() {
                     "on-web": o,
                     "chirurgiens-dentistes-en-france": o,
                     dedibox: o,
+                    aeroport: o,
+                    avocat: o,
+                    chambagri: o,
+                    "chirurgiens-dentistes": o,
+                    "experts-comptables": o,
+                    medecin: o,
+                    notaires: o,
+                    pharmacien: o,
+                    port: o,
+                    veterinaire: o,
                     myspreadshop: o,
                     ynh: o
                 }
@@ -2804,7 +3195,7 @@ const s = function() {
                     my: [
                         1,
                         {
-                            rss: e
+                            rss: i
                         }
                     ],
                     net: a,
@@ -2895,7 +3286,12 @@ const s = function() {
                     business: a,
                     ca: a,
                     cn: a,
-                    co: a,
+                    co: [
+                        1,
+                        {
+                            cyclic: o
+                        }
+                    ],
                     com: a,
                     coop: a,
                     cs: a,
@@ -2970,7 +3366,7 @@ const s = function() {
                 {
                     2038: o,
                     com: a,
-                    "on-acorn": e,
+                    "on-acorn": i,
                     apigee: o,
                     "b-data": o,
                     backplaneapp: o,
@@ -2978,13 +3374,19 @@ const s = function() {
                         0,
                         {
                             app: o,
-                            backyards: e
+                            backyards: i
                         }
                     ],
                     beagleboard: o,
                     bitbucket: o,
                     bluebite: o,
                     boxfuse: o,
+                    brave: [
+                        0,
+                        {
+                            s: i
+                        }
+                    ],
                     browsersafetymark: o,
                     bigv: [
                         0,
@@ -3016,8 +3418,8 @@ const s = function() {
                     lolipop: o,
                     "hasura-app": o,
                     hostyhosting: o,
-                    moonscale: e,
-                    beebyte: y,
+                    moonscale: i,
+                    beebyte: W,
                     beebyteapp: [
                         0,
                         {
@@ -3034,7 +3436,7 @@ const s = function() {
                     webthings: o,
                     loginline: o,
                     barsy: o,
-                    azurecontainer: e,
+                    azurecontainer: i,
                     ngrok: [
                         2,
                         {
@@ -3067,7 +3469,7 @@ const s = function() {
                     qcx: [
                         2,
                         {
-                            sys: e
+                            sys: i
                         }
                     ],
                     vaporcloud: o,
@@ -3077,8 +3479,8 @@ const s = function() {
                             g: o
                         }
                     ],
-                    "on-k3s": e,
-                    "on-rio": e,
+                    "on-k3s": i,
+                    "on-rio": i,
                     readthedocs: o,
                     resindevice: o,
                     resinstaging: [
@@ -3093,31 +3495,32 @@ const s = function() {
                     shiftedit: o,
                     "mo-siemens": o,
                     musician: o,
-                    lair: p,
-                    stolos: e,
+                    lair: H,
+                    stolos: i,
                     spacekit: o,
                     utwente: o,
-                    s5y: e,
+                    s5y: i,
                     edugit: o,
                     telebit: o,
                     thingdust: [
                         0,
                         {
-                            dev: C,
-                            disrec: C,
-                            prod: A,
-                            testing: C
+                            dev: M,
+                            disrec: M,
+                            prod: N,
+                            testing: M
                         }
                     ],
                     tickets: o,
                     upli: o,
                     wedeploy: o,
                     editorx: o,
+                    wixstudio: o,
                     basicserver: o,
                     virtualserver: o
                 }
             ],
-            iq: P,
+            iq: Q,
             ir: [
                 1,
                 {
@@ -3576,6 +3979,7 @@ const s = function() {
                     vs: a,
                     vt: a,
                     vv: a,
+                    "12chars": o,
                     blogspot: o,
                     ibxos: o,
                     iliadboxos: o,
@@ -3591,7 +3995,7 @@ const s = function() {
                             open: [
                                 0,
                                 {
-                                    jelastic: t
+                                    jelastic: c
                                 }
                             ]
                         }
@@ -3613,7 +4017,7 @@ const s = function() {
                     of: o
                 }
             ],
-            jm: r,
+            jm: m,
             jo: [
                 1,
                 {
@@ -3641,7 +4045,7 @@ const s = function() {
                     ne: [
                         1,
                         {
-                            aseinet: I,
+                            aseinet: J,
                             gehirn: o,
                             ivory: o,
                             "mail-box": o,
@@ -5656,13 +6060,13 @@ const s = function() {
                     "鳥取": a,
                     "xn--d5qv7z876c": a,
                     "鹿児島": a,
-                    kawasaki: r,
-                    kitakyushu: r,
-                    kobe: r,
-                    nagoya: r,
-                    sapporo: r,
-                    sendai: r,
-                    yokohama: r,
+                    kawasaki: m,
+                    kitakyushu: m,
+                    kobe: m,
+                    nagoya: m,
+                    sapporo: m,
+                    sendai: m,
+                    yokohama: m,
                     buyshop: o,
                     fashionstore: o,
                     handcrafted: o,
@@ -5795,8 +6199,8 @@ const s = function() {
                     sakurastorage: [
                         0,
                         {
-                            isk01: u,
-                            isk02: u
+                            isk01: R,
+                            isk02: R
                         }
                     ],
                     saloon: o,
@@ -5839,7 +6243,6 @@ const s = function() {
                     edu: a,
                     gov: a,
                     mil: a,
-                    blog: o,
                     io: o,
                     jp: o,
                     tv: o,
@@ -5847,8 +6250,8 @@ const s = function() {
                     us: o
                 }
             ],
-            kh: r,
-            ki: H,
+            kh: m,
+            ki: T,
             km: [
                 1,
                 {
@@ -5938,7 +6341,7 @@ const s = function() {
                     org: a
                 }
             ],
-            ky: z,
+            ky: E,
             kz: [
                 1,
                 {
@@ -5972,7 +6375,7 @@ const s = function() {
                     c: o
                 }
             ],
-            lb: i,
+            lb: e,
             lc: [
                 1,
                 {
@@ -6012,7 +6415,7 @@ const s = function() {
                     ac: a
                 }
             ],
-            lr: i,
+            lr: e,
             ls: [
                 1,
                 {
@@ -6028,7 +6431,7 @@ const s = function() {
                     de: o
                 }
             ],
-            lt: W,
+            lt: U,
             lu: [
                 1,
                 {
@@ -6139,7 +6542,7 @@ const s = function() {
                     i234: o,
                     myds: o,
                     synology: o,
-                    transip: x,
+                    transip: L,
                     wedeploy: o,
                     yombo: o,
                     nohost: o
@@ -6186,7 +6589,7 @@ const s = function() {
                     presse: a
                 }
             ],
-            mm: r,
+            mm: m,
             mn: [
                 1,
                 {
@@ -6196,7 +6599,7 @@ const s = function() {
                     nyc: o
                 }
             ],
-            mo: i,
+            mo: e,
             mobi: [
                 1,
                 {
@@ -6211,7 +6614,7 @@ const s = function() {
                 }
             ],
             mq: a,
-            mr: W,
+            mr: U,
             ms: [
                 1,
                 {
@@ -6344,8 +6747,8 @@ const s = function() {
             name: [
                 1,
                 {
-                    her: O,
-                    his: O
+                    her: Y,
+                    his: Y
                 }
             ],
             nc: [
@@ -6418,7 +6821,7 @@ const s = function() {
                     "feste-ip": o,
                     "knx-server": o,
                     "static-access": o,
-                    cryptonomic: e,
+                    cryptonomic: i,
                     dattolocal: o,
                     mydatto: o,
                     debian: o,
@@ -6547,27 +6950,47 @@ const s = function() {
                             "nordeste-idc": o
                         }
                     ],
-                    scaleforce: j,
-                    tsukaeru: q,
+                    scaleforce: F,
+                    tsukaeru: G,
                     kinghost: o,
                     uni5: o,
                     krellian: o,
                     barsy: o,
                     memset: o,
+                    "azure-api": o,
+                    azureedge: o,
+                    azurefd: o,
                     azurewebsites: o,
                     "azure-mobile": o,
-                    cloudapp: o,
                     azurestaticapps: [
                         2,
                         {
                             1: o,
                             2: o,
                             3: o,
+                            4: o,
+                            5: o,
+                            6: o,
+                            7: o,
                             centralus: o,
                             eastasia: o,
                             eastus2: o,
                             westeurope: o,
                             westus2: o
+                        }
+                    ],
+                    cloudapp: o,
+                    trafficmanager: o,
+                    windows: [
+                        0,
+                        {
+                            core: [
+                                0,
+                                {
+                                    blob: o
+                                }
+                            ],
+                            servicebus: o
                         }
                     ],
                     dnsup: o,
@@ -6595,8 +7018,8 @@ const s = function() {
                     ovh: [
                         0,
                         {
-                            webpaas: e,
-                            hosting: e
+                            webpaas: i,
+                            hosting: i
                         }
                     ],
                     bar0: o,
@@ -6723,7 +7146,7 @@ const s = function() {
                     khplay: o,
                     "123website": o,
                     myspreadshop: o,
-                    transurl: e,
+                    transurl: i,
                     cistron: o,
                     demon: o
                 }
@@ -6743,27 +7166,27 @@ const s = function() {
                     dep: a,
                     kommune: a,
                     herad: a,
-                    aa: B,
-                    ah: B,
-                    bu: B,
-                    fm: B,
-                    hl: B,
-                    hm: B,
-                    "jan-mayen": B,
-                    mr: B,
-                    nl: B,
-                    nt: B,
-                    of: B,
-                    ol: B,
-                    oslo: B,
-                    rl: B,
-                    sf: B,
-                    st: B,
-                    svalbard: B,
-                    tm: B,
-                    tr: B,
-                    va: B,
-                    vf: B,
+                    aa: Z,
+                    ah: Z,
+                    bu: Z,
+                    fm: Z,
+                    hl: Z,
+                    hm: Z,
+                    "jan-mayen": Z,
+                    mr: Z,
+                    nl: Z,
+                    nt: Z,
+                    of: Z,
+                    ol: Z,
+                    oslo: Z,
+                    rl: Z,
+                    sf: Z,
+                    st: Z,
+                    svalbard: Z,
+                    tm: Z,
+                    tr: Z,
+                    va: Z,
+                    vf: Z,
                     akrehamn: a,
                     "xn--krehamn-dxa": a,
                     "åkrehamn": a,
@@ -7311,8 +7734,8 @@ const s = function() {
                     narviika: a,
                     naustdal: a,
                     "nedre-eiker": a,
-                    akershus: E,
-                    buskerud: E,
+                    akershus: $,
+                    buskerud: $,
                     nesna: a,
                     nesodden: a,
                     nesseby: a,
@@ -7697,8 +8120,8 @@ const s = function() {
                     myspreadshop: o
                 }
             ],
-            np: r,
-            nr: H,
+            np: m,
+            nr: T,
             nu: [
                 1,
                 {
@@ -7912,11 +8335,11 @@ const s = function() {
                         0,
                         {
                             cloud: o,
-                            os: f,
+                            os: D,
                             stg: [
                                 0,
                                 {
-                                    os: f
+                                    os: D
                                 }
                             ]
                         }
@@ -7953,7 +8376,7 @@ const s = function() {
                     "small-web": o,
                     dsmynas: o,
                     familyds: o,
-                    teckids: u,
+                    teckids: R,
                     tuxfamily: o,
                     diskstation: o,
                     hk: o,
@@ -8000,7 +8423,7 @@ const s = function() {
                     edu: a
                 }
             ],
-            pg: r,
+            pg: m,
             ph: [
                 1,
                 {
@@ -8261,6 +8684,7 @@ const s = function() {
                     poniatowa: o,
                     swidnik: o,
                     co: o,
+                    torun: o,
                     simplesite: o,
                     art: o,
                     gliwice: o,
@@ -8326,6 +8750,7 @@ const s = function() {
                     law: a,
                     med: a,
                     recht: a,
+                    "12chars": o,
                     cloudns: o,
                     dnstrace: [
                         0,
@@ -8483,14 +8908,14 @@ const s = function() {
                     blogspot: o,
                     na4u: o,
                     mircloud: o,
-                    regruhosting: q,
+                    regruhosting: G,
                     myjino: [
                         2,
                         {
-                            hosting: e,
-                            landing: e,
-                            spectrum: e,
-                            vps: e
+                            hosting: i,
+                            landing: i,
+                            spectrum: i,
+                            vps: i
                         }
                     ],
                     cldmail: [
@@ -8539,8 +8964,8 @@ const s = function() {
                     sch: a
                 }
             ],
-            sb: i,
-            sc: i,
+            sb: e,
+            sc: e,
             sd: [
                 1,
                 {
@@ -8637,7 +9062,6 @@ const s = function() {
                     platform: [
                         0,
                         {
-                            bc: o,
                             ent: o,
                             eu: o,
                             us: o
@@ -8658,7 +9082,7 @@ const s = function() {
             ],
             sj: a,
             sk: n,
-            sl: i,
+            sl: e,
             sm: a,
             sn: [
                 1,
@@ -8785,7 +9209,7 @@ const s = function() {
                 }
             ],
             sx: s,
-            sy: P,
+            sy: Q,
             sz: [
                 1,
                 {
@@ -8893,7 +9317,7 @@ const s = function() {
                     rdv: o,
                     x0: o,
                     vpnplus: o,
-                    quickconnect: c,
+                    quickconnect: b,
                     nyan: o
                 }
             ],
@@ -9047,6 +9471,7 @@ const s = function() {
                     lg: a,
                     lt: a,
                     lugansk: a,
+                    luhansk: a,
                     lutsk: a,
                     lv: a,
                     lviv: a,
@@ -9070,11 +9495,13 @@ const s = function() {
                     ternopil: a,
                     uz: a,
                     uzhgorod: a,
+                    uzhhorod: a,
                     vinnica: a,
                     vinnytsia: a,
                     vn: a,
                     volyn: a,
                     yalta: a,
+                    zakarpattia: a,
                     zaporizhzhe: a,
                     zaporizhzhia: a,
                     zhitomir: a,
@@ -9121,10 +9548,10 @@ const s = function() {
                                 }
                             ],
                             blogspot: o,
-                            layershift: j,
+                            layershift: F,
                             barsy: o,
                             barsyonline: o,
-                            retrosnub: A,
+                            retrosnub: N,
                             "nh-serv": o,
                             "no-ip": o,
                             wellbeingzone: o,
@@ -9137,8 +9564,7 @@ const s = function() {
                         {
                             campaign: o,
                             service: o,
-                            api: o,
-                            homeoffice: o
+                            api: o
                         }
                     ],
                     ltd: a,
@@ -9158,7 +9584,7 @@ const s = function() {
                     ],
                     plc: a,
                     police: a,
-                    sch: r,
+                    sch: m,
                     conn: o,
                     copro: o,
                     hosp: o,
@@ -9181,34 +9607,33 @@ const s = function() {
                     isa: a,
                     kids: a,
                     nsn: a,
-                    ak: F,
-                    al: F,
-                    ar: F,
-                    as: F,
-                    az: F,
-                    ca: F,
-                    co: F,
-                    ct: F,
-                    dc: F,
+                    ak: _,
+                    al: _,
+                    ar: _,
+                    as: _,
+                    az: _,
+                    ca: _,
+                    co: _,
+                    ct: _,
+                    dc: _,
                     de: [
                         1,
                         {
-                            k12: a,
                             cc: a,
                             lib: o
                         }
                     ],
-                    fl: F,
-                    ga: F,
-                    gu: F,
-                    hi: G,
-                    ia: F,
-                    id: F,
-                    il: F,
-                    in: F,
-                    ks: F,
-                    ky: F,
-                    la: F,
+                    fl: _,
+                    ga: _,
+                    gu: _,
+                    hi: aa,
+                    ia: _,
+                    id: _,
+                    il: _,
+                    in: _,
+                    ks: _,
+                    ky: _,
+                    la: _,
                     ma: [
                         1,
                         {
@@ -9224,8 +9649,8 @@ const s = function() {
                             lib: a
                         }
                     ],
-                    md: F,
-                    me: F,
+                    md: _,
+                    me: _,
                     mi: [
                         1,
                         {
@@ -9242,41 +9667,41 @@ const s = function() {
                             washtenaw: a
                         }
                     ],
-                    mn: F,
-                    mo: F,
-                    ms: F,
-                    mt: F,
-                    nc: F,
-                    nd: G,
-                    ne: F,
-                    nh: F,
-                    nj: F,
-                    nm: F,
-                    nv: F,
-                    ny: F,
-                    oh: F,
-                    ok: F,
-                    or: F,
-                    pa: F,
-                    pr: F,
-                    ri: G,
-                    sc: F,
-                    sd: G,
-                    tn: F,
-                    tx: F,
-                    ut: F,
-                    vi: F,
-                    vt: F,
-                    va: F,
-                    wa: F,
-                    wi: F,
+                    mn: _,
+                    mo: _,
+                    ms: _,
+                    mt: _,
+                    nc: _,
+                    nd: aa,
+                    ne: _,
+                    nh: _,
+                    nj: _,
+                    nm: _,
+                    nv: _,
+                    ny: _,
+                    oh: _,
+                    ok: _,
+                    or: _,
+                    pa: _,
+                    pr: _,
+                    ri: aa,
+                    sc: _,
+                    sd: aa,
+                    tn: _,
+                    tx: _,
+                    ut: _,
+                    vi: _,
+                    vt: _,
+                    va: _,
+                    wa: _,
+                    wi: _,
                     wv: [
                         1,
                         {
                             cc: a
                         }
                     ],
-                    wy: F,
+                    wy: _,
                     graphox: o,
                     cloudns: o,
                     drud: o,
@@ -9380,18 +9805,84 @@ const s = function() {
             vn: [
                 1,
                 {
+                    ac: a,
+                    ai: a,
+                    biz: a,
                     com: a,
-                    net: a,
-                    org: a,
                     edu: a,
                     gov: a,
-                    int: a,
-                    ac: a,
-                    biz: a,
-                    info: a,
-                    name: a,
-                    pro: a,
                     health: a,
+                    id: a,
+                    info: a,
+                    int: a,
+                    io: a,
+                    name: a,
+                    net: a,
+                    org: a,
+                    pro: a,
+                    angiang: a,
+                    bacgiang: a,
+                    backan: a,
+                    baclieu: a,
+                    bacninh: a,
+                    "baria-vungtau": a,
+                    bentre: a,
+                    binhdinh: a,
+                    binhduong: a,
+                    binhphuoc: a,
+                    binhthuan: a,
+                    camau: a,
+                    cantho: a,
+                    caobang: a,
+                    daklak: a,
+                    daknong: a,
+                    danang: a,
+                    dienbien: a,
+                    dongnai: a,
+                    dongthap: a,
+                    gialai: a,
+                    hagiang: a,
+                    haiduong: a,
+                    haiphong: a,
+                    hanam: a,
+                    hanoi: a,
+                    hatinh: a,
+                    haugiang: a,
+                    hoabinh: a,
+                    hungyen: a,
+                    khanhhoa: a,
+                    kiengiang: a,
+                    kontum: a,
+                    laichau: a,
+                    lamdong: a,
+                    langson: a,
+                    laocai: a,
+                    longan: a,
+                    namdinh: a,
+                    nghean: a,
+                    ninhbinh: a,
+                    ninhthuan: a,
+                    phutho: a,
+                    phuyen: a,
+                    quangbinh: a,
+                    quangnam: a,
+                    quangngai: a,
+                    quangninh: a,
+                    quangtri: a,
+                    soctrang: a,
+                    sonla: a,
+                    tayninh: a,
+                    thaibinh: a,
+                    thainguyen: a,
+                    thanhhoa: a,
+                    thanhphohochiminh: a,
+                    thuathienhue: a,
+                    tiengiang: a,
+                    travinh: a,
+                    tuyenquang: a,
+                    vinhlong: a,
+                    vinhphuc: a,
+                    yenbai: a,
                     blogspot: o
                 }
             ],
@@ -9423,7 +9914,7 @@ const s = function() {
                     org: a,
                     gov: a,
                     edu: a,
-                    advisor: e,
+                    advisor: i,
                     cloud66: o,
                     dyndns: o,
                     mypets: o
@@ -9634,7 +10125,7 @@ const s = function() {
             "xn--mgb2ddes": a,
             "اليمن": a,
             xxx: a,
-            ye: P,
+            ye: Q,
             za: [
                 0,
                 {
@@ -9686,7 +10177,6 @@ const s = function() {
             ],
             aaa: a,
             aarp: a,
-            abarth: a,
             abb: a,
             abbott: a,
             abbvie: a,
@@ -9718,7 +10208,6 @@ const s = function() {
             airforce: a,
             airtel: a,
             akdn: a,
-            alfaromeo: a,
             alibaba: a,
             alipay: a,
             allfinanz: a,
@@ -9742,10 +10231,11 @@ const s = function() {
             app: [
                 1,
                 {
-                    beget: e,
+                    beget: i,
                     clerk: o,
                     clerkstage: o,
                     wnext: o,
+                    cyclic: o,
                     platform0: o,
                     deta: o,
                     ondigitalocean: o,
@@ -9754,13 +10244,9 @@ const s = function() {
                     edgecompute: o,
                     fireweb: o,
                     onflashdrive: o,
+                    flutterflow: o,
                     framer: o,
-                    run: [
-                        2,
-                        {
-                            a: o
-                        }
-                    ],
+                    run: i,
                     web: o,
                     hasura: o,
                     loginline: o,
@@ -9768,9 +10254,10 @@ const s = function() {
                     netlify: o,
                     ngrok: o,
                     "ngrok-free": o,
-                    developer: e,
+                    developer: i,
                     noop: o,
-                    northflank: e,
+                    northflank: i,
+                    upsun: i,
                     snowflake: [
                         2,
                         {
@@ -9778,6 +10265,7 @@ const s = function() {
                         }
                     ],
                     streamlit: o,
+                    storipress: o,
                     telebit: o,
                     typedream: o,
                     vercel: o,
@@ -9805,13 +10293,64 @@ const s = function() {
             auto: a,
             autos: a,
             avianca: a,
-            aws: a,
+            aws: [
+                1,
+                {
+                    sagemaker: [
+                        0,
+                        {
+                            "af-south-1": t,
+                            "ap-east-1": t,
+                            "ap-northeast-1": t,
+                            "ap-northeast-2": t,
+                            "ap-northeast-3": t,
+                            "ap-south-1": t,
+                            "ap-south-2": r,
+                            "ap-southeast-1": t,
+                            "ap-southeast-2": t,
+                            "ap-southeast-3": t,
+                            "ap-southeast-4": r,
+                            "ca-central-1": u,
+                            "ca-west-1": [
+                                0,
+                                {
+                                    notebook: o,
+                                    "notebook-fips": o
+                                }
+                            ],
+                            "eu-central-1": t,
+                            "eu-central-2": r,
+                            "eu-north-1": t,
+                            "eu-south-1": t,
+                            "eu-south-2": r,
+                            "eu-west-1": t,
+                            "eu-west-2": t,
+                            "eu-west-3": t,
+                            "il-central-1": t,
+                            "me-central-1": t,
+                            "me-south-1": t,
+                            "sa-east-1": t,
+                            "us-east-1": u,
+                            "us-east-2": u,
+                            "us-gov-east-1": l,
+                            "us-gov-west-1": l,
+                            "us-west-1": t,
+                            "us-west-2": u
+                        }
+                    ],
+                    repost: [
+                        0,
+                        {
+                            private: i
+                        }
+                    ]
+                }
+            ],
             axa: a,
             azure: a,
             baby: a,
             baidu: a,
             banamex: a,
-            bananarepublic: a,
             band: a,
             bank: a,
             bar: a,
@@ -9886,7 +10425,7 @@ const s = function() {
                     cloudsite: o
                 }
             ],
-            business: l,
+            business: d,
             buy: a,
             buzz: a,
             bzh: a,
@@ -9928,7 +10467,6 @@ const s = function() {
             cba: a,
             cbn: a,
             cbre: a,
-            cbs: a,
             center: a,
             ceo: a,
             cern: a,
@@ -9951,7 +10489,6 @@ const s = function() {
             citi: a,
             citic: a,
             city: a,
-            cityeats: a,
             claims: a,
             cleaning: a,
             click: a,
@@ -9961,7 +10498,8 @@ const s = function() {
             cloud: [
                 1,
                 {
-                    banzai: e,
+                    banzai: i,
+                    cyclic: o,
                     elementor: o,
                     encoway: [
                         0,
@@ -9969,7 +10507,7 @@ const s = function() {
                             eu: o
                         }
                     ],
-                    statics: e,
+                    statics: i,
                     ravendb: o,
                     axarnet: [
                         0,
@@ -10039,10 +10577,10 @@ const s = function() {
                     jotelulu: o,
                     kuleuven: o,
                     linkyard: o,
-                    magentosite: e,
+                    magentosite: i,
                     perspecta: o,
                     vapor: o,
-                    "on-rancher": e,
+                    "on-rancher": i,
                     scw: [
                         0,
                         {
@@ -10057,13 +10595,14 @@ const s = function() {
                             "fr-par": [
                                 0,
                                 {
+                                    cockpit: o,
                                     fnc: [
                                         2,
                                         {
                                             functions: o
                                         }
                                     ],
-                                    k8s: m,
+                                    k8s: g,
                                     s3: o,
                                     "s3-website": o,
                                     whm: o
@@ -10080,7 +10619,8 @@ const s = function() {
                             "nl-ams": [
                                 0,
                                 {
-                                    k8s: m,
+                                    cockpit: o,
+                                    k8s: g,
                                     s3: o,
                                     "s3-website": o,
                                     whm: o
@@ -10089,7 +10629,8 @@ const s = function() {
                             "pl-waw": [
                                 0,
                                 {
-                                    k8s: m,
+                                    cockpit: o,
+                                    k8s: g,
                                     s3: o,
                                     "s3-website": o
                                 }
@@ -10098,10 +10639,11 @@ const s = function() {
                             smartlabeling: o
                         }
                     ],
-                    sensiosite: e,
+                    sensiosite: i,
                     trafficplex: o,
                     urown: o,
-                    voorloper: o
+                    voorloper: o,
+                    zap: o
                 }
             ],
             club: [
@@ -10117,13 +10659,12 @@ const s = function() {
             codes: [
                 1,
                 {
-                    owo: e
+                    owo: i
                 }
             ],
             coffee: a,
             college: a,
             cologne: a,
-            comcast: a,
             commbank: a,
             community: [
                 1,
@@ -10143,7 +10684,6 @@ const s = function() {
             contact: a,
             contractors: a,
             cooking: a,
-            cookingchannel: a,
             cool: [
                 1,
                 {
@@ -10199,11 +10739,13 @@ const s = function() {
             dev: [
                 1,
                 {
+                    "12chars": o,
+                    panel: o,
                     autocode: o,
-                    lcl: e,
-                    lclstage: e,
-                    stg: e,
-                    stgstage: e,
+                    lcl: i,
+                    lclstage: i,
+                    stg: i,
+                    stgstage: i,
                     pages: o,
                     r2: o,
                     workers: o,
@@ -10213,12 +10755,12 @@ const s = function() {
                     deta: o,
                     fly: o,
                     githubpreview: o,
-                    gateway: e,
+                    gateway: i,
                     iserv: o,
                     localcert: [
                         0,
                         {
-                            user: e
+                            user: i
                         }
                     ],
                     loginline: o,
@@ -10228,7 +10770,7 @@ const s = function() {
                     "platter-app": o,
                     shiftcrypto: o,
                     vercel: o,
-                    webhare: e
+                    webhare: i
                 }
             ],
             dhl: a,
@@ -10273,7 +10815,7 @@ const s = function() {
                         0,
                         {
                             "*": o,
-                            bzz: e
+                            bzz: i
                         }
                     ]
                 }
@@ -10281,7 +10823,7 @@ const s = function() {
             eat: a,
             eco: a,
             edeka: a,
-            education: l,
+            education: d,
             email: a,
             emerck: a,
             energy: a,
@@ -10296,15 +10838,14 @@ const s = function() {
             estate: [
                 1,
                 {
-                    compute: e
+                    compute: i
                 }
             ],
-            etisalat: a,
             eurovision: a,
             eus: [
                 1,
                 {
-                    party: I
+                    party: J
                 }
             ],
             events: [
@@ -10322,7 +10863,7 @@ const s = function() {
             fage: a,
             fail: a,
             fairwinds: a,
-            faith: S,
+            faith: K,
             family: a,
             fan: a,
             fans: a,
@@ -10339,13 +10880,12 @@ const s = function() {
             feedback: a,
             ferrari: a,
             ferrero: a,
-            fiat: a,
             fidelity: a,
             fido: a,
             film: a,
             final: a,
             finance: a,
-            financial: l,
+            financial: d,
             fire: a,
             firestone: a,
             firmdale: a,
@@ -10361,7 +10901,6 @@ const s = function() {
             fly: a,
             foo: a,
             food: a,
-            foodnetwork: a,
             football: a,
             ford: a,
             forex: a,
@@ -10373,7 +10912,6 @@ const s = function() {
             fresenius: a,
             frl: a,
             frogans: a,
-            frontdoor: a,
             frontier: a,
             ftr: a,
             fujitsu: a,
@@ -10387,10 +10925,20 @@ const s = function() {
             gallo: a,
             gallup: a,
             game: a,
-            games: a,
+            games: [
+                1,
+                {
+                    pley: o
+                }
+            ],
             gap: a,
             garden: a,
-            gay: a,
+            gay: [
+                1,
+                {
+                    pages: o
+                }
+            ],
             gbiz: a,
             gdn: [
                 1,
@@ -10426,7 +10974,7 @@ const s = function() {
                 {
                     cloud: o,
                     translate: o,
-                    usercontent: e
+                    usercontent: i
                 }
             ],
             google: a,
@@ -10468,7 +11016,6 @@ const s = function() {
             helsinki: a,
             here: a,
             hermes: a,
-            hgtv: a,
             hiphop: a,
             hisamitsu: a,
             hitachi: a,
@@ -10507,7 +11054,6 @@ const s = function() {
                 }
             ],
             hot: a,
-            hoteles: a,
             hotels: a,
             hotmail: a,
             house: a,
@@ -10571,7 +11117,6 @@ const s = function() {
             kia: a,
             kids: a,
             kim: a,
-            kinder: a,
             kindle: a,
             kitchen: a,
             kiwi: a,
@@ -10594,7 +11139,6 @@ const s = function() {
             lamborghini: a,
             lamer: a,
             lancaster: a,
-            lancia: a,
             land: [
                 1,
                 {
@@ -10638,13 +11182,14 @@ const s = function() {
                 {
                     cyon: o,
                     mypep: o,
-                    dweb: e
+                    dweb: i
                 }
             ],
             lipsy: a,
             live: [
                 1,
                 {
+                    aem: o,
                     hlx: o
                 }
             ],
@@ -10690,18 +11235,17 @@ const s = function() {
             markets: a,
             marriott: a,
             marshalls: a,
-            maserati: a,
             mattel: a,
             mba: a,
             mckinsey: a,
             med: a,
-            media: D,
+            media: V,
             meet: a,
             melbourne: a,
             meme: a,
             memorial: a,
             men: a,
-            menu: L,
+            menu: X,
             merckmsd: a,
             miami: a,
             microsoft: a,
@@ -10731,7 +11275,6 @@ const s = function() {
             mtn: a,
             mtr: a,
             music: a,
-            mutual: a,
             nab: a,
             nagoya: a,
             natura: a,
@@ -10743,7 +11286,7 @@ const s = function() {
             network: [
                 1,
                 {
-                    alces: e,
+                    alces: i,
                     co: o,
                     arvo: o,
                     azimuth: o,
@@ -10771,7 +11314,6 @@ const s = function() {
             nissan: a,
             nissay: a,
             nokia: a,
-            northwesternmutual: a,
             norton: a,
             now: a,
             nowruz: a,
@@ -10786,7 +11328,6 @@ const s = function() {
             okinawa: a,
             olayan: a,
             olayangroup: a,
-            oldnavy: a,
             ollo: a,
             omega: a,
             one: [
@@ -10798,6 +11339,7 @@ const s = function() {
                             staging: o
                         }
                     ],
+                    kin: i,
                     service: o,
                     homelink: o
                 }
@@ -10835,6 +11377,7 @@ const s = function() {
             page: [
                 1,
                 {
+                    aem: o,
                     hlx: o,
                     hlx3: o,
                     translated: o,
@@ -10851,8 +11394,7 @@ const s = function() {
             pars: a,
             partners: a,
             parts: a,
-            party: S,
-            passagens: a,
+            party: K,
             pay: a,
             pccw: a,
             pet: a,
@@ -10863,7 +11405,7 @@ const s = function() {
             phone: a,
             photo: a,
             photography: a,
-            photos: D,
+            photos: V,
             physio: a,
             pics: a,
             pictet: a,
@@ -10884,7 +11426,7 @@ const s = function() {
                     ngrok: o
                 }
             ],
-            place: l,
+            place: d,
             play: a,
             playstation: a,
             plumbing: a,
@@ -10913,7 +11455,14 @@ const s = function() {
             protection: a,
             pru: a,
             prudential: a,
-            pub: L,
+            pub: [
+                1,
+                {
+                    id: i,
+                    kin: i,
+                    barsy: o
+                }
+            ],
             pwc: a,
             qpon: a,
             quebec: a,
@@ -10941,7 +11490,7 @@ const s = function() {
             republican: a,
             rest: a,
             restaurant: a,
-            review: S,
+            review: K,
             reviews: a,
             rexroth: a,
             rich: a,
@@ -10955,7 +11504,6 @@ const s = function() {
                     clan: o
                 }
             ],
-            rocher: a,
             rocks: [
                 1,
                 {
@@ -10977,12 +11525,13 @@ const s = function() {
                     development: o,
                     ravendb: o,
                     servers: o,
-                    build: e,
-                    code: e,
-                    database: e,
-                    migration: e,
+                    build: i,
+                    code: i,
+                    database: i,
+                    migration: i,
                     onporter: o,
-                    repl: o
+                    repl: o,
+                    wix: o
                 }
             ],
             rwe: a,
@@ -11005,7 +11554,6 @@ const s = function() {
             saxo: a,
             sbi: a,
             sbs: a,
-            sca: a,
             scb: a,
             schaeffler: a,
             schmidt: a,
@@ -11013,7 +11561,7 @@ const s = function() {
             school: a,
             schule: a,
             schwarz: a,
-            science: S,
+            science: K,
             scot: [
                 1,
                 {
@@ -11062,14 +11610,13 @@ const s = function() {
             shopping: a,
             shouji: a,
             show: a,
-            showtime: a,
             silk: a,
             sina: a,
             singles: a,
             site: [
                 1,
                 {
-                    cloudera: e,
+                    cloudera: i,
                     cyon: o,
                     fnwk: o,
                     folionetwork: o,
@@ -11081,8 +11628,8 @@ const s = function() {
                     mintere: o,
                     omniwe: o,
                     opensocial: o,
-                    platformsh: e,
-                    tst: e,
+                    platformsh: i,
+                    tst: i,
                     byen: o,
                     srht: o,
                     novecore: o
@@ -11105,7 +11652,7 @@ const s = function() {
             solutions: [
                 1,
                 {
-                    diher: e
+                    diher: i
                 }
             ],
             song: a,
@@ -11147,7 +11694,7 @@ const s = function() {
             sucks: a,
             supplies: a,
             supply: a,
-            support: L,
+            support: X,
             surf: a,
             surgery: a,
             suzuki: a,
@@ -11180,7 +11727,7 @@ const s = function() {
                 }
             ],
             tech: a,
-            technology: l,
+            technology: d,
             temasek: a,
             tennis: a,
             teva: a,
@@ -11190,7 +11737,6 @@ const s = function() {
             tiaa: a,
             tickets: a,
             tienda: a,
-            tiffany: a,
             tips: a,
             tires: a,
             tirol: a,
@@ -11220,11 +11766,10 @@ const s = function() {
             town: a,
             toyota: a,
             toys: a,
-            trade: S,
+            trade: K,
             trading: a,
             training: a,
             travel: a,
-            travelchannel: a,
             travelers: a,
             travelersinsurance: a,
             trust: a,
@@ -11263,13 +11808,11 @@ const s = function() {
             vivo: a,
             vlaanderen: a,
             vodka: a,
-            volkswagen: a,
             volvo: a,
             vote: a,
             voting: a,
             voto: a,
             voyage: a,
-            vuelos: a,
             wales: a,
             walmart: a,
             walter: a,
@@ -11281,13 +11824,14 @@ const s = function() {
             weatherchannel: a,
             webcam: a,
             weber: a,
-            website: D,
+            website: V,
+            wed: a,
             wedding: a,
             weibo: a,
             weir: a,
             whoswho: a,
             wien: a,
-            wiki: D,
+            wiki: V,
             williamhill: a,
             win: a,
             windows: a,
@@ -11304,7 +11848,6 @@ const s = function() {
             wtf: a,
             xbox: a,
             xerox: a,
-            xfinity: a,
             xihuan: a,
             xin: a,
             "xn--11b4c3d": a,
@@ -11423,8 +11966,6 @@ const s = function() {
             "ارامكو": a,
             "xn--mgba7c0bbn0a": a,
             "العليان": a,
-            "xn--mgbaakc7dvf": a,
-            "اتصالات": a,
             "xn--mgbab2bd": a,
             "بازار": a,
             "xn--mgbca7dzdo": a,
@@ -11524,7 +12065,7 @@ const s = function() {
                     localzone: o,
                     crafting: o,
                     zapto: o,
-                    telebit: e
+                    telebit: i
                 }
             ],
             yachts: a,
@@ -11546,7 +12087,7 @@ const s = function() {
                 {
                     cloud66: o,
                     hs: o,
-                    triton: e,
+                    triton: i,
                     lima: o
                 }
             ],
@@ -11554,41 +12095,40 @@ const s = function() {
         }
     ];
 }();
-function t(a, o, i, e) {
-    var n;
-    let s = null, r = o;
-    for(; void 0 !== r && (0 != (r[0] & e) && (s = {
-        index: i + 1,
-        isIcann: 1 === r[0],
-        isPrivate: 2 === r[0]
-    }), -1 !== i);){
-        const o = r[1];
-        r = null !== (n = o[a[i]]) && void 0 !== n ? n : o["*"], i -= 1;
+function r(a, o, e, i) {
+    let n = null, s = o;
+    for(; void 0 !== s && (0 != (s[0] & i) && (n = {
+        index: e + 1,
+        isIcann: 1 === s[0],
+        isPrivate: 2 === s[0]
+    }), -1 !== e);){
+        const o = s[1];
+        s = Object.prototype.hasOwnProperty.call(o, a[e]) ? o[a[e]] : o["*"], e -= 1;
     }
-    return s;
+    return n;
 }
-function l(a, o, i) {
-    var e;
-    if (function(a, o, i) {
+function u(a, o, e) {
+    var i;
+    if (function(a, o, e) {
         if (!o.allowPrivateDomains && a.length > 3) {
-            const o = a.length - 1, e = a.charCodeAt(o), n = a.charCodeAt(o - 1), s = a.charCodeAt(o - 2), r = a.charCodeAt(o - 3);
-            if (109 === e && 111 === n && 99 === s && 46 === r) return i.isIcann = !0, i.isPrivate = !1, i.publicSuffix = "com", !0;
-            if (103 === e && 114 === n && 111 === s && 46 === r) return i.isIcann = !0, i.isPrivate = !1, i.publicSuffix = "org", !0;
-            if (117 === e && 100 === n && 101 === s && 46 === r) return i.isIcann = !0, i.isPrivate = !1, i.publicSuffix = "edu", !0;
-            if (118 === e && 111 === n && 103 === s && 46 === r) return i.isIcann = !0, i.isPrivate = !1, i.publicSuffix = "gov", !0;
-            if (116 === e && 101 === n && 110 === s && 46 === r) return i.isIcann = !0, i.isPrivate = !1, i.publicSuffix = "net", !0;
-            if (101 === e && 100 === n && 46 === s) return i.isIcann = !0, i.isPrivate = !1, i.publicSuffix = "de", !0;
+            const o = a.length - 1, i = a.charCodeAt(o), n = a.charCodeAt(o - 1), s = a.charCodeAt(o - 2), t = a.charCodeAt(o - 3);
+            if (109 === i && 111 === n && 99 === s && 46 === t) return e.isIcann = !0, e.isPrivate = !1, e.publicSuffix = "com", !0;
+            if (103 === i && 114 === n && 111 === s && 46 === t) return e.isIcann = !0, e.isPrivate = !1, e.publicSuffix = "org", !0;
+            if (117 === i && 100 === n && 101 === s && 46 === t) return e.isIcann = !0, e.isPrivate = !1, e.publicSuffix = "edu", !0;
+            if (118 === i && 111 === n && 103 === s && 46 === t) return e.isIcann = !0, e.isPrivate = !1, e.publicSuffix = "gov", !0;
+            if (116 === i && 101 === n && 110 === s && 46 === t) return e.isIcann = !0, e.isPrivate = !1, e.publicSuffix = "net", !0;
+            if (101 === i && 100 === n && 46 === s) return e.isIcann = !0, e.isPrivate = !1, e.publicSuffix = "de", !0;
         }
         return !1;
-    }(a, o, i)) return;
-    const n = a.split("."), l = (o.allowPrivateDomains ? 2 : 0) | (o.allowIcannDomains ? 1 : 0), m = t(n, s, n.length - 1, l);
-    if (null !== m) return i.isIcann = m.isIcann, i.isPrivate = m.isPrivate, void (i.publicSuffix = n.slice(m.index + 1).join("."));
-    const u = t(n, r, n.length - 1, l);
-    if (null !== u) return i.isIcann = u.isIcann, i.isPrivate = u.isPrivate, void (i.publicSuffix = n.slice(u.index).join("."));
-    i.isIcann = !1, i.isPrivate = !1, i.publicSuffix = null !== (e = n[n.length - 1]) && void 0 !== e ? e : null;
+    }(a, o, e)) return;
+    const n = a.split("."), u = (o.allowPrivateDomains ? 2 : 0) | (o.allowIcannDomains ? 1 : 0), l = r(n, s, n.length - 1, u);
+    if (null !== l) return e.isIcann = l.isIcann, e.isPrivate = l.isPrivate, void (e.publicSuffix = n.slice(l.index + 1).join("."));
+    const m = r(n, t, n.length - 1, u);
+    if (null !== m) return e.isIcann = m.isIcann, e.isPrivate = m.isPrivate, void (e.publicSuffix = n.slice(m.index).join("."));
+    e.isIcann = !1, e.isPrivate = !1, e.publicSuffix = null !== (i = n[n.length - 1]) && void 0 !== i ? i : null;
 }
-function u(a, o = {}) {
-    return n(a, 5, l, o, {
+function m(a, o = {}) {
+    return n(a, 5, u, o, {
         domain: null,
         domainWithoutSuffix: null,
         hostname: null,
@@ -12580,14 +13120,23 @@ async function flattenedVerify(jws, key, options) {
     }
     checkKeyType(alg, key, 'verify');
     const data = concat(encoder.encode(jws.protected ?? ''), encoder.encode('.'), typeof jws.payload === 'string' ? encoder.encode(jws.payload) : jws.payload);
-    const signature = decode1(jws.signature);
+    let signature;
+    try {
+        signature = decode1(jws.signature);
+    } catch  {
+        throw new JWSInvalid('Failed to base64url decode the signature');
+    }
     const verified = await verify(alg, key, signature, data);
     if (!verified) {
         throw new JWSSignatureVerificationFailed();
     }
     let payload;
     if (b64) {
-        payload = decode1(jws.payload);
+        try {
+            payload = decode1(jws.payload);
+        } catch  {
+            throw new JWSInvalid('Failed to base64url decode the payload');
+        }
     } else if (typeof jws.payload === 'string') {
         payload = encoder.encode(jws.payload);
     } else {
@@ -37324,6 +37873,12 @@ let defaultOptions = {
     mapsAsObjects: true
 };
 let sequentialMode = false;
+let inlineObjectReadThreshold = 2;
+try {
+    new Function('');
+} catch (error) {
+    inlineObjectReadThreshold = Infinity;
+}
 class Decoder {
     constructor(options){
         if (options) {
@@ -37705,7 +38260,7 @@ function createStructureReader(structure) {
             if (compiledReader.propertyCount === length) return compiledReader(read);
             compiledReader = compiledReader.next;
         }
-        if (this.slowReads++ >= 3) {
+        if (this.slowReads++ >= inlineObjectReadThreshold) {
             let array = this.length == length ? this : this.slice(0, length);
             compiledReader = currentDecoder.keyMap ? new Function('r', 'return {' + array.map((k)=>currentDecoder.decodeKey(k)).map((k)=>validName.test(k) ? safeKey(k) + ':r()' : '[' + JSON.stringify(k) + ']:r()').join(',') + '}') : new Function('r', 'return {' + array.map((key)=>validName.test(key) ? safeKey(key) + ':r()' : '[' + JSON.stringify(key) + ']:r()').join(',') + '}');
             if (this.compiledReader) compiledReader.next = this.compiledReader;
@@ -37724,7 +38279,9 @@ function createStructureReader(structure) {
     return readObject;
 }
 function safeKey(key) {
-    return key === '__proto__' ? '__proto_' : key;
+    if (typeof key === 'string') return key === '__proto__' ? '__proto_' : key;
+    if (typeof key !== 'object') return key.toString();
+    throw new Error('Invalid property name type ' + typeof key);
 }
 let readFixedString = readStringJS;
 let isNativeAccelerationEnabled = false;
@@ -38005,8 +38562,17 @@ currentExtensions[27] = (data)=>{
     return (glbl[data[0]] || Error)(data[1], data[2]);
 };
 const packedTable = (read)=>{
-    if (src[position++] != 0x84) throw new Error('Packed values structure must be followed by a 4 element array');
+    if (src[position++] != 0x84) {
+        let error = new Error('Packed values structure must be followed by a 4 element array');
+        if (src.length < position) error.incomplete = true;
+        throw error;
+    }
     let newPackedValues = read();
+    if (!newPackedValues || !newPackedValues.length) {
+        let error = new Error('Packed values structure must be followed by a 4 element array');
+        error.incomplete = true;
+        throw error;
+    }
     packedValues = packedValues ? newPackedValues.concat(packedValues.slice(newPackedValues.length)) : newPackedValues;
     packedValues.prefixes = read();
     packedValues.suffixes = read();
@@ -38020,7 +38586,9 @@ currentExtensions[PACKED_REFERENCE_TAG_ID] = (data)=>{
         else return new Tag(data, PACKED_REFERENCE_TAG_ID);
     }
     if (typeof data == 'number') return packedValues[16 + (data >= 0 ? 2 * data : -2 * data - 1)];
-    throw new Error('No support for non-integer packed references yet');
+    let error = new Error('No support for non-integer packed references yet');
+    if (data === undefined) error.incomplete = true;
+    throw error;
 };
 currentExtensions[28] = (read)=>{
     if (!referenceMap) {
@@ -38129,6 +38697,9 @@ function registerTypedArray(TypedArray, tag) {
         let sizeShift = bytesPerElement == 2 ? 1 : bytesPerElement == 4 ? 2 : 3;
         currentExtensions[littleEndian ? tag : tag - 4] = bytesPerElement == 1 || littleEndian == isLittleEndianMachine ? (buffer)=>{
             if (!TypedArray) throw new Error('Could not find typed array for code ' + tag);
+            if (!currentDecoder.copyBuffers) {
+                if (bytesPerElement === 1 || bytesPerElement === 2 && !(buffer.byteOffset & 1) || bytesPerElement === 4 && !(buffer.byteOffset & 3) || bytesPerElement === 8 && !(buffer.byteOffset & 7)) return new TypedArray(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+            }
             return new TypedArray(Uint8Array.prototype.slice.call(buffer, 0).buffer);
         } : (buffer)=>{
             if (!TypedArray) throw new Error('Could not find typed array for code ' + tag);
@@ -38261,7 +38832,7 @@ try {
     textEncoder = new TextEncoder();
 } catch (error) {}
 let extensions, extensionClasses;
-const Buffer1 = globalThis.Buffer;
+const Buffer1 = typeof globalThis === 'object' && globalThis.Buffer;
 const hasNodeBuffer = typeof Buffer1 !== 'undefined';
 const ByteArrayAllocate = hasNodeBuffer ? Buffer1.allocUnsafeSlow : Uint8Array;
 const ByteArray = hasNodeBuffer ? Buffer1 : Uint8Array;
@@ -38739,6 +39310,10 @@ class Encoder extends Decoder {
                             error.iteratorNotHandled = true;
                             throw error;
                         }
+                        if (this.useToJSON && value.toJSON) {
+                            const json = value.toJSON();
+                            if (json !== value) return encode(json);
+                        }
                         writeObject(value, !value.hasOwnProperty);
                     }
                 }
@@ -38786,7 +39361,7 @@ class Encoder extends Decoder {
             }
             if (encoder.keyMap) {
                 for(let i = 0; i < length; i++){
-                    encode(encodeKey(keys[i]));
+                    encode(encoder.encodeKey(keys[i]));
                     encode(vals[i]);
                 }
             } else {
@@ -39445,11 +40020,14 @@ const mod = function() {
 }();
 const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", charsUrl = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_", genLookup = (target)=>{
     const lookupTemp = typeof Uint8Array === "undefined" ? [] : new Uint8Array(256);
-    for(let i = 0; i < chars.length; i++){
+    const len = chars.length;
+    for(let i = 0; i < len; i++){
         lookupTemp[target.charCodeAt(i)] = i;
     }
     return lookupTemp;
 }, lookup = genLookup(chars), lookupUrl = genLookup(charsUrl);
+const base64UrlPattern = /^[-A-Za-z0-9\-_]*$/;
+const base64Pattern = /^[-A-Za-z0-9+/]*={0,3}$/;
 const base64 = {};
 base64.toArrayBuffer = (data, urlMode)=>{
     const len = data.length;
@@ -39482,9 +40060,10 @@ base64.fromArrayBuffer = (arrBuf, urlMode)=>{
         result += target[(bytes[i + 1] & 15) << 2 | bytes[i + 2] >> 6];
         result += target[bytes[i + 2] & 63];
     }
-    if (len % 3 === 2) {
+    const remainder = len % 3;
+    if (remainder === 2) {
         result = result.substring(0, result.length - 1) + (urlMode ? "" : "=");
-    } else if (len % 3 === 1) {
+    } else if (remainder === 1) {
         result = result.substring(0, result.length - 2) + (urlMode ? "" : "==");
     }
     return result;
@@ -39500,11 +40079,7 @@ base64.validate = (encoded, urlMode)=>{
         return false;
     }
     try {
-        if (urlMode) {
-            return /^[-A-Za-z0-9\-_]*$/.test(encoded);
-        } else {
-            return /^[-A-Za-z0-9+/]*={0,3}$/.test(encoded);
-        }
+        return urlMode ? base64UrlPattern.test(encoded) : base64Pattern.test(encoded);
     } catch (_e) {
         return false;
     }
@@ -39747,7 +40322,7 @@ function checkUrl(value, name, rules = {}) {
     return value;
 }
 function validEtldPlusOne(value) {
-    const result = u(value, {
+    const result = m(value, {
         allowPrivateDomains: true
     });
     if (result.publicSuffix === null) {
