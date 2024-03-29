@@ -41,10 +41,10 @@
 		"chai-as-promised": "^7.1.1",
 		"codecov": "^3.7.0",
 		"docdash": "^2.0.1",
-		"eslint": "^8.42.0",
+		"eslint": "^8.57.0",
 		"gh-pages": "^5.0.0",
 		"jsdoc": "^4.0.2",
-		"mocha": "^10.3.0",
+		"mocha": "^10.4.0",
 		"rollup": "^3.25.1"
 	},
 	"dependencies": {
@@ -52,10 +52,11 @@
 		"@peculiar/webcrypto": "~1.4.5",
 		"asn1js": "~3.0.2",
 		"cbor-x": "~1.5.8",
+		"elint": "^2.0.1",
 		"jose": "^4.15.5",
 		"pkijs": "~3.0.15",
-		"tldts": "~6.1.11",
-		"punycode.js": "^2.3.1"
+		"punycode.js": "^2.3.1",
+		"tldts": "~6.1.11"
 	},
 	"eslintConfig": {
 		"root": true,

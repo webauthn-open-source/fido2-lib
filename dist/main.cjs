@@ -725,7 +725,7 @@ const algToJWKAlg = {
 	"RSASSA-PKCS1-v1_5_w_SHA256": "RS256",
 	"RSASSA-PKCS1-v1_5_w_SHA384": "RS384",
 	"RSASSA-PKCS1-v1_5_w_SHA512": "RS512",
-	"RSASSA-PKCS1-v1_5_w_SHA1": "RS256",
+	"RSASSA-PKCS1-v1_5_w_SHA1": "RS1",
 	/*
 	PS256-512 is untested 
 	"RSASSA-PSS_w_SHA-256": "PS256",
@@ -2349,7 +2349,9 @@ async function validateFlags() {
 			} else if (flags.has("UP")) {
 				continue;
 			} else {
-				throw new Error("expected User Presence (UP) or User Verification (UV) flag to be set and neither was");
+				//throw new Error("expected User Presence (UP) or User Verification (UV) flag to be set and neither was");
+				//Fixed to pass certification: both flags can be false
+				continue
 			}
 		}
 

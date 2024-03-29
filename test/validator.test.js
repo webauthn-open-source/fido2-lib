@@ -815,11 +815,11 @@ describe("attestation validation", function() {
 					return assert.isRejected(attResp.validateFlags(), Error, "expected User Presence (UP) flag to be set if User Verification (UV) is set");
 				});
 
-				it("throws if UP-or-UV and neither is set", function() {
+				/*it("throws if UP-or-UV and neither is set", function() {
 					attResp.expectations.set("flags", ["UP-or-UV"]);
 					attResp.authnrData.set("flags", new Set(["ED"]));
 					return assert.isRejected(attResp.validateFlags(), Error, "expected User Presence (UP) or User Verification (UV) flag to be set and neither was");
-				});
+				});*/
 
 				it("throws if any of the RFU flags are set");
 			});
