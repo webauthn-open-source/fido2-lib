@@ -5033,7 +5033,7 @@ class Fido2Lib {
 	 * @param {String} [opts.rpIcon] A URL for the service's icon. Can be a [RFC 2397]{@link https://tools.ietf.org/html/rfc2397} data URL.
 	 * @param {Number} [opts.challengeSize=64] The number of bytes to use for the challenge
 	 * @param {Object} [opts.authenticatorSelection] An object describing what types of authenticators are allowed to register with the service.
-	 * See [AuthenticatorSelectionCriteria]{@link https://w3.org/TR/webauthn/#authenticatorSelection} in the WebAuthn spec for details.
+	 * See [AuthenticatorSelectionCriteria] {@link https://w3.org/TR/webauthn/#authenticatorSelection} in the WebAuthn spec for details.
 	 * @param {String} [opts.authenticatorAttachment] Indicates whether authenticators should be part of the OS ("platform"), or can be roaming authenticators ("cross-platform")
 	 * @param {Boolean} [opts.authenticatorRequireResidentKey] Indicates whether authenticators must store the key internally (true) or if they can use a KDF to generate keys
 	 * @param {String} [opts.authenticatorUserVerification] Indicates whether user verification should be performed. Options are "required", "preferred", or "discouraged".
@@ -5774,8 +5774,9 @@ function checkOptType(opts, prop, type) {
 	// undefined
 	if (opts[prop] === undefined) return;
 
+	const tType = typeof type;
 	// native type
-	if (typeof type === "string") {
+	if (tType === "string") {
 		// deno-lint-ignore valid-typeof
 		if (typeof opts[prop] !== type) {
 			throw new TypeError(
@@ -5785,7 +5786,7 @@ function checkOptType(opts, prop, type) {
 	}
 
 	// class type
-	if (typeof type === "function") {
+	if (tType === "function") {
 		if (!(opts[prop] instanceof type)) {
 			throw new TypeError(
 				`expected ${prop} to be ${type.name}, got: ${opts[prop]}`,
@@ -5799,6 +5800,14 @@ function setOpt(obj, prop, val) {
 		obj[prop] = val;
 	}
 }
+
+/**
+ * @param {string} expectedFactor - "first" | "second" | "either"
+ * See {@link https://www.w3.org/TR/webauthn-3/#authdata-flags Flags Docs on W3}
+ *
+ * @param {Array<string>} flags array of flag strings
+ */
+
 
 function factorToFlags(expectedFactor, flags) {
 	// var flags = ["AT"];
@@ -5823,6 +5832,11 @@ function factorToFlags(expectedFactor, flags) {
 
 	return flags;
 }
+
+/**
+ * @param {string} type - "attestation" | "assertion"
+ * @param {Object} extObj - extenstionOptions
+ */
 
 function createExtensions(type, extObj) {
 	/* eslint-disable no-invalid-this */

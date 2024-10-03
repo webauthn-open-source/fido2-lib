@@ -42979,12 +42979,13 @@ class Fido2Lib {
 function checkOptType(opts, prop, type) {
     if (typeof opts !== "object") return;
     if (opts[prop] === undefined) return;
-    if (typeof type === "string") {
+    const tType = typeof type;
+    if (tType === "string") {
         if (typeof opts[prop] !== type) {
             throw new TypeError(`expected ${prop} to be ${type}, got: ${opts[prop]}`);
         }
     }
-    if (typeof type === "function") {
+    if (tType === "function") {
         if (!(opts[prop] instanceof type)) {
             throw new TypeError(`expected ${prop} to be ${type.name}, got: ${opts[prop]}`);
         }
