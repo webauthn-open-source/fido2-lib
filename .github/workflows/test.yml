@@ -33,7 +33,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
-        node-version: [18.x, 20.x]
+        node-version: [20.x, 22.x]
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
@@ -48,7 +48,12 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run report
-      - run: npm run codecov
+      - uses: codecov/codecov-action@v4
+        with:
+          fail_ci_if_error: true
+          files: ./coverage.lcov
+          token: ${{ secrets.GH_TOKEN }}
+          verbose: true
 
   release:
     if: github.ref == 'refs/heads/master' && needs.test_node.result == 'success' && needs.test_deno.result == 'success'

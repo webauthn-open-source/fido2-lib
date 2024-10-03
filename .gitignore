@@ -13,3 +13,4 @@ dist/*
 !dist/main.cjs
 test/dist/*
 !test/dist/package.json
+coverage.lcov

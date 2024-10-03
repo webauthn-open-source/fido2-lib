@@ -13,7 +13,6 @@
 		"test": "c8 mocha",
 		"test:dist": "npx mocha test/dist",
 		"report": "c8 report --reporter=text-lcov > coverage.lcov",
-		"codecov": "codecov -e TRAVIS_NODE_VERSION",
 		"docs": "jsdoc -c ./.jsdoc-conf.json",
 		"publish-docs": "gh-pages --repo https://$GH_TOKEN@github.com/webauthn-open-source/fido2-lib.git --dist docs"
 	},
@@ -39,7 +38,6 @@
 		"c8": "^8.0.0",
 		"chai": "^4.3.7",
 		"chai-as-promised": "^7.1.1",
-		"codecov": "^3.7.0",
 		"docdash": "^2.0.1",
 		"eslint": "^8.42.0",
 		"gh-pages": "^5.0.0",
@@ -54,8 +52,8 @@
 		"cbor-x": "~1.5.8",
 		"jose": "^4.15.5",
 		"pkijs": "~3.0.15",
-		"tldts": "~6.1.11",
-		"punycode.js": "^2.3.1"
+		"punycode.js": "^2.3.1",
+		"tldts": "~6.1.11"
 	},
 	"eslintConfig": {
 		"root": true,
