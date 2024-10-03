@@ -52,7 +52,7 @@ jobs:
         with:
           fail_ci_if_error: true
           files: ./coverage.lcov
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
           verbose: true
 
   release:
