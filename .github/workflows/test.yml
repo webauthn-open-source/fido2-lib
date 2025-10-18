@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        deno-version: ["v1.x"]
+        deno-version: ["v2.x"]
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
@@ -71,7 +71,7 @@ jobs:
           node-version: "24.x"
       - uses: denolib/setup-deno@4df079f84f6c4ef488b04806df9af59e51d09bfb # v2.3.0
         with:
-          deno-version: "1.x"
+          deno-version: "2.x"
       - name: Get current package version
         id: package_version
         uses: martinbeentjes/npm-get-version-action@7aa1d82604bb2dbe377a64ca35e692e6fe333c9c # v1.2.3
