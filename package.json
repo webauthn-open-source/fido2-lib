@@ -35,25 +35,25 @@
     "url": "https://github.com/webauthn-open-source/fido2-lib/issues"
   },
   "devDependencies": {
-    "c8": "^8.0.0",
-    "chai": "^4.3.7",
-    "chai-as-promised": "^7.1.1",
-    "docdash": "^2.0.1",
-    "eslint": "^8.42.0",
+    "c8": "^8.0.1",
+    "chai": "^4.5.0",
+    "chai-as-promised": "^7.1.2",
+    "docdash": "^2.0.2",
+    "eslint": "^8.57.1",
     "gh-pages": "^5.0.0",
-    "jsdoc": "^4.0.2",
-    "mocha": "^10.3.0",
-    "rollup": "^3.25.1"
+    "jsdoc": "^4.0.5",
+    "mocha": "^10.8.2",
+    "rollup": "^3.29.5"
   },
   "dependencies": {
     "@hexagon/base64": "~1.1.28",
-    "@peculiar/webcrypto": "~1.4.5",
-    "asn1js": "~3.0.2",
-    "cbor-x": "~1.5.8",
-    "jose": "^4.15.5",
-    "pkijs": "~3.0.15",
+    "@peculiar/webcrypto": "~1.4.6",
+    "asn1js": "~3.0.6",
+    "cbor-x": "~1.5.9",
+    "jose": "^4.15.9",
+    "pkijs": "~3.0.16",
     "punycode.js": "^2.3.1",
-    "tldts": "~6.1.11"
+    "tldts": "~6.1.86"
   },
   "eslintConfig": {
     "root": true,
