@@ -51,6 +51,11 @@ function klon(source, target, breakCircular, trace) {
 			continue;
 		}
 
+		// Prevent prototype pollution
+		if (key === "__proto__" || key === "constructor" || key === "prototype") {
+			continue;
+		}
+
 		// Circular reference? Store the circular reference and move on to next property
 		const ref = circularReference = trace.get(prop);
 		if (ref) {
