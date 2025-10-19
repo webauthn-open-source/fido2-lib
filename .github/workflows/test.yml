@@ -93,7 +93,7 @@ jobs:
         with:
           commit_message: "[skip ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
           tagging_message: "${{ steps.package_version.outputs.current-version}}"
-          file_pattern: dist/*.js dist/*.cjs
+          file_pattern: dist/*.js
       - name: Update npm
         run: npm install -g npm@latest
       - run: npm run docs
