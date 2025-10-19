@@ -74,7 +74,7 @@ jobs:
           deno-version: "2.x"
       - name: Get current package version
         id: package_version
-        uses: martinbeentjes/npm-get-version-action@7aa1d82604bb2dbe377a64ca35e692e6fe333c9c # v1.2.3
+        uses: martinbeentjes/npm-get-version-action@3cf273023a0dda27efcd3164bdfb51908dd46a5b # v1.3.1
       - run: deno task build
       - run: npm ci
       - run: npm run build
