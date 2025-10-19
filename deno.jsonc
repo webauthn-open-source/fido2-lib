@@ -23,8 +23,8 @@
     "test:dist": "deno test --lock=deno-lock.json --importmap=import_map.dist.json --ignore=test/dist --allow-import test",
 
     /* Run after changing dependencies */
-    "update-deps": "deno cache -r --lock=deno-lock.json --lock-write --importmap=import_map.json test/main.test.js lib/main.js",
+    "update-deps": "deno cache -r --lock=deno-lock.json --importmap=import_map.json test/main.test.js lib/main.js --allow-import",
 
-    "build": "deno task test && (mkdir dist; deno bundle --lock=deno-lock.json lib/main.js dist/main.js) && deno task test:dist"
+    "build": "deno task test && deno bundle --lock=deno-lock.json lib/main.js -o dist/main.js --allow-import && deno bundle --lock=deno-lock.json lib/main.js --platform=browser -o dist/main.browser.js --allow-import && deno task test:dist"
   }
 }
