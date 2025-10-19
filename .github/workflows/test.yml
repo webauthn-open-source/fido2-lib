@@ -43,7 +43,7 @@ jobs:
           egress-policy: audit
       - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1.4.6
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
@@ -66,7 +66,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
-      - uses: actions/setup-node@f1f314fca9dfce2769ece7d933488f076716723e # v1.4.6
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: "24.x"
       - uses: denolib/setup-deno@4df079f84f6c4ef488b04806df9af59e51d09bfb # v2.3.0
