@@ -37,7 +37,7 @@
   "devDependencies": {
     "c8": "^8.0.1",
     "chai": "^4.5.0",
-    "chai-as-promised": "^7.1.2",
+    "chai-as-promised": "^8.0.2",
     "docdash": "^2.0.2",
     "eslint": "^8.57.1",
     "gh-pages": "^5.0.0",
