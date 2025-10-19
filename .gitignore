@@ -10,7 +10,7 @@ yarn.lock
 .vscode
 dist/*
 !dist/main.js
-!dist/main.cjs
+!dist/main.browser.js
 test/dist/*
 !test/dist/package.json
 coverage.lcov
