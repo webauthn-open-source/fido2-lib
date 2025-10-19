@@ -1,8 +1,8 @@
 {
-  "version": "3",
+  "version": "5",
   "redirects": {
     "https://unpkg.com/asn1js@3.0.5?module": "https://unpkg.com/asn1js@3.0.5/build/index.es.js?module",
-    "https://unpkg.com/asn1js@^3.0.5?module": "https://unpkg.com/asn1js@3.0.5/build/index.es.js?module",
+    "https://unpkg.com/asn1js@^3.0.5?module": "https://unpkg.com/asn1js@3.0.6/build/index.es.js?module",
     "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/bit?module": "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/bit.js?module",
     "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/bit_stream?module": "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/bit_stream.js?module",
     "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/byte_stream?module": "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/byte_stream.js?module",
@@ -11,7 +11,8 @@
     "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/seq_stream?module": "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/seq_stream.js?module",
     "https://unpkg.com/bytestreamjs@^2.0.0?module": "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/index.js?module",
     "https://unpkg.com/pkijs@3.0.15?module": "https://unpkg.com/pkijs@3.0.15/build/index.es.js?module",
-    "https://unpkg.com/pvtsutils@^1.3.2?module": "https://unpkg.com/pvtsutils@1.3.5/build/index.es.js?module",
+    "https://unpkg.com/pvtsutils@^1.3.2?module": "https://unpkg.com/pvtsutils@1.3.6/build/index.es.js?module",
+    "https://unpkg.com/pvtsutils@^1.3.6?module": "https://unpkg.com/pvtsutils@1.3.6/build/index.es.js?module",
     "https://unpkg.com/pvutils@^1.1.3?module": "https://unpkg.com/pvutils@1.1.3/build/utils.es.js?module"
   },
   "remote": {
@@ -19,7 +20,6 @@
     "https://deno.land/std@0.136.0/testing/_diff.ts": "d8743b5c15d34eb58ae7e4ad43295ee1c7a935029b460a056d901f3aefcead45",
     "https://deno.land/std@0.136.0/testing/_format.ts": "0d8dc79eab15b67cdc532826213bbe05bccfd276ca473a50a3fc7bbfb7260642",
     "https://deno.land/std@0.136.0/testing/asserts.ts": "61d85fc80f548a6e1e66d93fb7874a2c9e097aeecc00643c5f4f340370cde56f",
-    "https://deno.land/x/b64@1.1.25/dist/base64.min.mjs": "1ee1f0776c0a2038fc8496b470a2651d2f5b604319eaa7daf300548526f95c93",
     "https://deno.land/x/b64@1.1.28/dist/base64.min.mjs": "3af421878b7d88ecc08af2735842f951af79a73afe3f490034e2e1972f295410",
     "https://deno.land/x/cbor@v1.5.8/decode.js": "c11597d7e31641a59af7f3b3b3ef15bd9a697e2e6ecfa6670efcb9937b991ad9",
     "https://deno.land/x/cbor@v1.5.8/encode.js": "7d7107d73a42c37a096c0f8838b6e43a310b0e4868b911c6de0f6dc7ffa5f1b2",
@@ -107,17 +107,41 @@
     "https://deno.land/x/test_suite@0.16.1/describe.ts": "c0c944d8e4fba4c54f168ba8799aca4ffabe7cdecfac28c5dbaf0d1f8b345df1",
     "https://deno.land/x/test_suite@0.16.1/mod.ts": "16dd20330261d5de4a0b4f85676329eb77679649d01e6468898883e527c9e133",
     "https://deno.land/x/test_suite@0.16.1/test_suite.ts": "7854f0ab37d920355fe2e1a2c386f104601449eb93fcf537dafe30d6915a32d4",
-    "https://unpkg.com/asn1js@3.0.5/build/index.es.js?module": "48ff8d0f461a86989dfe5ce8133d9732517697c93e343a8e3e8d8511d95c5eeb",
-    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/bit.js?module": "b7df5624b5bd088751caaa569e122f6052ebafcb1857c3b5d829c00637009e83",
-    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/bit_stream.js?module": "531ec71e608c47bd2be88a60a716bc06b6e61d16ca8bf038e52f16152025b906",
-    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/byte_stream.js?module": "ae94869d120cc9c62648d22a0c8358a38749b412e802d1fee0f17277f8f79650",
-    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/helpers.js?module": "cad67cd361f8625aab190c46f6e2c3ed559de5f29d1dfe2aa45515723de62650",
-    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/index.js?module": "b28479744cbecb01cb69c4a49a8797d670ba4189270504a12b366d3bff9afc63",
-    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/seq_bit_stream.js?module": "85d9f73fefdfba00d037a13e5605a3db43852b38d47e65d55a55d2acd6259b7b",
-    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/seq_stream.js?module": "aa84f1a692c6a4244d493592318b14302c6c4753cf0fef58186c5cd4556a2591",
-    "https://unpkg.com/pkijs@3.0.15/build/index.es.js?module": "30ca868e524a18bd9a7fd6e1ee73549b6b9e6fc27bf25f40d96867f9d0bcc3c3",
-    "https://unpkg.com/pvtsutils@1.3.5/build/index.es.js?module": "c4eca4d375604c7930aa9d6e5421552b854de2e243df38175858db19a52bf4cf",
-    "https://unpkg.com/pvutils@1.1.3/build/utils.es.js?module": "6def4dab26340f2056fde9711dbf595396b64d53c720268b9f9a73c46940206f",
+    "https://unpkg.com/asn1js@3.0.5/build/index.es.js?module": "d81883a82fc2a279e2443d4fb5bbd8ab4da02d995f48f0f224a9da90767a0ffa",
+    "https://unpkg.com/asn1js@3.0.6/build/index.es.js?module": "67638ee7e0f924a6453ea844f3ce8ace993dc3a5914effe01ef05436019ed0af",
+    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/bit.js?module": "948aa3449ba484a4b33b8d251714a655ec67544e991902cd1773cab0c8cc1bfe",
+    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/bit_stream.js?module": "cb6918ab2e858ca9d9309e8bbf431ad18f9c70cca3d1115ce9f51ecd8e5be4a1",
+    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/byte_stream.js?module": "d265091e6b5209c1839b2c3f4d91df681a37bb1d3e3834891619d422277b634c",
+    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/helpers.js?module": "9fe919254ac3db6db045e008cce021c5223146d8d9fbb2b3c5aa45a9ec1b2abf",
+    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/index.js?module": "9cc09230554a166d515a9fc7cfdda21893e835a14d7f9ace07ba94e34b1172be",
+    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/seq_bit_stream.js?module": "afab6b08758fa2a614d92f30aedfbc90a4812ee4a101e1278f41eb185a22741b",
+    "https://unpkg.com/bytestreamjs@2.0.1/build/mjs/seq_stream.js?module": "7370ca6af5c23014345f05381440bdd5f12e11d965b5b429dc54e8f4aa306ebc",
+    "https://unpkg.com/pkijs@3.0.15/build/index.es.js?module": "0d9869ff95b28571972e79c2b339183692011ec50325d8f3e5d7cb65bb7666cc",
+    "https://unpkg.com/pvtsutils@1.3.6/build/index.es.js?module": "b452291586e6c44fdccfaf5ff03894c15c1ec0b1ccac7192e6a23968821cb98c",
+    "https://unpkg.com/pvutils@1.1.3/build/utils.es.js?module": "0578f1e3467599acc43b3e53006669b51acd9ef019524286b5443328e80f6b71",
     "https://unpkg.com/tldts@6.1.11/dist/index.esm.min.js": "e93d6a4fe311f54b298994803ab1654cbbc0ac70dbd6b8dea64e80a341c8a834"
+  },
+  "workspace": {
+    "packageJson": {
+      "dependencies": [
+        "npm:@hexagon/base64@~1.1.28",
+        "npm:@peculiar/webcrypto@~1.4.6",
+        "npm:asn1js@~3.0.6",
+        "npm:c8@^8.0.1",
+        "npm:cbor-x@~1.5.9",
+        "npm:chai-as-promised@^7.1.2",
+        "npm:chai@^4.5.0",
+        "npm:docdash@^2.0.2",
+        "npm:eslint@^8.57.1",
+        "npm:gh-pages@5",
+        "npm:jose@^4.15.9",
+        "npm:jsdoc@^4.0.5",
+        "npm:mocha@^10.8.2",
+        "npm:pkijs@~3.0.16",
+        "npm:punycode.js@^2.3.1",
+        "npm:rollup@^3.29.5",
+        "npm:tldts@~6.1.86"
+      ]
+    }
   }
 }
