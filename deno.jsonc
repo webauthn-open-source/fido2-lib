@@ -1,27 +1,26 @@
 {
   "lint": {
     "files": {
-      "include": ["lib/","test/"],
-      "exclude": ["dist/","test/dist/"]
+      "include": ["lib/", "test/"],
+      "exclude": ["dist/", "test/dist/"]
     }
   },
-  
+
   /* Never run deno fmt, unless you want to change formatting of all files */
   "fmt": {
     "files": {
-      "include": ["lib/","test/"]
+      "include": ["lib/", "test/"]
     }
   },
 
   "importMap": "import_map.json",
 
   "tasks": {
-    
     /* Run deno tests with `deno task test`, using default import map */
-    "test": "deno test --lock=deno-lock.json --ignore=test/dist test",
+    "test": "deno test --lock=deno-lock.json --ignore=test/dist --allow-import test",
 
     /* import_map.dist.json redirects ./lib -> ./dist, to make tests use dist/main.js instead of lib/main.js */
-    "test:dist": "deno test --lock=deno-lock.json --importmap=import_map.dist.json --ignore=test/dist test",
+    "test:dist": "deno test --lock=deno-lock.json --importmap=import_map.dist.json --ignore=test/dist --allow-import test",
 
     /* Run after changing dependencies */
     "update-deps": "deno cache -r --lock=deno-lock.json --lock-write --importmap=import_map.json test/main.test.js lib/main.js",
