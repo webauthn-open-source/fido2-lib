@@ -82,7 +82,7 @@ jobs:
       - run: git config --global user.email "https://mailhide.io/e/Wno7k"
       - name: Check if tag already exists
         id: tag_exists
-        uses: mukunku/tag-exists-action@f8003af57c02ede2638326be67523df10cf6b10a # v1.0.0
+        uses: mukunku/tag-exists-action@bdad1eaa119ce71b150b952c97351c75025c06a9 # v1.6.0
         with:
           tag: "${{ steps.package_version.outputs.current-version}}"
         env:
