@@ -6,7 +6,6 @@ on:
     branches: [master]
 
 permissions:
-  id-token: write # Required for OIDC
   contents: read
 
 jobs:
@@ -57,6 +56,7 @@ jobs:
     permissions:
       contents: write
       pages: write
+      id-token: write # Required for OIDC
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
@@ -88,13 +88,13 @@ jobs:
           tag: "${{ steps.package_version.outputs.current-version}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      - name: Git Auto Commit Deno Artifacts
-        if: steps.tag_exists.outputs.exists == 'false'
-        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
-        with:
-          commit_message: "[skip ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
-          tagging_message: "${{ steps.package_version.outputs.current-version}}"
-          file_pattern: dist/*.js
+      #- name: Git Auto Commit Deno Artifacts
+      #  if: steps.tag_exists.outputs.exists == 'false'
+      #  uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
+      #  with:
+      #    commit_message: "[skip ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
+      #    tagging_message: "${{ steps.package_version.outputs.current-version}}"
+      #    file_pattern: dist/*.js
       - name: Update npm
         run: npm install -g npm@latest
       - run: npm run docs
