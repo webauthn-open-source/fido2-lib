@@ -69,6 +69,7 @@ jobs:
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: "24.x"
+          registry-url: 'https://registry.npmjs.org'
       - uses: denolib/setup-deno@4df079f84f6c4ef488b04806df9af59e51d09bfb # v2.3.0
         with:
           deno-version: "2.x"
