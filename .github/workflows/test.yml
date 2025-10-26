@@ -17,12 +17,12 @@ jobs:
         deno-version: ["v2.x"]
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
         with:
           egress-policy: audit
 
       - name: Git Checkout Deno Module
-        uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Use Deno Version ${{ matrix.deno-version }}
         uses: denolib/setup-deno@4df079f84f6c4ef488b04806df9af59e51d09bfb # v2.3.0
         with:
@@ -38,10 +38,10 @@ jobs:
         node-version: [22.x, 24.x]
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
         with:
           egress-policy: audit
-      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
@@ -59,10 +59,10 @@ jobs:
       pages: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@8ca2b8b2ece13480cda6dacd3511b49857a23c09 # v2.5.1
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
         with:
           egress-policy: audit
-      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
@@ -82,14 +82,14 @@ jobs:
       - run: git config --global user.email "https://mailhide.io/e/Wno7k"
       - name: Check if tag already exists
         id: tag_exists
-        uses: mukunku/tag-exists-action@f8003af57c02ede2638326be67523df10cf6b10a # v1.0.0
+        uses: mukunku/tag-exists-action@bdad1eaa119ce71b150b952c97351c75025c06a9 # v1.6.0
         with:
           tag: "${{ steps.package_version.outputs.current-version}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Git Auto Commit Deno Artifacts
         if: steps.tag_exists.outputs.exists == 'false'
-        uses: stefanzweifel/git-auto-commit-action@49620cd3ed21ee620a48530e81dba0d139c9cb80 # v4.14.1
+        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
         with:
           commit_message: "[skip ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
           tagging_message: "${{ steps.package_version.outputs.current-version}}"
