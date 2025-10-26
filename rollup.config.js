@@ -8,6 +8,7 @@ const externals = [
 	"url",
 	"tldts",
 	"punycode",
+	"punycode.js",
 	"jose",
 	"pkijs",
 	"asn1js",
@@ -62,7 +63,7 @@ export default [
 		external: [...externals,...devExternals],
 		output: {
 			dir: "test/dist/",
-			format: "cjs",
+			format: "esm",
 		},
 		onwarn: surpressWarnings,
 	},
