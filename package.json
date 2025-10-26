@@ -11,7 +11,7 @@
     "lint:fix": "eslint --fix .",
     "build": "npm run test && npx rollup -c rollup.config.js && npm run test:dist",
     "test": "c8 mocha",
-    "test:dist": "npx mocha test/dist",
+    "test:dist": "npx mocha \"test/dist/**/*.mjs\"",
     "report": "c8 report --reporter=text-lcov > coverage.lcov",
     "docs": "jsdoc -c ./.jsdoc-conf.json",
     "publish-docs": "gh-pages --repo https://$GH_TOKEN@github.com/webauthn-open-source/fido2-lib.git --dist docs"

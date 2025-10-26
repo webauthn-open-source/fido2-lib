@@ -64,6 +64,8 @@ export default [
 		output: {
 			dir: "test/dist/",
 			format: "esm",
+			entryFileNames: "[name].mjs",
+			chunkFileNames: "[name]-[hash].mjs",
 		},
 		onwarn: surpressWarnings,
 	},

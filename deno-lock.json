@@ -135,7 +135,7 @@
         "npm:docdash@^2.0.2",
         "npm:eslint@^8.57.1",
         "npm:gh-pages@5",
-        "npm:jose@^4.15.9",
+        "npm:jose@^6.1.0",
         "npm:jsdoc@^4.0.5",
         "npm:mocha@^10.8.2",
         "npm:pkijs@~3.0.16",
