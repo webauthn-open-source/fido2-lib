@@ -89,7 +89,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - name: Git Auto Commit Deno Artifacts
         if: steps.tag_exists.outputs.exists == 'false'
-        uses: stefanzweifel/git-auto-commit-action@49620cd3ed21ee620a48530e81dba0d139c9cb80 # v4.14.1
+        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
         with:
           commit_message: "[skip ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
           tagging_message: "${{ steps.package_version.outputs.current-version}}"
