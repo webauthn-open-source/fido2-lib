@@ -42,7 +42,7 @@
     "eslint": "^8.57.1",
     "gh-pages": "^5.0.0",
     "jsdoc": "^4.0.5",
-    "mocha": "^10.8.2",
+    "mocha": "^11.7.4",
     "rollup": "^3.29.5"
   },
   "dependencies": {
