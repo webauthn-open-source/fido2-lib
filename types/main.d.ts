@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-import {JWTPayload} from "jose/dist/types/types";
+import {JWTPayload} from 'jose';
 
 declare module "fido2-lib" {
 
