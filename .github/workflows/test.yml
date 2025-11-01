@@ -27,7 +27,7 @@ jobs:
         with:
           deno-version: ${{ matrix.deno-version }}
       - name: Test Module
-        run: deno task test # bundling disabled until issue #178 is fixed
+        run: deno task build
 
   test_node:
     runs-on: ${{ matrix.os }}
@@ -76,7 +76,7 @@ jobs:
       - name: Get current package version
         id: package_version
         uses: martinbeentjes/npm-get-version-action@3cf273023a0dda27efcd3164bdfb51908dd46a5b # v1.3.1
-      - run: deno task test # bundling disabled until issue #178 is fixed
+      - run: deno task build
       - run: npm ci
       - run: npm run build
       - run: git config --global user.name "JamesCullum (Pseudonym)"
