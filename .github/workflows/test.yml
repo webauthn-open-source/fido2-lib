@@ -27,7 +27,7 @@ jobs:
         with:
           deno-version: ${{ matrix.deno-version }}
       - name: Test Module
-        run: deno task test # bundling disabled until issue #178 is fixed
+        run: deno task build
 
   test_node:
     runs-on: ${{ matrix.os }}
@@ -76,7 +76,7 @@ jobs:
       - name: Get current package version
         id: package_version
         uses: martinbeentjes/npm-get-version-action@3cf273023a0dda27efcd3164bdfb51908dd46a5b # v1.3.1
-      - run: deno task test # bundling disabled until issue #178 is fixed
+      - run: deno task build
       - run: npm ci
       - run: npm run build
       - run: git config --global user.name "JamesCullum (Pseudonym)"
@@ -88,13 +88,13 @@ jobs:
           tag: "${{ steps.package_version.outputs.current-version}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-      #- name: Git Auto Commit Deno Artifacts
-      #  if: steps.tag_exists.outputs.exists == 'false'
-      #  uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
-      #  with:
-      #    commit_message: "[skip ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
-      #    tagging_message: "${{ steps.package_version.outputs.current-version}}"
-      #    file_pattern: dist/*.js
+      - name: Git Auto Commit Deno Artifacts
+        if: steps.tag_exists.outputs.exists == 'false'
+        uses: stefanzweifel/git-auto-commit-action@28e16e81777b558cc906c8750092100bbb34c5e3 # v7.0.0
+        with:
+          commit_message: "[skip ci] v${{ steps.package_version.outputs.current-version}}: Build artifacts for Deno"
+          tagging_message: "${{ steps.package_version.outputs.current-version}}"
+          file_pattern: dist/*.js
       - name: Update npm
         run: npm install -g npm@latest
       - run: npm run docs
