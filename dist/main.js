@@ -42936,36 +42936,37 @@ function resolveOid(id, value) {
   }
 }
 function decodeValue(valueBlock) {
-  const blockType = Object.getPrototypeOf(valueBlock).constructor.name;
-  switch (blockType) {
-    case "LocalIntegerValueBlock":
-      return valueBlock.valueDec;
-    case "LocalOctetStringValueBlock":
-      return valueBlock.valueHex;
-    case "LocalUtf8StringValueBlock":
-      return valueBlock.value;
-    case "LocalSimpleStringValueBlock":
-      return valueBlock.value;
-    case "OctetString":
-      return valueBlock.valueBlock.valueHex;
-    case "LocalBitStringValueBlock":
-      return new Uint8Array(valueBlock.valueHex)[0];
-    case "LocalBmpStringValueBlock":
-      return valueBlock.value;
-    case "LocalConstructedValueBlock":
-      if (typeof valueBlock === "object" && Array.isArray(valueBlock.value)) {
-        return valueBlock.value.map((v) => decodeValue(v));
-      }
-      return valueBlock;
-    case "Constructed":
-      return decodeValue(valueBlock.valueBlock.value[0]);
-    case "BmpString":
-      return decodeValue(valueBlock.valueBlock);
-    case "Utf8String":
-      return valueBlock.valueBlock.value;
-    default:
-      throw new TypeError("unknown value type when decoding certificate: " + blockType);
+  if (valueBlock && typeof valueBlock === "object" && "valueBlock" in valueBlock && valueBlock.valueBlock) {
+    const innerBlock = valueBlock.valueBlock;
+    if (Array.isArray(innerBlock.value) && innerBlock.value.length > 0) {
+      return decodeValue(innerBlock.value[0]);
+    }
+    if ("value" in innerBlock && typeof innerBlock.value === "string") {
+      return innerBlock.value;
+    }
+    if ("valueHex" in innerBlock && innerBlock.valueHex instanceof ArrayBuffer) {
+      return innerBlock.valueHex;
+    }
+    return decodeValue(innerBlock);
   }
+  if ("valueDec" in valueBlock) {
+    return valueBlock.valueDec;
+  }
+  if ("unusedBits" in valueBlock && "valueHex" in valueBlock && valueBlock.valueHex instanceof ArrayBuffer) {
+    return new Uint8Array(valueBlock.valueHex)[0];
+  }
+  if ("isConstructed" in valueBlock && "valueHex" in valueBlock && !("unusedBits" in valueBlock) && valueBlock.valueHex instanceof ArrayBuffer) {
+    return valueBlock.valueHex;
+  }
+  if (typeof valueBlock === "object" && !("valueBlock" in valueBlock) && "value" in valueBlock && Array.isArray(valueBlock.value)) {
+    return valueBlock.value.map((v) => decodeValue(v));
+  }
+  if ("value" in valueBlock && typeof valueBlock.value === "string") {
+    return valueBlock.value;
+  }
+  const blockType = Object.getPrototypeOf(valueBlock).constructor.name;
+  const availableProps = Object.keys(valueBlock).join(", ");
+  throw new TypeError(`unknown value type when decoding certificate: ${blockType} (properties: ${availableProps})`);
 }
 function decodeU2FTransportType(u2fRawTransports) {
   const bitLen = 3;
