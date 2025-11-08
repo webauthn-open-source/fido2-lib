@@ -43,7 +43,7 @@
     "gh-pages": "^6.3.0",
     "jsdoc": "^4.0.5",
     "mocha": "^10.8.2",
-    "rollup": "^3.29.5"
+    "rollup": "^4.53.1"
   },
   "dependencies": {
     "@hexagon/base64": "~1.1.28",
