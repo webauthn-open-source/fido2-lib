@@ -40,7 +40,7 @@
     "chai-as-promised": "^7.1.2",
     "docdash": "^2.0.2",
     "eslint": "^8.57.1",
-    "gh-pages": "^5.0.0",
+    "gh-pages": "^6.3.0",
     "jsdoc": "^4.0.5",
     "mocha": "^10.8.2",
     "rollup": "^3.29.5"
