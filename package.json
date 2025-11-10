@@ -39,7 +39,7 @@
     "chai": "^4.5.0",
     "chai-as-promised": "^7.1.2",
     "docdash": "^2.0.2",
-    "eslint": "^8.57.1",
+    "eslint": "^9.39.1",
     "gh-pages": "^6.3.0",
     "jsdoc": "^4.0.5",
     "mocha": "^11.7.5",
