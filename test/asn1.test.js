@@ -1,4 +1,4 @@
-import base64 from "@hexagon/base64";
+import { base64 } from "@hexagon/base64";
 
 // Testing lib
 import * as chai from "chai";
