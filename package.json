@@ -39,7 +39,7 @@
     "chai": "^4.5.0",
     "chai-as-promised": "^7.1.2",
     "docdash": "^2.0.2",
-    "eslint": "^8.57.1",
+    "eslint": "^9.39.1",
     "gh-pages": "^6.3.0",
     "jsdoc": "^4.0.5",
     "mocha": "^11.7.5",
@@ -54,80 +54,6 @@
     "pkijs": "~3.3.2",
     "punycode.js": "^2.3.1",
     "tldts": "~7.0.17"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "rules": {
-      "space-before-function-paren": [
-        "error",
-        {
-          "anonymous": "never",
-          "named": "never",
-          "asyncArrow": "always"
-        }
-      ],
-      "no-mixed-spaces-and-tabs": "error",
-      "quotes": [
-        "error",
-        "double",
-        {
-          "avoidEscape": true
-        }
-      ],
-      "comma-dangle": [
-        "error",
-        {
-          "arrays": "always-multiline",
-          "objects": "always-multiline",
-          "imports": "never",
-          "exports": "never",
-          "functions": "ignore"
-        }
-      ],
-      "indent": [
-        "error",
-        "tab",
-        {
-          "SwitchCase": 1
-        }
-      ],
-      "semi": [
-        "error",
-        "always"
-      ],
-      "no-multiple-empty-lines": [
-        "error",
-        {
-          "max": 2,
-          "maxEOF": 1
-        }
-      ],
-      "no-var": [
-        "error"
-      ]
-    },
-    "parserOptions": {
-      "requireConfigFile": false,
-      "sourceType": "module",
-      "ecmaVersion": 13
-    },
-    "ignorePatterns": [
-      "dist/*",
-      "test/dist/*"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "**/__tests__/*.{j,t}s?(x)"
-        ],
-        "env": {
-          "mocha": true
-        }
-      }
-    ]
   },
   "engines": {
     "node": ">=10"
