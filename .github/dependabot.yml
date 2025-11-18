@@ -4,6 +4,10 @@ updates:
     directory: /
     schedule:
       interval: daily
+    groups:
+      all-updates:
+        patterns:
+          - "*" # Group all into one
 
   - package-ecosystem: npm
     directory: /
