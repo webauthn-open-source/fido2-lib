@@ -98,6 +98,7 @@ declare module "fido2-lib" {
     origin: string;
     challenge: string;
     factor: Factor;
+    userVerification?: UserVerification;
   }
 
   interface Fido2AttestationResult {
@@ -153,6 +154,7 @@ declare module "fido2-lib" {
     publicKey: string;
     prevCounter: number;
     userHandle: string | null;
+    userVerification?: UserVerification;
     allowCredentials?: PublicKeyCredentialDescriptor[];
   }
 

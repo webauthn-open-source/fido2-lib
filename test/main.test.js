@@ -589,6 +589,40 @@ describe("Fido2Lib", function() {
 		});
 
 		it("catches bad requests");
+
+		it("validates attestation with factor first and no userVerification does not require UV", async function() {
+			const expectations = {
+				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+				origin: "https://localhost:8443",
+				factor: "first",
+			};
+
+			const res = await serv.attestationResult(
+				h.lib.makeCredentialAttestationNoneResponse,
+				expectations,
+			);
+
+			assert.instanceOf(res, Fido2AttestationResult);
+			return res;
+		});
+
+		it("rejects attestation with factor first and userVerification required when UV not set", async function() {
+			const expectations = {
+				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+				origin: "https://localhost:8443",
+				factor: "first",
+				userVerification: "required",
+			};
+
+			return assert.isRejected(
+				serv.attestationResult(
+					h.lib.makeCredentialAttestationNoneResponse,
+					expectations,
+				),
+				Error,
+				"expected flag was not set: UV",
+			);
+		});
 	});
 
 	describe("assertionOptions", function() {
