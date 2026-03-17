@@ -9,6 +9,7 @@ import * as h from "./helpers/fido2-helpers.js";
 import { cosePublicKey } from "./fixtures/cosePublicKey.js";
 
 import { rsaPublicKey } from "./fixtures/rsaPublicKey.js";
+import { eddsaPublicKey } from "./fixtures/eddsaPublicKey.js";
 
 use(chaiAsPromised.default);
 
@@ -180,6 +181,50 @@ describe("key utils", function() {
 					"couldn't parse authenticator.authData.attestationData CBOR: Error:",
 				);
 			});
+
+			describe("can import Ed25519 cose public key", function() {
+				const k = new PublicKey();
+				it("can import", async () => {
+					await k.fromCose(tools.base64.toArrayBuffer(eddsaPublicKey.exampleBase64));
+				});
+				it("has key data", () => {
+					assert.isDefined(k.getKey());
+				});
+				it("correctly identifies algorithm as Ed25519 without hash or namedCurve", () => {
+					const alg = k.getAlgorithm();
+					assert.equal(alg.name, "Ed25519");
+					assert.isUndefined(alg.hash);
+					assert.isUndefined(alg.namedCurve);
+				});
+				it("can export to jwk", () => {
+					const jwk = k.toJwk();
+					assert.equal(jwk.alg, "EdDSA");
+					assert.equal(jwk.crv, "Ed25519");
+					assert.equal(jwk.kty, "OKP");
+				});
+				it("can export to PEM", async () => {
+					const pem = await k.toPem();
+					assert.equal(pem, eddsaPublicKey.examplePem);
+				});
+			});
+
+			describe("can import Ed25519 pem public key", function() {
+				const k = new PublicKey();
+				it("can import", async () => {
+					await k.fromPem(eddsaPublicKey.examplePem);
+				});
+				it("has key data", () => {
+					assert.isDefined(k.getKey());
+				});
+				it("correctly identifies algorithm as Ed25519", () => {
+					const alg = k.getAlgorithm();
+					assert.equal(alg.name, "Ed25519");
+				});
+				it("can re-export to identical PEM (using original pem)", async () => {
+					const pem = await k.toPem();
+					assert.equal(pem, eddsaPublicKey.examplePem);
+				});
+			});
 		});
 	});
 	describe("coseAlgToHashStr", () => {
@@ -213,6 +258,9 @@ describe("key utils", function() {
 	describe("coseAlgToStr", () => {
 		it("Returns SHA1 for -65535", () => {
 			assert.equal("RSASSA-PKCS1-v1_5_w_SHA1", coseAlgToStr(-65535));
+		});
+		it("Returns EdDSA for -8", () => {
+			assert.equal("EdDSA", coseAlgToStr(-8));
 		});
 		it("Throws on string representation", () => {
 			assert.throws(() => {

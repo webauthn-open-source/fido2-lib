@@ -4,10 +4,12 @@ import * as chai from "chai";
 // Helpers
 import * as h from "./helpers/fido2-helpers.js";
 
-import { appendBuffer, tools } from "../lib/main.js";
+import { appendBuffer, PublicKey, tools } from "../lib/main.js";
 
 // Test subject
 import { arrayBufferEquals, parseAuthnrAssertionResponse } from "../lib/main.js";
+
+import { eddsaPublicKey } from "./fixtures/eddsaPublicKey.js";
 const assert = chai.assert;
 
 describe("parseAuthnrAssertionResponse", function() {
@@ -70,6 +72,31 @@ describe("validate signature", function() {
 			sig,
 			appendBuffer(authnrData, clientDataHashBuf),
 			"SHA-256",
+		);
+		assert.equal(verify, true);
+	});
+
+	it("works with Ed25519 from PEM", async function() {
+		const pk = eddsaPublicKey.examplePem;
+		const sig = tools.base64.toArrayBuffer(eddsaPublicKey.testSignature, true);
+		const data = tools.base64.toArrayBuffer(eddsaPublicKey.testData, true);
+		const verify = await tools.verifySignature(
+			pk,
+			sig,
+			data,
+		);
+		assert.equal(verify, true);
+	});
+
+	it("works with Ed25519 from COSE", async function() {
+		const k = new PublicKey();
+		await k.fromCose(tools.base64.toArrayBuffer(eddsaPublicKey.exampleBase64));
+		const sig = tools.base64.toArrayBuffer(eddsaPublicKey.testSignature, true);
+		const data = tools.base64.toArrayBuffer(eddsaPublicKey.testData, true);
+		const verify = await tools.verifySignature(
+			k,
+			sig,
+			data,
 		);
 		assert.equal(verify, true);
 	});
