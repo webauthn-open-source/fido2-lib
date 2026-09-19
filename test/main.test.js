@@ -974,6 +974,26 @@ describe("Fido2Lib", function() {
 			return res;
 		});
 
+		it("ignores a userVerification inherited from the prototype chain", function() {
+			const expectations = Object.assign(
+				Object.create({ userVerification: "discouraged" }),
+				{
+					challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+					origin: "https://localhost:8443",
+					factor: "first",
+					publicKey: h.lib.assnPublicKey,
+					prevCounter: 362,
+					userHandle: null,
+				},
+			);
+
+			return assert.isRejected(
+				serv.assertionResult(h.lib.assertionResponse, expectations),
+				Error,
+				"expected flag was not set: UV",
+			);
+		});
+
 		it("throws on an unknown userVerification", function() {
 			const expectations = {
 				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
