@@ -2,6 +2,10 @@
 const ecdsaPublicKey = {
 	examplePem:
 		"-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEJBQFy4iWxx2yMO6+8Zxjd+qVm+eB\nVWvpZB+TTduzRNmSsrZ6uoxdOPvuq3Q4MSeKpD1+0K630LrghYbo0mfihw==\n-----END PUBLIC KEY-----\n",
+	examplePemP384:
+		"-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEy0f+ui1ZpK32+INO+x1zi49gF3jcjflU\nlVsZW3j5A5hZOxLAdJTqV0f89dCNkdO4gTRNW2b+VLuzFJlH8pZodtMICcdv/wCA\nYYXk8JXmpHMwrZGZyf/f6YlWTrALAEkx\n-----END PUBLIC KEY-----\n",
+	examplePemP521:
+		"-----BEGIN PUBLIC KEY-----\nMIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQAj7iPZatE+yoQqkCr015UDHBphKqJ\n009TCNiUZsLLP1ydWFnajQy5cWB21Rr6w0LK6dQCKZhMEk6/Fj/FxCcWtVIA9luv\nFltpHbJ3r6HiSbLCMQncOicwf+GlVFIWkTC7NpGmcAwRHXXB+5+jp8FK3iito3C+\noLI9TWxizmQ7a7k8a8k=\n-----END PUBLIC KEY-----\n",
 };
 
 export { ecdsaPublicKey };
