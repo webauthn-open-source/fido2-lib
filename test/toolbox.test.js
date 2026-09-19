@@ -3,12 +3,15 @@ import * as chai from "chai";
 
 // Helpers
 import { tools } from "../lib/main.js";
+import { abToPem } from "../lib/utils.js";
 const assert = chai.assert;
 const {
 	checkOrigin,
 	checkRpId,
 	checkUrl,
 	checkDomainOrUrl,
+	verifySignature,
+	webcrypto,
 } = tools;
 
 describe("toolbox", function() {
@@ -336,6 +339,67 @@ describe("toolbox", function() {
 		it("should return value when value is valid url", () => {
 			const ret = checkDomainOrUrl("https://www.test.com", "test");
 			assert.strictEqual(ret, "https://www.test.com");
+		});
+	});
+
+	describe("verifySignature", () => {
+		// webcrypto signs ECDSA in raw form, authenticators send DER, which is what verifySignature takes
+		function rawToDer(raw) {
+			const encodeInt = (bytes) => {
+				let start = 0;
+				while (start < bytes.length - 1 && bytes[start] === 0) start++;
+				const v = [...bytes.slice(start)];
+				if (v[0] & 0x80) v.unshift(0x00);
+				return [0x02, v.length, ...v];
+			};
+			const half = raw.length / 2;
+			const body = [
+				...encodeInt(raw.slice(0, half)),
+				...encodeInt(raw.slice(half)),
+			];
+			const len = body.length < 0x80 ? [body.length] : [0x81, body.length];
+			return new Uint8Array([0x30, ...len, ...body]);
+		}
+
+		async function signWith(namedCurve, hash) {
+			const pair = await webcrypto.subtle.generateKey(
+				{ name: "ECDSA", namedCurve },
+				true,
+				["sign", "verify"],
+			);
+			const pem = abToPem(
+				"PUBLIC KEY",
+				await webcrypto.subtle.exportKey("spki", pair.publicKey),
+			);
+			const data = new TextEncoder().encode("fido2-lib signature test");
+			const raw = new Uint8Array(
+				await webcrypto.subtle.sign(
+					{ name: "ECDSA", hash: { name: hash } },
+					pair.privateKey,
+					data,
+				),
+			);
+			return { pem, data, sig: rawToDer(raw) };
+		}
+
+		const curves = [
+			["P-256", "SHA-256"],
+			["P-384", "SHA-384"],
+			["P-521", "SHA-512"],
+		];
+
+		curves.forEach(([namedCurve, hash]) => {
+			it(`verifies an ECDSA ${namedCurve} signature`, async () => {
+				const { pem, data, sig } = await signWith(namedCurve, hash);
+				assert.isTrue(await verifySignature(pem, sig, data, hash));
+			});
+
+			it(`rejects a tampered ECDSA ${namedCurve} signature`, async () => {
+				const { pem, data, sig } = await signWith(namedCurve, hash);
+				const tampered = new Uint8Array(data);
+				tampered[0] ^= 0xff;
+				assert.isFalse(await verifySignature(pem, sig, tampered, hash));
+			});
 		});
 	});
 });
