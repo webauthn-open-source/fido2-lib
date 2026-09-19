@@ -14,3 +14,4 @@ dist/*
 test/dist/*
 !test/dist/package.json
 coverage.lcov
+deno.lock
