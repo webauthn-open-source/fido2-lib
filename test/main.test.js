@@ -588,6 +588,103 @@ describe("Fido2Lib", function() {
 				});
 		});
 
+		it("requires the UV flag for factor 'first' when no userVerification is given", function() {
+			const expectations = {
+				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+				origin: "https://localhost:8443",
+				factor: "first",
+			};
+
+			return assert.isRejected(
+				serv.attestationResult(
+					h.lib.makeCredentialAttestationNoneResponse,
+					expectations,
+				),
+				Error,
+				"expected flag was not set: UV",
+			);
+		});
+
+		it("doesn't require the UV flag for factor 'first' when userVerification is 'preferred'", async function() {
+			const expectations = {
+				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+				origin: "https://localhost:8443",
+				factor: "first",
+				userVerification: "preferred",
+			};
+
+			const res = await serv.attestationResult(
+				h.lib.makeCredentialAttestationNoneResponse,
+				expectations,
+			);
+
+			assert.instanceOf(res, Fido2AttestationResult);
+			return res;
+		});
+
+		it("requires the UV flag for factor 'either' when userVerification is 'required'", function() {
+			const expectations = {
+				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+				origin: "https://localhost:8443",
+				factor: "either",
+				userVerification: "required",
+			};
+
+			return assert.isRejected(
+				serv.attestationResult(
+					h.lib.makeCredentialAttestationNoneResponse,
+					expectations,
+				),
+				Error,
+				"expected flag was not set: UV",
+			);
+		});
+
+		it("validates a credential with the UV flag set when userVerification is 'required'", async function() {
+			const expectations = {
+				challenge: "zBNZ9XmBj4cu7xxYI_uSJauAj89yOTZX1xEqKxhQydhYCTdoKB0k8bzs3llRrBxQlNn3WyRovWvYAXmuIiswLQ",
+				origin: "http://localhost:3000",
+				factor: "second",
+				userVerification: "required",
+			};
+
+			const parsedPackedSelfAttestationResponse = {
+				...packedSelfAttestationResponse,
+				id: tools.base64.toArrayBuffer(packedSelfAttestationResponse.id),
+				rawId: tools.base64.toArrayBuffer(packedSelfAttestationResponse.rawId),
+				response: {
+					attestationObject: tools.base64.toArrayBuffer(packedSelfAttestationResponse.response.attestationObject),
+					clientDataJSON: tools.base64.toArrayBuffer(packedSelfAttestationResponse.response.clientDataJSON),
+				},
+			};
+
+			const res = await serv.attestationResult(
+				parsedPackedSelfAttestationResponse,
+				expectations,
+			);
+
+			assert.instanceOf(res, Fido2AttestationResult);
+			return res;
+		});
+
+		it("throws on an unknown userVerification", function() {
+			const expectations = {
+				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+				origin: "https://localhost:8443",
+				factor: "either",
+				userVerification: "sometimes",
+			};
+
+			return assert.isRejected(
+				serv.attestationResult(
+					h.lib.makeCredentialAttestationNoneResponse,
+					expectations,
+				),
+				TypeError,
+				"userVerification should be 'required', 'preferred' or 'discouraged'",
+			);
+		});
+
 		it("catches bad requests");
 	});
 
@@ -753,6 +850,146 @@ describe("Fido2Lib", function() {
 				assert.instanceOf(res, Fido2AssertionResult);
 				return res;
 			});
+		});
+
+		it("requires the UV flag for factor 'first' when no userVerification is given", function() {
+			const expectations = {
+				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+				origin: "https://localhost:8443",
+				factor: "first",
+				publicKey: h.lib.assnPublicKey,
+				prevCounter: 362,
+				userHandle: null,
+			};
+
+			return assert.isRejected(
+				serv.assertionResult(h.lib.assertionResponse, expectations),
+				Error,
+				"expected flag was not set: UV",
+			);
+		});
+
+		it("doesn't require the UV flag for factor 'first' when userVerification is 'preferred'", async function() {
+			const expectations = {
+				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+				origin: "https://localhost:8443",
+				factor: "first",
+				userVerification: "preferred",
+				publicKey: h.lib.assnPublicKey,
+				prevCounter: 362,
+				userHandle: null,
+			};
+
+			const res = await serv.assertionResult(
+				h.lib.assertionResponse,
+				expectations,
+			);
+
+			assert.instanceOf(res, Fido2AssertionResult);
+			return res;
+		});
+
+		it("doesn't require the UV flag for factor 'first' when userVerification is 'discouraged'", async function() {
+			const expectations = {
+				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+				origin: "https://localhost:8443",
+				factor: "first",
+				userVerification: "discouraged",
+				publicKey: h.lib.assnPublicKey,
+				prevCounter: 362,
+				userHandle: null,
+			};
+
+			const res = await serv.assertionResult(
+				h.lib.assertionResponse,
+				expectations,
+			);
+
+			assert.instanceOf(res, Fido2AssertionResult);
+			return res;
+		});
+
+		it("requires the UV flag for factor 'second' when userVerification is 'required'", function() {
+			const expectations = {
+				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+				origin: "https://localhost:8443",
+				factor: "second",
+				userVerification: "required",
+				publicKey: h.lib.assnPublicKey,
+				prevCounter: 362,
+				userHandle: null,
+			};
+
+			return assert.isRejected(
+				serv.assertionResult(h.lib.assertionResponse, expectations),
+				Error,
+				"expected flag was not set: UV",
+			);
+		});
+
+		it("requires the UV flag for factor 'either' when userVerification is 'required'", function() {
+			const expectations = {
+				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+				origin: "https://localhost:8443",
+				factor: "either",
+				userVerification: "required",
+				publicKey: h.lib.assnPublicKey,
+				prevCounter: 362,
+				userHandle: null,
+			};
+
+			return assert.isRejected(
+				serv.assertionResult(h.lib.assertionResponse, expectations),
+				Error,
+				"expected flag was not set: UV",
+			);
+		});
+
+		it("validates an assertion with the UV flag set when userVerification is 'required'", async function() {
+			const expectations = {
+				challenge: "g_Pu32bpluktxugNNBLX-ZO5N9ub0D50bJERbKiU2GWON3md0rR9CaQYdPHdCgo-dpi1-9gbJJvmCuHDnh04Rg",
+				origin: "https://mighty-fireant-84.loca.lt",
+				factor: "second",
+				userVerification: "required",
+				publicKey: "-----BEGIN PUBLIC KEY-----\n" +
+					"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0dBhdNNvh2NkaNstlFhrBhi9yrjP\n" +
+					"0qPqZvRRnf3zQiN9zDwJ9ZXoyO4dhKz3OIhMBJG6F+muH35fEsWBZI6dhg==\n" +
+					"-----END PUBLIC KEY-----\n",
+				prevCounter: 0,
+				userHandle: null,
+			};
+
+			const assertionResponse = {
+				rawId: coerceToArrayBuffer("7S8aQSSxqPkztahKbgw36Mr_-hE", "rawId"),
+				response: {
+					authenticatorData: coerceToArrayBuffer("YS67HU8UTNyqQ5f-EVzitWw5paVnpyhQli2ahN6PS6UFAAAAAA", "authenticatorData"),
+					clientDataJSON: coerceToArrayBuffer("eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiZ19QdTMyYnBsdWt0eHVnTk5CTFgtWk81Tjl1YjBENTBiSkVSYktpVTJHV09OM21kMHJSOUNhUVlkUEhkQ2dvLWRwaTEtOWdiSkp2bUN1SERuaDA0UmciLCJvcmlnaW4iOiJodHRwczovL21pZ2h0eS1maXJlYW50LTg0LmxvY2EubHQifQ", "clientDataJSON"),
+					signature: coerceToArrayBuffer("MEQCIEhIhQBglBn1iGMDgF4WFDG7ISJHD1C1Q60drTaijjV2AiBOnQleadMnzcMJ0EBpwoP8zr2V5lBuKvpNfJrcbC1T4w", "signature"),
+				},
+			};
+
+			const res = await serv.assertionResult(assertionResponse, expectations);
+
+			assert.instanceOf(res, Fido2AssertionResult);
+			return res;
+		});
+
+		it("throws on an unknown userVerification", function() {
+			const expectations = {
+				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+				origin: "https://localhost:8443",
+				factor: "either",
+				userVerification: "sometimes",
+				publicKey: h.lib.assnPublicKey,
+				prevCounter: 362,
+				userHandle: null,
+			};
+
+			return assert.isRejected(
+				serv.assertionResult(h.lib.assertionResponse, expectations),
+				TypeError,
+				"userVerification should be 'required', 'preferred' or 'discouraged'",
+			);
 		});
 	});
 
