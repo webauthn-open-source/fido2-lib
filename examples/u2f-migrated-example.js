@@ -1,5 +1,4 @@
-const { Fido2Lib } = require("fido2-lib");
-const { coerceToArrayBuffer, coerceToBase64Url } = require("fido2-lib/lib/utils");
+import { Fido2Lib, PublicKey, coerceToArrayBuffer, coerceToBase64Url } from "fido2-lib";
 
 // STEP 1: Add the extension for app id like specified in https://developers.yubico.com/WebAuthn/WebAuthn_Developer_Guide/Migrating_from_U2F.html
 const optionGeneratorFn = (extName, type, value) => value;
@@ -17,6 +16,12 @@ const f2l = new Fido2Lib({
 });
 f2l.enableExtension("appid");
 
+// parse a public key from its base64 encoded COSE form
+const storedCosePublicKeyToPem = async (b64Cose) => {
+	const key = await new PublicKey().fromCose(coerceToArrayBuffer(b64Cose, "pkey"));
+	return key.toPem();
+};
+
 const main = async () => {
 	// STEP 3: Generate authentication challenge
 	const authnOptions = await f2l.assertionOptions({
@@ -25,7 +30,7 @@ const main = async () => {
 		},
 	});
 	// encode challenge in format supported for data transfer
-	authnOptions.challenge = coerceToBase64Url(authOpts.challenge, "challenge");
+	authnOptions.challenge = coerceToBase64Url(authnOptions.challenge, "challenge");
 
 	const authnChallenge = {
 		allowCredentials: [ // force only specific credentials
@@ -61,7 +66,7 @@ const main = async () => {
 		origin: "https://www.example.com",
 		rpId: authnChallenge.extensions.appid,
 		factor: "either",
-		publicKey: jwkToPem(coseToJwk(coerceToArrayBuffer("pQECAy...", "pkey"))), // parse public key from base64 encoded format, useful if you don't store them in PEM format
+		publicKey: await storedCosePublicKeyToPem("pQECAy..."), // useful if you don't store the key in PEM format
 		prevCounter: 1234,
 		userHandle: null,
 	};
@@ -84,6 +89,8 @@ const main = async () => {
 	const authenticated = validResponse && newCounter > expectedAuthn.prevCounter; // double check also counter to make sure auth passed
 	console.log(authenticated); // true
 };
+
+await main();
 
 // NOTE! for migrating your u2f credentials to webauthn you can use this example:
 // https://github.com/cedarcode/webauthn-ruby/blob/master/docs/u2f_migration.md
