@@ -550,6 +550,8 @@ describe("Fido2Lib", function() {
 				expectations,
 			).then((res) => {
 				assert.instanceOf(res, Fido2AttestationResult);
+				// audit must describe the attestation cert, not the intermediate behind it
+				assert.strictEqual(res.audit.info.get("organization-name"), "Google LLC");
 				return res;
 			});
 		});
