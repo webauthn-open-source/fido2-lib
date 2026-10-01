@@ -16,14 +16,14 @@ jobs:
         deno-version: ["v2.x"]
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
 
       - name: Git Checkout Deno Module
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Use Deno Version ${{ matrix.deno-version }}
-        uses: denolib/setup-deno@4df079f84f6c4ef488b04806df9af59e51d09bfb # v2.3.0
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: ${{ matrix.deno-version }}
       - name: Test Module
@@ -37,7 +37,7 @@ jobs:
         node-version: [22.x, 24.x]
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -59,7 +59,7 @@ jobs:
       id-token: write # Required for OIDC
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2.15.0
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
         with:
           egress-policy: audit
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -70,7 +70,7 @@ jobs:
         with:
           node-version: "24.x"
           registry-url: 'https://registry.npmjs.org'
-      - uses: denolib/setup-deno@4df079f84f6c4ef488b04806df9af59e51d09bfb # v2.3.0
+      - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: "2.x"
       - name: Get current package version
@@ -101,4 +101,15 @@ jobs:
       - run: npm run publish-docs
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      - run: npm publish
+      - name: Publish to npm
+        shell: bash
+        run: |
+          set +e
+          npm publish 2>&1 | tee npm-publish.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ] && grep -q "You cannot publish over the previously published versions" npm-publish.log; then
+            echo "::warning title=npm publish skipped::Version ${{ steps.package_version.outputs.current-version }} is already published on npm"
+            exit 0
+          fi
+          exit "$status"
