@@ -944,7 +944,7 @@ describe("Fido2Lib", function() {
 
 		it("sets the current global MDS collection", async function() {
 			const mc = Fido2Lib.createMdsCollection("test");
-			await mc.addToc(h.mds.mds2TocJwt);
+			await mc.addToc(h.mds.mds2TocJwt, undefined, undefined, h.mds.mds2CheckDate);
 			mc.addEntry(h.mds.mds2UafEntry);
 			assert.strictEqual(mc.entryList.size, 0);
 			await Fido2Lib.addMdsCollection(mc);
@@ -953,14 +953,14 @@ describe("Fido2Lib", function() {
 
 		it("can add multiple collections", async function() {
 			const mc1 = Fido2Lib.createMdsCollection("fido-mds-1");
-			await mc1.addToc(h.mds.mds1TocJwt);
+			await mc1.addToc(h.mds.mds1TocJwt, undefined, undefined, h.mds.mds2CheckDate);
 			mc1.addEntry(h.mds.mds1UafEntry);
 			assert.strictEqual(mc1.entryList.size, 0);
 			await Fido2Lib.addMdsCollection(mc1);
 			assert.strictEqual(mc1.entryList.size, 1);
 
 			const mc2 = Fido2Lib.createMdsCollection("fido-mds-2");
-			await mc2.addToc(h.mds.mds2TocJwt);
+			await mc2.addToc(h.mds.mds2TocJwt, undefined, undefined, h.mds.mds2CheckDate);
 			mc2.addEntry(h.mds.mds2UafEntry);
 			assert.strictEqual(mc2.entryList.size, 0);
 			await Fido2Lib.addMdsCollection(mc2);
@@ -981,7 +981,7 @@ describe("Fido2Lib", function() {
 
 		it("finds a UAF MDS entry in the global collection", async function() {
 			const mc = Fido2Lib.createMdsCollection("test");
-			await mc.addToc(h.mds.mds2TocJwt);
+			await mc.addToc(h.mds.mds2TocJwt, undefined, undefined, h.mds.mds2CheckDate);
 			mc.addEntry(h.mds.mds2UafEntry);
 			await Fido2Lib.addMdsCollection(mc);
 
@@ -995,7 +995,7 @@ describe("Fido2Lib", function() {
 
 		it("finds a UAF MDS entry in the global collection", async function() {
 			const mc = Fido2Lib.createMdsCollection("test");
-			await mc.addToc(h.mds.mds1TocJwt);
+			await mc.addToc(h.mds.mds1TocJwt, undefined, undefined, h.mds.mds2CheckDate);
 			mc.addEntry(h.mds.mds1U2fEntry);
 			await Fido2Lib.addMdsCollection(mc);
 
@@ -1012,7 +1012,7 @@ describe("Fido2Lib", function() {
 
 		it("throws if id isn't specified", async function() {
 			const mc = Fido2Lib.createMdsCollection("test");
-			await mc.addToc(h.mds.mds2TocJwt);
+			await mc.addToc(h.mds.mds2TocJwt, undefined, undefined, h.mds.mds2CheckDate);
 			mc.addEntry(h.mds.mds2UafEntry);
 			await Fido2Lib.addMdsCollection(mc);
 
@@ -1024,13 +1024,13 @@ describe("Fido2Lib", function() {
 		it("can find multiple entries", async function() {
 			// Add UAF 4e4e#4005 from FIDO MDS 1
 			const mc1 = Fido2Lib.createMdsCollection("fido-mds1-toc");
-			await mc1.addToc(h.mds.mds1TocJwt);
+			await mc1.addToc(h.mds.mds1TocJwt, undefined, undefined, h.mds.mds2CheckDate);
 			mc1.addEntry(h.mds.mds1UafEntry4e4e4005);
 			await Fido2Lib.addMdsCollection(mc1);
 
 			// Add UAF 4e4e#4005 from FIDO MDS 2
 			const mc2 = Fido2Lib.createMdsCollection("fido-mds2-toc");
-			await mc2.addToc(h.mds.mds2TocJwt);
+			await mc2.addToc(h.mds.mds2TocJwt, undefined, undefined, h.mds.mds2CheckDate);
 			mc2.addEntry(h.mds.mds2UafEntry);
 			await Fido2Lib.addMdsCollection(mc2);
 

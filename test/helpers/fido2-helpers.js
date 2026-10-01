@@ -4749,6 +4749,7 @@ const mdsSigningCert = "-----BEGIN CERTIFICATE-----\n" +
 	"-----END CERTIFICATE-----\n";
 
 const mds = {
+	mds2CheckDate: new Date("2018-01-01T00:00:00Z"),
 	mds1TocJwt,
 	mds1U2fEntry,
 	mds1UafEntry,

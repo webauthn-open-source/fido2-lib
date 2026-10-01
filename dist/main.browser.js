@@ -12459,7 +12459,6 @@ var decode2 = (input) => {
 };
 
 // deno:https://deno.land/x/jose@v4.15.4/util/errors.ts
-var _computedKey;
 var JOSEError = class extends Error {
   /** A unique error code for the particular error subclass. */
   static get code() {
@@ -12526,16 +12525,6 @@ var JWTInvalid = class extends JOSEError {
     return "ERR_JWT_INVALID";
   }
   code = "ERR_JWT_INVALID";
-};
-_computedKey = Symbol.asyncIterator;
-var JWKSMultipleMatchingKeys = class extends JOSEError {
-  /** @ignore */
-  [_computedKey];
-  static get code() {
-    return "ERR_JWKS_MULTIPLE_MATCHING_KEYS";
-  }
-  code = "ERR_JWKS_MULTIPLE_MATCHING_KEYS";
-  message = "multiple matching keys found in the JSON Web Key Set";
 };
 var JWSSignatureVerificationFailed = class extends JOSEError {
   static get code() {
@@ -43141,7 +43130,7 @@ var CertManager = class {
   static removeAll() {
     certMap.clear();
   }
-  static async verifyCertChain(certs, roots, crls) {
+  static async verifyCertChain(certs, roots, crls, checkDate) {
     if (!Array.isArray(certs) || certs.length < 1) {
       throw new Error("expected 'certs' to be non-empty Array, got: " + certs);
     }
@@ -43172,8 +43161,9 @@ var CertManager = class {
     });
     const chain = new toolbox_exports.pkijs.CertificateChainValidationEngine({
       trustedCerts: roots,
-      certs,
-      crls
+      certs: certs.reverse(),
+      crls,
+      checkDate: checkDate || /* @__PURE__ */ new Date()
     });
     const res = await chain.verify();
     if (!res.result) {
@@ -43623,7 +43613,6 @@ var PublicKey = class {
   * Sets internal algorithm identifier in format used by webcrypto, should be one of
   * - Allows adding missing properties
   * - Makes sure `alg.hash` is is `{ hash: { name: 'foo'} }` format
-  * - Syncs back updated algorithm to this._key
   *
   * @public
   * @param {object} - RsaHashedImportParams, EcKeyImportParams, JWK or JWK-like
@@ -43663,9 +43652,35 @@ var PublicKey = class {
     }
     if (Object.keys(algorithmOutput).length > 0) {
       this._alg = algorithmOutput;
-      if (this._alg.hash && this._key) {
-        this._key.algorithm.hash = this._alg.hash;
-      }
+    }
+  }
+  /**
+  * Returns a CryptoKey carrying the hash of the supplied algorithm
+  * - Only needed for RSA, which takes the hash from the key
+  * - Imports the key again, `CryptoKey.algorithm` is read-only
+  * - Leaves internal state untouched
+  *
+  * @async
+  * @public
+  * @param {object} alg - RsaHashedImportParams or EcKeyImportParams
+  * @return {Promise<CryptoKey>} - Key to verify with
+  */
+  async keyForAlgorithm(alg) {
+    const key = this.getKey();
+    const keyAlg = key.algorithm || {};
+    if (!alg || !alg.hash || typeof keyAlg.name !== "string" || !keyAlg.name.startsWith("RSA")) {
+      return key;
+    }
+    if (keyAlg.hash && keyAlg.hash.name === (alg.hash.name || alg.hash)) {
+      return key;
+    }
+    try {
+      const spki = await toolbox_exports.webcrypto.subtle.exportKey("spki", key);
+      return await toolbox_exports.webcrypto.subtle.importKey("spki", spki, alg, true, [
+        "verify"
+      ]);
+    } catch (_e) {
+      return key;
     }
   }
 };
@@ -43867,21 +43882,23 @@ async function verifySignature(publicKey, expectedSignature, data, hashName) {
   if (typeof alg === "undefined") {
     throw new Error("verifySignature: Algoritm missing.");
   }
+  const verifyAlg = Object.assign({}, alg);
   if (hashName) {
-    alg.hash = {
+    verifyAlg.hash = {
       name: hashName
     };
   }
-  if (!alg.hash) {
+  if (!verifyAlg.hash) {
     throw new Error("verifySignature: Hash name missing.");
   }
-  publicKeyInst.setAlgorithm(alg);
+  publicKeyInst.setAlgorithm(verifyAlg);
+  const key = await publicKeyInst.keyForAlgorithm(verifyAlg);
   try {
     let uSignature = new Uint8Array(expectedSignature);
-    if (alg.name === "ECDSA") {
+    if (verifyAlg.name === "ECDSA") {
       uSignature = await derToRaw(uSignature);
     }
-    const result = await webcrypto2.subtle.verify(publicKeyInst.getAlgorithm(), publicKeyInst.getKey(), uSignature, new Uint8Array(data));
+    const result = await webcrypto2.subtle.verify(verifyAlg, key, uSignature, new Uint8Array(data));
     if (!result && hashName === "SHA-1" && not_used_by_deno_exports && void 0) {
       try {
         const pem = await publicKeyInst.toPem();
@@ -45231,16 +45248,23 @@ var MdsCollection = class {
   * @param {Array.<String>|Array.<ArrayBuffer>} crls     An array of Certificate Revocation Lists (CRLs) that should be used when validating
   * the certificate chain. Like `rootCert` the format of the CRLs is flexible and can be PEM encoded, base64 encoded, or an ArrayBuffer
   * provied that the CRL contains valid ASN.1 encoding.
+  * @param {Date} [checkDate] Date the certificate chain has to be valid at, defaults to now
   * @returns {Promise.<Object>} Returns a Promise that resolves to a TOC object, or that rejects with an error.
   */
-  async addToc(tocStr, rootCert, crls) {
+  async addToc(tocStr, rootCert, crls, checkDate) {
     if (typeof tocStr !== "string" || tocStr.length < 1) {
       throw new Error("expected MDS TOC to be non-empty string");
     }
     let parsedJws;
     try {
       const protectedHeader = await toolbox_exports.decodeProtectedHeader(tocStr);
-      const publicKey = await toolbox_exports.getEmbeddedJwk(protectedHeader);
+      if (!Array.isArray(protectedHeader.x5c) || protectedHeader.x5c.length < 1) {
+        throw new Error("x5c missing from header");
+      }
+      const publicKey = await toolbox_exports.getEmbeddedJwk({
+        x5c: protectedHeader.x5c,
+        alg: protectedHeader.alg
+      });
       parsedJws = await toolbox_exports.jwtVerify(tocStr, await toolbox_exports.importJWK(publicKey));
       parsedJws.header = protectedHeader;
       parsedJws.key = publicKey;
@@ -45262,7 +45286,7 @@ var MdsCollection = class {
       rootCert
     ];
     const certHeader = parsedJws.header ? parsedJws.header : parsedJws.protectedHeader;
-    await CertManager.verifyCertChain(certHeader.x5c, rootCerts, crls);
+    await CertManager.verifyCertChain(certHeader.x5c, rootCerts, crls, checkDate);
     this.toc.raw = tocStr;
     if (this.toc.entries.some((entry) => !entry.metadataStatement)) console.warn("[DEPRECATION WARNING] FIDO MDS v2 will be removed in October 2022. Please update to MDS v3!");
     return this.toc;
