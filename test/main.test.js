@@ -70,18 +70,6 @@ function restoreAttestationFormats() {
 	);
 }
 
-async function captureWarnings(fn) {
-	const warn = new Stub();
-	const consoleWarn = console.warn;
-	console.warn = warn.stub();
-	try {
-		await fn();
-	} finally {
-		console.warn = consoleWarn;
-	}
-	return warn;
-}
-
 describe("Fido2Lib", function() {
 	it("can create FIDO server object", function() {
 		const fs = new Fido2Lib();
@@ -617,26 +605,24 @@ describe("Fido2Lib", function() {
 			);
 		});
 
-		it("doesn't require the UV flag for factor 'first' when userVerification is 'preferred', but warns", async function() {
-			const expectations = {
-				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
-				origin: "https://localhost:8443",
-				factor: "first",
-				userVerification: "preferred",
-			};
+		["preferred", "discouraged"].forEach((userVerification) => {
+			it(`throws for factor 'first' when userVerification is '${userVerification}'`, function() {
+				const expectations = {
+					challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+					origin: "https://localhost:8443",
+					factor: "first",
+					userVerification,
+				};
 
-			let res;
-			const warn = await captureWarnings(async () => {
-				res = await serv.attestationResult(
-					h.lib.makeCredentialAttestationNoneResponse,
-					expectations,
+				return assert.isRejected(
+					serv.attestationResult(
+						h.lib.makeCredentialAttestationNoneResponse,
+						expectations,
+					),
+					TypeError,
+					"factor 'first' requires userVerification 'required', use factor 'either' to accept responses without user verification",
 				);
 			});
-
-			assert.instanceOf(res, Fido2AttestationResult);
-			assert.strictEqual(warn.callCount, 1);
-			assert.isTrue(warn.calledWith[0].startsWith("[SECURITY WARNING]"));
-			return res;
 		});
 
 		it("requires the UV flag for factor 'either' when userVerification is 'required'", function() {
@@ -657,31 +643,33 @@ describe("Fido2Lib", function() {
 			);
 		});
 
-		it("validates a credential with the UV flag set when userVerification is 'required'", async function() {
-			const expectations = {
-				challenge: "zBNZ9XmBj4cu7xxYI_uSJauAj89yOTZX1xEqKxhQydhYCTdoKB0k8bzs3llRrBxQlNn3WyRovWvYAXmuIiswLQ",
-				origin: "http://localhost:3000",
-				factor: "second",
-				userVerification: "required",
-			};
+		["first", "second"].forEach((factor) => {
+			it(`validates a credential with the UV flag set for factor '${factor}' when userVerification is 'required'`, async function() {
+				const expectations = {
+					challenge: "zBNZ9XmBj4cu7xxYI_uSJauAj89yOTZX1xEqKxhQydhYCTdoKB0k8bzs3llRrBxQlNn3WyRovWvYAXmuIiswLQ",
+					origin: "http://localhost:3000",
+					factor,
+					userVerification: "required",
+				};
 
-			const parsedPackedSelfAttestationResponse = {
-				...packedSelfAttestationResponse,
-				id: tools.base64.toArrayBuffer(packedSelfAttestationResponse.id),
-				rawId: tools.base64.toArrayBuffer(packedSelfAttestationResponse.rawId),
-				response: {
-					attestationObject: tools.base64.toArrayBuffer(packedSelfAttestationResponse.response.attestationObject),
-					clientDataJSON: tools.base64.toArrayBuffer(packedSelfAttestationResponse.response.clientDataJSON),
-				},
-			};
+				const parsedPackedSelfAttestationResponse = {
+					...packedSelfAttestationResponse,
+					id: tools.base64.toArrayBuffer(packedSelfAttestationResponse.id),
+					rawId: tools.base64.toArrayBuffer(packedSelfAttestationResponse.rawId),
+					response: {
+						attestationObject: tools.base64.toArrayBuffer(packedSelfAttestationResponse.response.attestationObject),
+						clientDataJSON: tools.base64.toArrayBuffer(packedSelfAttestationResponse.response.clientDataJSON),
+					},
+				};
 
-			const res = await serv.attestationResult(
-				parsedPackedSelfAttestationResponse,
-				expectations,
-			);
+				const res = await serv.attestationResult(
+					parsedPackedSelfAttestationResponse,
+					expectations,
+				);
 
-			assert.instanceOf(res, Fido2AttestationResult);
-			return res;
+				assert.instanceOf(res, Fido2AttestationResult);
+				return res;
+			});
 		});
 
 		it("throws on an unknown userVerification", function() {
@@ -886,57 +874,27 @@ describe("Fido2Lib", function() {
 			);
 		});
 
-		it("doesn't require the UV flag for factor 'first' when userVerification is 'preferred', but warns", async function() {
-			const expectations = {
-				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
-				origin: "https://localhost:8443",
-				factor: "first",
-				userVerification: "preferred",
-				publicKey: h.lib.assnPublicKey,
-				prevCounter: 362,
-				userHandle: null,
-			};
+		["preferred", "discouraged"].forEach((userVerification) => {
+			it(`throws for factor 'first' when userVerification is '${userVerification}'`, function() {
+				const expectations = {
+					challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+					origin: "https://localhost:8443",
+					factor: "first",
+					userVerification,
+					publicKey: h.lib.assnPublicKey,
+					prevCounter: 362,
+					userHandle: null,
+				};
 
-			let res;
-			const warn = await captureWarnings(async () => {
-				res = await serv.assertionResult(
-					h.lib.assertionResponse,
-					expectations,
+				return assert.isRejected(
+					serv.assertionResult(h.lib.assertionResponse, expectations),
+					TypeError,
+					"factor 'first' requires userVerification 'required', use factor 'either' to accept responses without user verification",
 				);
 			});
-
-			assert.instanceOf(res, Fido2AssertionResult);
-			assert.strictEqual(warn.callCount, 1);
-			assert.isTrue(warn.calledWith[0].startsWith("[SECURITY WARNING]"));
-			return res;
 		});
 
-		it("doesn't require the UV flag for factor 'first' when userVerification is 'discouraged', but warns", async function() {
-			const expectations = {
-				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
-				origin: "https://localhost:8443",
-				factor: "first",
-				userVerification: "discouraged",
-				publicKey: h.lib.assnPublicKey,
-				prevCounter: 362,
-				userHandle: null,
-			};
-
-			let res;
-			const warn = await captureWarnings(async () => {
-				res = await serv.assertionResult(
-					h.lib.assertionResponse,
-					expectations,
-				);
-			});
-
-			assert.instanceOf(res, Fido2AssertionResult);
-			assert.strictEqual(warn.callCount, 1);
-			assert.isTrue(warn.calledWith[0].startsWith("[SECURITY WARNING]"));
-			return res;
-		});
-
-		it("doesn't warn for factor 'second' when userVerification is 'preferred'", async function() {
+		it("doesn't require the UV flag for factor 'second' when userVerification is 'preferred'", async function() {
 			const expectations = {
 				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
 				origin: "https://localhost:8443",
@@ -947,43 +905,7 @@ describe("Fido2Lib", function() {
 				userHandle: null,
 			};
 
-			let res;
-			const warn = await captureWarnings(async () => {
-				res = await serv.assertionResult(
-					h.lib.assertionResponse,
-					expectations,
-				);
-			});
-
-			assert.instanceOf(res, Fido2AssertionResult);
-			assert.strictEqual(warn.callCount, 0);
-			return res;
-		});
-
-		it("still validates when console.warn throws", async function() {
-			const expectations = {
-				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
-				origin: "https://localhost:8443",
-				factor: "first",
-				userVerification: "preferred",
-				publicKey: h.lib.assnPublicKey,
-				prevCounter: 362,
-				userHandle: null,
-			};
-
-			const consoleWarn = console.warn;
-			console.warn = () => {
-				throw new Error("log sink down");
-			};
-			let res;
-			try {
-				res = await serv.assertionResult(
-					h.lib.assertionResponse,
-					expectations,
-				);
-			} finally {
-				console.warn = consoleWarn;
-			}
+			const res = await serv.assertionResult(h.lib.assertionResponse, expectations);
 
 			assert.instanceOf(res, Fido2AssertionResult);
 			return res;
@@ -1025,33 +947,35 @@ describe("Fido2Lib", function() {
 			);
 		});
 
-		it("validates an assertion with the UV flag set when userVerification is 'required'", async function() {
-			const expectations = {
-				challenge: "g_Pu32bpluktxugNNBLX-ZO5N9ub0D50bJERbKiU2GWON3md0rR9CaQYdPHdCgo-dpi1-9gbJJvmCuHDnh04Rg",
-				origin: "https://mighty-fireant-84.loca.lt",
-				factor: "second",
-				userVerification: "required",
-				publicKey: "-----BEGIN PUBLIC KEY-----\n" +
-					"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0dBhdNNvh2NkaNstlFhrBhi9yrjP\n" +
-					"0qPqZvRRnf3zQiN9zDwJ9ZXoyO4dhKz3OIhMBJG6F+muH35fEsWBZI6dhg==\n" +
-					"-----END PUBLIC KEY-----\n",
-				prevCounter: 0,
-				userHandle: null,
-			};
+		["first", "second"].forEach((factor) => {
+			it(`validates an assertion with the UV flag set for factor '${factor}' when userVerification is 'required'`, async function() {
+				const expectations = {
+					challenge: "g_Pu32bpluktxugNNBLX-ZO5N9ub0D50bJERbKiU2GWON3md0rR9CaQYdPHdCgo-dpi1-9gbJJvmCuHDnh04Rg",
+					origin: "https://mighty-fireant-84.loca.lt",
+					factor,
+					userVerification: "required",
+					publicKey: "-----BEGIN PUBLIC KEY-----\n" +
+						"MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0dBhdNNvh2NkaNstlFhrBhi9yrjP\n" +
+						"0qPqZvRRnf3zQiN9zDwJ9ZXoyO4dhKz3OIhMBJG6F+muH35fEsWBZI6dhg==\n" +
+						"-----END PUBLIC KEY-----\n",
+					prevCounter: 0,
+					userHandle: null,
+				};
 
-			const assertionResponse = {
-				rawId: coerceToArrayBuffer("7S8aQSSxqPkztahKbgw36Mr_-hE", "rawId"),
-				response: {
-					authenticatorData: coerceToArrayBuffer("YS67HU8UTNyqQ5f-EVzitWw5paVnpyhQli2ahN6PS6UFAAAAAA", "authenticatorData"),
-					clientDataJSON: coerceToArrayBuffer("eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiZ19QdTMyYnBsdWt0eHVnTk5CTFgtWk81Tjl1YjBENTBiSkVSYktpVTJHV09OM21kMHJSOUNhUVlkUEhkQ2dvLWRwaTEtOWdiSkp2bUN1SERuaDA0UmciLCJvcmlnaW4iOiJodHRwczovL21pZ2h0eS1maXJlYW50LTg0LmxvY2EubHQifQ", "clientDataJSON"),
-					signature: coerceToArrayBuffer("MEQCIEhIhQBglBn1iGMDgF4WFDG7ISJHD1C1Q60drTaijjV2AiBOnQleadMnzcMJ0EBpwoP8zr2V5lBuKvpNfJrcbC1T4w", "signature"),
-				},
-			};
+				const assertionResponse = {
+					rawId: coerceToArrayBuffer("7S8aQSSxqPkztahKbgw36Mr_-hE", "rawId"),
+					response: {
+						authenticatorData: coerceToArrayBuffer("YS67HU8UTNyqQ5f-EVzitWw5paVnpyhQli2ahN6PS6UFAAAAAA", "authenticatorData"),
+						clientDataJSON: coerceToArrayBuffer("eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiZ19QdTMyYnBsdWt0eHVnTk5CTFgtWk81Tjl1YjBENTBiSkVSYktpVTJHV09OM21kMHJSOUNhUVlkUEhkQ2dvLWRwaTEtOWdiSkp2bUN1SERuaDA0UmciLCJvcmlnaW4iOiJodHRwczovL21pZ2h0eS1maXJlYW50LTg0LmxvY2EubHQifQ", "clientDataJSON"),
+						signature: coerceToArrayBuffer("MEQCIEhIhQBglBn1iGMDgF4WFDG7ISJHD1C1Q60drTaijjV2AiBOnQleadMnzcMJ0EBpwoP8zr2V5lBuKvpNfJrcbC1T4w", "signature"),
+					},
+				};
 
-			const res = await serv.assertionResult(assertionResponse, expectations);
+				const res = await serv.assertionResult(assertionResponse, expectations);
 
-			assert.instanceOf(res, Fido2AssertionResult);
-			return res;
+				assert.instanceOf(res, Fido2AssertionResult);
+				return res;
+			});
 		});
 
 		it("ignores a userVerification inherited from the prototype chain", function() {
