@@ -343,18 +343,20 @@ describe("toolbox", function() {
 
 	describe("verifySignature", () => {
 		// webcrypto signs ECDSA in raw form, authenticators send DER, which is what verifySignature takes
-		function rawToDer(raw) {
-			const encodeInt = (bytes) => {
+		function rawToDer(raw, { rPrefix = [], trailing = [] } = {}) {
+			const encodeInt = (bytes, prefix = []) => {
 				let start = 0;
 				while (start < bytes.length - 1 && bytes[start] === 0) start++;
 				const v = [...bytes.slice(start)];
 				if (v[0] & 0x80) v.unshift(0x00);
+				v.unshift(...prefix);
 				return [0x02, v.length, ...v];
 			};
 			const half = raw.length / 2;
 			const body = [
-				...encodeInt(raw.slice(0, half)),
+				...encodeInt(raw.slice(0, half), rPrefix),
 				...encodeInt(raw.slice(half)),
+				...trailing,
 			];
 			const len = body.length < 0x80 ? [body.length] : [0x81, body.length];
 			return new Uint8Array([0x30, ...len, ...body]);
@@ -381,7 +383,7 @@ describe("toolbox", function() {
 					data,
 				),
 			);
-			return { pem, data, sig: rawToDer(raw) };
+			return { pem, data, raw, sig: rawToDer(raw) };
 		}
 
 		const curves = [
@@ -401,6 +403,26 @@ describe("toolbox", function() {
 				const tampered = new Uint8Array(data);
 				tampered[0] ^= 0xff;
 				assert.isFalse(await verifySignature(pem, sig, tampered, hash));
+			});
+
+			const malformed = {
+				"bytes after the SEQUENCE": (raw, sig) => new Uint8Array([...sig, 0x00]),
+				"bytes after s inside the SEQUENCE": (raw) => rawToDer(raw, { trailing: [0x00] }),
+				"a junk byte in front of r": (raw) => rawToDer(raw, { rPrefix: [0x01] }),
+				"a truncated SEQUENCE": (raw, sig) => sig.slice(0, -1),
+			};
+
+			Object.entries(malformed).forEach(([desc, mangle]) => {
+				it(`rejects an ECDSA ${namedCurve} signature with ${desc}`, async () => {
+					const { pem, data, raw, sig } = await signWith(namedCurve, hash);
+					let error;
+					try {
+						await verifySignature(pem, mangle(raw, sig), data, hash);
+					} catch (e) {
+						error = e;
+					}
+					assert.match(error && error.message, /^derToRaw: /);
+				});
 			});
 		});
 	});
