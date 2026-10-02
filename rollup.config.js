@@ -1,13 +1,11 @@
 const devExternals = [
 	"chai",
 	"chai-as-promised",
-	"sinon",
 ];
 const externals = [
 	"@hexagon/base64",
 	"url",
 	"tldts",
-	"punycode",
 	"punycode.js",
 	"jose",
 	"pkijs",

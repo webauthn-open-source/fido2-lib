@@ -16,6 +16,7 @@ import {
 	appleAttestation,
 	appendBuffer,
 	coerceToArrayBuffer,
+	coerceToBase64Url,
 	Fido2AssertionResult,
 	Fido2AttestationResult,
 	fidoU2fAttestation,
@@ -550,7 +551,84 @@ describe("Fido2Lib", function() {
 				expectations,
 			).then((res) => {
 				assert.instanceOf(res, Fido2AttestationResult);
+				// audit must describe the attestation cert, not the intermediate behind it
+				assert.strictEqual(res.audit.info.get("organization-name"), "Google LLC");
+				assert.strictEqual(res.audit.info.get("attestation-type"), "none");
+				assert.strictEqual(
+					res.audit.warning.get("attesation-not-validated"),
+					"android-safetynet is deprecated, its certificate chain is not validated",
+				);
 				return res;
+			});
+		});
+
+		describe("forged 'android-safetynet' attestation", function() {
+			const src = h.lib.makeCredentialAttestationSafetyNetResponse;
+			const rawClientData = coerceToArrayBuffer(src.response.clientDataJSON, "clientDataJSON");
+			const genuine = tools.cbor.decode(
+				new Uint8Array(coerceToArrayBuffer(src.response.attestationObject, "attestationObject")),
+			);
+			const rawAuthnrData = coerceToArrayBuffer(genuine.authData, "authData");
+
+			// nonce and payload are genuine-looking, so only the signing key is wrong
+			async function forgeResponse(header) {
+				const pair = await tools.webcrypto.subtle.generateKey(
+					{
+						name: "RSASSA-PKCS1-v1_5",
+						modulusLength: 2048,
+						publicExponent: new Uint8Array([1, 0, 1]),
+						hash: "SHA-256",
+					},
+					true,
+					["sign", "verify"],
+				);
+				const jwk = await tools.webcrypto.subtle.exportKey("jwk", pair.publicKey);
+				delete jwk.ext;
+				delete jwk.key_ops;
+
+				const clientDataHash = await tools.hashDigest(rawClientData);
+				const nonce = await tools.hashDigest(appendBuffer(rawAuthnrData, clientDataHash));
+				const part = (obj) =>
+					coerceToBase64Url(new TextEncoder().encode(JSON.stringify(obj)), "jws part");
+				const signingInput = part({ alg: "RS256", jwk, ...header }) + "." + part({
+					nonce: tools.base64.fromArrayBuffer(nonce),
+					timestampMs: Date.now(),
+					apkPackageName: "com.google.android.gms",
+					ctsProfileMatch: true,
+					basicIntegrity: true,
+				});
+				const sig = await tools.webcrypto.subtle.sign(
+					"RSASSA-PKCS1-v1_5",
+					pair.privateKey,
+					new TextEncoder().encode(signingInput),
+				);
+				return signingInput + "." + coerceToBase64Url(sig, "jws signature");
+			}
+
+			function validate(response) {
+				return androidSafetyNetAttestation.validateFn.call({
+					authnrData: new Map([
+						["response", response],
+						["rawAuthnrData", rawAuthnrData],
+					]),
+					clientData: new Map([["rawClientDataJson", rawClientData]]),
+					audit: { journal: new Set(), info: new Map(), warning: new Map() },
+				});
+			}
+
+			it("rejects a response signed with a key from its own header", async function() {
+				const x5c = tools.decodeProtectedHeader(
+					new TextDecoder().decode(genuine.attStmt.response),
+				).x5c;
+				await assert.isRejected(validate(await forgeResponse({ x5c })), Error);
+			});
+
+			it("rejects a response with no certificate chain", async function() {
+				await assert.isRejected(
+					validate(await forgeResponse({})),
+					Error,
+					"android-safetynet attestation: x5c missing from JWS header",
+				);
 			});
 		});
 

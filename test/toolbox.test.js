@@ -1,14 +1,18 @@
 // Testing lib
 import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 
 // Helpers
-import { tools } from "../lib/main.js";
+import { coerceToBase64, tools } from "../lib/main.js";
+chai.use(chaiAsPromised.default);
 const assert = chai.assert;
 const {
 	checkOrigin,
 	checkRpId,
 	checkUrl,
 	checkDomainOrUrl,
+	verifySignature,
+	webcrypto,
 } = tools;
 
 describe("toolbox", function() {
@@ -336,6 +340,90 @@ describe("toolbox", function() {
 		it("should return value when value is valid url", () => {
 			const ret = checkDomainOrUrl("https://www.test.com", "test");
 			assert.strictEqual(ret, "https://www.test.com");
+		});
+	});
+
+	describe("verifySignature", () => {
+		// webcrypto signs ECDSA in raw form, authenticators send DER, which is what verifySignature takes
+		function rawToDer(raw, { rPrefix = [], trailing = [] } = {}) {
+			const encodeInt = (bytes, prefix = []) => {
+				if (prefix.length) return [0x02, prefix.length + bytes.length, ...prefix, ...bytes];
+				let start = 0;
+				while (start < bytes.length - 1 && bytes[start] === 0) start++;
+				const v = [...bytes.slice(start)];
+				if (v[0] & 0x80) v.unshift(0x00);
+				return [0x02, v.length, ...v];
+			};
+			const half = raw.length / 2;
+			const body = [
+				...encodeInt(raw.slice(0, half), rPrefix),
+				...encodeInt(raw.slice(half)),
+				...trailing,
+			];
+			const len = body.length < 0x80 ? [body.length] : [0x81, body.length];
+			return new Uint8Array([0x30, ...len, ...body]);
+		}
+
+		async function signWith(namedCurve, hash) {
+			const pair = await webcrypto.subtle.generateKey(
+				{ name: "ECDSA", namedCurve },
+				true,
+				["sign", "verify"],
+			);
+			const spki = coerceToBase64(
+				await webcrypto.subtle.exportKey("spki", pair.publicKey),
+				"spki",
+			);
+			const pem = "-----BEGIN PUBLIC KEY-----\n" +
+				spki.match(/.{1,64}/g).join("\n") +
+				"\n-----END PUBLIC KEY-----\n";
+			const data = new TextEncoder().encode("fido2-lib signature test");
+			const raw = new Uint8Array(
+				await webcrypto.subtle.sign(
+					{ name: "ECDSA", hash: { name: hash } },
+					pair.privateKey,
+					data,
+				),
+			);
+			return { pem, data, raw, sig: rawToDer(raw) };
+		}
+
+		const curves = [
+			["P-256", "SHA-256"],
+			["P-384", "SHA-384"],
+			["P-521", "SHA-512"],
+		];
+
+		curves.forEach(([namedCurve, hash]) => {
+			it(`verifies an ECDSA ${namedCurve} signature`, async () => {
+				const { pem, data, sig } = await signWith(namedCurve, hash);
+				assert.isTrue(await verifySignature(pem, sig, data, hash));
+			});
+
+			it(`rejects a tampered ECDSA ${namedCurve} signature`, async () => {
+				const { pem, data, sig } = await signWith(namedCurve, hash);
+				const tampered = new Uint8Array(data);
+				tampered[0] ^= 0xff;
+				assert.isFalse(await verifySignature(pem, sig, tampered, hash));
+			});
+
+			const malformed = {
+				"bytes after the SEQUENCE": (raw, sig) => new Uint8Array([...sig, 0x00]),
+				"bytes after s inside the SEQUENCE": (raw) => rawToDer(raw, { trailing: [0x00] }),
+				"a junk byte in front of r": (raw) => rawToDer(raw, { rPrefix: [0x01] }),
+				"a truncated SEQUENCE": (raw, sig) => sig.slice(0, -1),
+			};
+
+			Object.entries(malformed).forEach(([desc, mangle]) => {
+				it(`rejects an ECDSA ${namedCurve} signature with ${desc}`, async () => {
+					const { pem, data, raw, sig } = await signWith(namedCurve, hash);
+					await assert.isRejected(
+						verifySignature(pem, mangle(raw, sig), data, hash),
+						Error,
+						"derToRaw: ",
+					);
+				});
+			});
 		});
 	});
 });

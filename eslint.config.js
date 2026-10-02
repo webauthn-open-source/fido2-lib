@@ -71,7 +71,7 @@ export default [
 		},
 	},
 	{
-		files: ["**/__tests__/*.{j,t}s?(x)"],
+		files: ["test/**/*.js"],
 		languageOptions: {
 			globals: {
 				// Mocha globals
