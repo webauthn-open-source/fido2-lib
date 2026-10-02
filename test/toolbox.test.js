@@ -2,8 +2,7 @@
 import * as chai from "chai";
 
 // Helpers
-import { tools } from "../lib/main.js";
-import { abToPem } from "../lib/utils.js";
+import { coerceToBase64, tools } from "../lib/main.js";
 const assert = chai.assert;
 const {
 	checkOrigin,
@@ -367,10 +366,13 @@ describe("toolbox", function() {
 				true,
 				["sign", "verify"],
 			);
-			const pem = abToPem(
-				"PUBLIC KEY",
+			const spki = coerceToBase64(
 				await webcrypto.subtle.exportKey("spki", pair.publicKey),
+				"spki",
 			);
+			const pem = "-----BEGIN PUBLIC KEY-----\n" +
+				spki.match(/.{1,64}/g).join("\n") +
+				"\n-----END PUBLIC KEY-----\n";
 			const data = new TextEncoder().encode("fido2-lib signature test");
 			const raw = new Uint8Array(
 				await webcrypto.subtle.sign(
