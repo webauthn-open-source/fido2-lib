@@ -553,6 +553,11 @@ describe("Fido2Lib", function() {
 				assert.instanceOf(res, Fido2AttestationResult);
 				// audit must describe the attestation cert, not the intermediate behind it
 				assert.strictEqual(res.audit.info.get("organization-name"), "Google LLC");
+				assert.strictEqual(res.audit.info.get("attestation-type"), "none");
+				assert.strictEqual(
+					res.audit.warning.get("attesation-not-validated"),
+					"android-safetynet is deprecated, its certificate chain is not validated",
+				);
 				return res;
 			});
 		});

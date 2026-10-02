@@ -25,7 +25,7 @@ For working examples see [OWASP Single Sign-On](https://github.com/OWASP/SSO_Pro
 ## Features
 
 * Works with Windows Hello
-* Attestation formats: packed, tpm, android-safetynet, fido-u2f, none, apple
+* Attestation formats: packed, tpm, fido-u2f, none, apple, and the deprecated android-safetynet (its certificate chain is not validated)
 * Convenient API for adding more attestation formats
 * Convenient API for adding extensions
 * Metadata service (MDS) support enables authenticator root of trust and authenticator metadata
