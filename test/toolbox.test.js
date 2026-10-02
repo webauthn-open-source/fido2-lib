@@ -1,8 +1,10 @@
 // Testing lib
 import * as chai from "chai";
+import * as chaiAsPromised from "chai-as-promised";
 
 // Helpers
 import { coerceToBase64, tools } from "../lib/main.js";
+chai.use(chaiAsPromised.default);
 const assert = chai.assert;
 const {
 	checkOrigin,
@@ -345,11 +347,11 @@ describe("toolbox", function() {
 		// webcrypto signs ECDSA in raw form, authenticators send DER, which is what verifySignature takes
 		function rawToDer(raw, { rPrefix = [], trailing = [] } = {}) {
 			const encodeInt = (bytes, prefix = []) => {
+				if (prefix.length) return [0x02, prefix.length + bytes.length, ...prefix, ...bytes];
 				let start = 0;
 				while (start < bytes.length - 1 && bytes[start] === 0) start++;
 				const v = [...bytes.slice(start)];
 				if (v[0] & 0x80) v.unshift(0x00);
-				v.unshift(...prefix);
 				return [0x02, v.length, ...v];
 			};
 			const half = raw.length / 2;
@@ -415,13 +417,11 @@ describe("toolbox", function() {
 			Object.entries(malformed).forEach(([desc, mangle]) => {
 				it(`rejects an ECDSA ${namedCurve} signature with ${desc}`, async () => {
 					const { pem, data, raw, sig } = await signWith(namedCurve, hash);
-					let error;
-					try {
-						await verifySignature(pem, mangle(raw, sig), data, hash);
-					} catch (e) {
-						error = e;
-					}
-					assert.match(error && error.message, /^derToRaw: /);
+					await assert.isRejected(
+						verifySignature(pem, mangle(raw, sig), data, hash),
+						Error,
+						"derToRaw: ",
+					);
 				});
 			});
 		});
