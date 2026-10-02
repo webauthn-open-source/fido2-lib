@@ -7,6 +7,7 @@ import { PublicKey, coseAlgToHashStr, coseAlgToStr, tools } from "../lib/main.js
 
 import * as h from "./helpers/fido2-helpers.js";
 import { cosePublicKey } from "./fixtures/cosePublicKey.js";
+import { ecdsaPublicKey } from "./fixtures/ecdsaPublicKey.js";
 
 import { rsaPublicKey } from "./fixtures/rsaPublicKey.js";
 
@@ -125,6 +126,34 @@ describe("key utils", function() {
 						Error,
 						"No usable key information available",
 					);
+				});
+			});
+
+			describe("ecdsa spki P-384", function() {
+				const k = new PublicKey();
+				it("can import", async () => {
+					await k.fromPem(ecdsaPublicKey.examplePemP384);
+				});
+				it("correctly identifies algorithm as ECDSA P-384", () => {
+					const alg = k.getAlgorithm();
+					assert.equal(alg.name, "ECDSA");
+					assert.equal(alg.namedCurve, "P-384");
+				});
+			});
+
+			describe("ecdsa spki P-521", function() {
+				const k = new PublicKey();
+				it("can import", async () => {
+					await k.fromPem(ecdsaPublicKey.examplePemP521);
+				});
+				it("correctly identifies algorithm as ECDSA P-521", () => {
+					const alg = k.getAlgorithm();
+					assert.equal(alg.name, "ECDSA");
+					assert.equal(alg.namedCurve, "P-521");
+				});
+				it("can re-export to spki PEM", async () => {
+					const pem = await k.toPem(true);
+					assert.equal(pem, ecdsaPublicKey.examplePemP521);
 				});
 			});
 

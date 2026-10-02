@@ -467,6 +467,20 @@ describe("cert utils", function() {
 			});
 
 			it("decodes YubiKey Nano device type");
+
+			it("decodes every certificate policy, not just the first", function() {
+				const ret = resolveOid("2.5.29.32", {
+					certificatePolicies: [
+						{ policyIdentifier: "2.5.4.6", policyQualifiers: undefined },
+						{ policyIdentifier: "2.5.4.10", policyQualifiers: undefined },
+					],
+				});
+				assert.strictEqual(ret.id, "certificate-policies");
+				assert.isArray(ret.value);
+				assert.strictEqual(ret.value.length, 2);
+				assert.strictEqual(ret.value[0].id, "country-name");
+				assert.strictEqual(ret.value[1].id, "organization-name");
+			});
 		});
 	});
 

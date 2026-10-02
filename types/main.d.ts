@@ -11,7 +11,7 @@ declare module "fido2-lib" {
   class MdsCollection{
     constructor(collectionName: string);
     addToc(tocStr: string, rootCert: string, crls: string[] |  ArrayBuffer[]): Promise<JWTPayload>
-    getToc(): Promise<JWTPayload | null>
+    getToc(): JWTPayload | null
     addEntry(entryStr: string): void
     validate() : Promise<void>
     findEntry(id: string | ArrayBuffer): MdsEntry | null
