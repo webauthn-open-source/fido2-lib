@@ -157,6 +157,23 @@ describe("key utils", function() {
 				});
 			});
 
+			describe("ecdsa spki on an unsupported curve", function() {
+				it("rejects secp256k1", () => {
+					return assert.isRejected(
+						new PublicKey().fromPem(ecdsaPublicKey.examplePemSecp256k1),
+						Error,
+						"Unsupported EC curve",
+					);
+				});
+				it("rejects brainpoolP256r1", () => {
+					return assert.isRejected(
+						new PublicKey().fromPem(ecdsaPublicKey.examplePemBrainpoolP256r1),
+						Error,
+						"Unsupported EC curve",
+					);
+				});
+			});
+
 			describe("can import ecdsa spki", function() {
 				const k = new PublicKey();
 				it("can import", async () => {
