@@ -46,7 +46,7 @@ __export(toolbox_exports, {
   pkijs: () => pkijs,
   randomValues: () => randomValues,
   verifySignature: () => verifySignature,
-  webcrypto: () => webcrypto2
+  webcrypto: () => webcrypto
 });
 
 // deno:https://unpkg.com/tldts@6.1.11/dist/index.esm.min.js
@@ -42745,6 +42745,14 @@ var Certificate2 = class {
     });
   }
   async getPublicKey() {
+    const spki = this._cert.subjectPublicKeyInfo;
+    if (spki.algorithm.algorithmId === "1.3.101.112") {
+      return await toolbox_exports.webcrypto.subtle.importKey("spki", spki.toSchema().toBER(false), {
+        name: "Ed25519"
+      }, true, [
+        "verify"
+      ]);
+    }
     const k = await this._cert.getPublicKey();
     return k;
   }
@@ -42999,7 +43007,6 @@ function decodeKeyUsage(value) {
   if (value & 4) retSet.add("keyCertSign");
   if (value & 2) retSet.add("cRLSign");
   if (value & 1) retSet.add("encipherOnly");
-  if (value & 1) retSet.add("decipherOnly");
   return retSet;
 }
 function decodeExtKeyUsage(value) {
@@ -43012,7 +43019,7 @@ function decodeExtKeyUsage(value) {
 }
 function decodeCertificatePolicies(value) {
   if (value && Array.isArray(value.certificatePolicies)) {
-    value = value.certificatePolicies.map((_policy) => resolveOid(value.certificatePolicies[0].policyIdentifier, value.certificatePolicies[0].policyQualifiers));
+    value = value.certificatePolicies.map((policy) => resolveOid(policy.policyIdentifier, policy.policyQualifiers));
   }
   return value;
 }
@@ -43195,7 +43202,7 @@ var coseLabels = {
     name: "alg",
     values: {
       "-7": "ECDSA_w_SHA256",
-      /* "-8": "EdDSA", */
+      "-8": "EdDSA",
       "-35": "ECDSA_w_SHA384",
       "-36": "ECDSA_w_SHA512",
       /*"-37": "RSASSA-PSS_w_SHA-256",
@@ -43313,7 +43320,8 @@ var algToJWKAlg = {
   "RSASSA-PSS_w_SHA-512": "PS512",*/
   "ECDSA_w_SHA256": "ES256",
   "ECDSA_w_SHA384": "ES384",
-  "ECDSA_w_SHA512": "ES512"
+  "ECDSA_w_SHA512": "ES512",
+  "EdDSA": "EdDSA"
 };
 var algorithmInputMap = {
   /* Cose Algorithm identifier to Webcrypto algorithm name */
@@ -43351,6 +43359,14 @@ var inputHashMap = {
   "ECDSA_w_SHA256": "SHA-256",
   "ECDSA_w_SHA384": "SHA-384",
   "ECDSA_w_SHA512": "SHA-512"
+};
+var ecNamedCurves = {
+  "1.2.840.10045.3.1.7": "P-256",
+  "1.3.132.0.34": "P-384",
+  "1.3.132.0.35": "P-521",
+  "P-256": "P-256",
+  "P-384": "P-384",
+  "P-521": "P-521"
 };
 var PublicKey = class {
   /**
@@ -43421,15 +43437,14 @@ var PublicKey = class {
     if (keyInfo.algorithm.algorithmId === "1.2.840.10045.2.1") {
       algorithm.name = "ECDSA";
       const parsedKey = keyInfo.parsedKey;
-      if (parsedKey && parsedKey.namedCurve === "1.2.840.10045.3.1.7") {
-        algorithm.namedCurve = "P-256";
-      } else if (parsedKey && parsedKey.namedCurve === "1.3.132.0.34") {
-        algorithm.namedCurve = "P-384";
-      } else if (parsedKey && parsedKey.namedCurve === "1.3.132.0.35") {
-        algorithm.namedCurve = "P-512";
-      } else {
-        algorithm.namedCurve = "P-256";
+      const params = keyInfo.algorithm.algorithmParams;
+      const isNamedCurveOid = params && params.idBlock && params.idBlock.tagNumber === 6;
+      algorithm.namedCurve = isNamedCurveOid ? parsedKey && ecNamedCurves[parsedKey.namedCurve] : "P-256";
+      if (!algorithm.namedCurve) {
+        throw new Error("Unsupported EC curve");
       }
+    } else if (keyInfo.algorithm.algorithmId === "1.3.101.112") {
+      algorithm.name = "Ed25519";
     } else if (keyInfo.algorithm.algorithmId === "1.2.840.113549.1.1.1") {
       algorithm.name = "RSASSA-PKCS1-v1_5";
       algorithm.hash = hashName || "SHA-256";
@@ -43482,10 +43497,10 @@ var PublicKey = class {
     if (typeof cose !== "object") {
       throw new TypeError("'cose' argument must be an object, probably an Buffer conatining valid COSE");
     }
-    this._cose = coerceToArrayBuffer(cose, "coseToJwk");
+    const coseAb = coerceToArrayBuffer(cose, "coseToJwk");
     let parsedCose;
     try {
-      toolbox_exports.cbor.decodeMultiple(new Uint8Array(cose), (cborObject) => {
+      toolbox_exports.cbor.decodeMultiple(new Uint8Array(coseAb), (cborObject) => {
         parsedCose = cborObject;
         return false;
       });
@@ -43526,6 +43541,9 @@ var PublicKey = class {
       retKey[name] = value;
     }
     this._original_cose = cose;
+    if (retKey.alg === "RSASSA-PKCS1-v1_5_w_SHA1") {
+      throw new Error("RS1 (RSA with SHA-1) credential keys are not supported");
+    }
     this.setAlgorithm(retKey);
     retKey.alg = algToJWKAlg[retKey.alg];
     await this.fromJWK(retKey, true);
@@ -43622,6 +43640,11 @@ var PublicKey = class {
     let algorithmOutput = this._alg || {};
     if (algorithmInput.name) {
       algorithmOutput.name = algorithmInput.name;
+    } else if (algorithmInput.alg === "EdDSA") {
+      if (algorithmInput.crv !== "Ed25519") {
+        throw new Error("Unsupported EdDSA curve");
+      }
+      algorithmOutput.name = "Ed25519";
     } else if (algorithmInput.alg) {
       const algMapResult = algorithmInputMap[algorithmInput.alg];
       if (algMapResult) {
@@ -43707,18 +43730,11 @@ function coseAlgToHashStr(alg) {
   return inputHashMap[alg];
 }
 
-// test/helpers/not-used-by-deno.js
-var not_used_by_deno_exports = {};
-
 // lib/toolbox.js
-var webcrypto2;
-if (typeof self !== "undefined" && "crypto" in self) {
-  webcrypto2 = self.crypto;
-} else {
-  if (not_used_by_deno_exports && void 0) {
-    webcrypto2 = void 0;
-  } else {
-    webcrypto2 = new (void 0)();
+var webcrypto = globalThis.crypto;
+function getPlatformCrypto() {
+  if (typeof process !== "undefined" && typeof process.getBuiltinModule === "function") {
+    return process.getBuiltinModule("crypto");
   }
 }
 var pkijs = {
@@ -43729,10 +43745,10 @@ var pkijs = {
   CertificateChainValidationEngine,
   PublicKeyInfo
 };
-pkijs.setEngine("newEngine", webcrypto2, new pkijs.CryptoEngine({
+pkijs.setEngine("newEngine", webcrypto, new pkijs.CryptoEngine({
   name: "",
-  crypto: webcrypto2,
-  subtle: webcrypto2.subtle
+  crypto: webcrypto,
+  subtle: webcrypto.subtle
 }));
 function extractBigNum(fullArray, start, end, expectedLength) {
   let num = fullArray.slice(start, end);
@@ -43741,13 +43757,44 @@ function extractBigNum(fullArray, start, end, expectedLength) {
   }
   return num;
 }
-function derToRaw(signature) {
-  const rStart = 4;
-  const rEnd = rStart + signature[3];
-  const sStart = rEnd + 2;
+var ecComponentLengths = {
+  "P-256": 32,
+  "P-384": 48,
+  "P-521": 66
+};
+function derToRaw(signature, componentLength) {
+  if (signature[0] !== 48) {
+    throw new Error("derToRaw: expected an ASN.1 SEQUENCE");
+  }
+  let pos = 2;
+  let seqLength = signature[1];
+  if (seqLength === 129 && signature[2] >= 128) {
+    seqLength = signature[2];
+    pos = 3;
+  }
+  if (pos + seqLength !== signature.length) {
+    throw new Error("derToRaw: invalid SEQUENCE length");
+  }
+  const readInteger = () => {
+    if (signature[pos] !== 2) {
+      throw new Error("derToRaw: expected an ASN.1 INTEGER");
+    }
+    const start = pos + 2;
+    const length = signature[pos + 1];
+    pos = start + length;
+    if (length < 1 || pos > signature.length || length > componentLength + 1 || length > componentLength && signature[start] !== 0) {
+      throw new Error("derToRaw: invalid INTEGER length");
+    }
+    return extractBigNum(signature, start, pos, componentLength);
+  };
+  const r2 = readInteger();
+  const s2 = readInteger();
+  if (pos !== signature.length) {
+    throw new Error("derToRaw: unexpected data after signature");
+  }
   return new Uint8Array([
-    ...extractBigNum(signature, rStart, rEnd, 32),
-    ...extractBigNum(signature, sStart, signature.length, 32)
+    ...r2,
+    ...s2
   ]);
 }
 function isAndroidFacetId(str) {
@@ -43883,12 +43930,15 @@ async function verifySignature(publicKey, expectedSignature, data, hashName) {
     throw new Error("verifySignature: Algoritm missing.");
   }
   const verifyAlg = Object.assign({}, alg);
-  if (hashName) {
+  if (verifyAlg.name === "Ed25519") {
+    delete verifyAlg.hash;
+    delete verifyAlg.namedCurve;
+  } else if (hashName) {
     verifyAlg.hash = {
       name: hashName
     };
   }
-  if (!verifyAlg.hash) {
+  if (!verifyAlg.hash && verifyAlg.name !== "Ed25519") {
     throw new Error("verifySignature: Hash name missing.");
   }
   publicKeyInst.setAlgorithm(verifyAlg);
@@ -43896,13 +43946,18 @@ async function verifySignature(publicKey, expectedSignature, data, hashName) {
   try {
     let uSignature = new Uint8Array(expectedSignature);
     if (verifyAlg.name === "ECDSA") {
-      uSignature = await derToRaw(uSignature);
+      const componentLength = ecComponentLengths[verifyAlg.namedCurve];
+      if (!componentLength) {
+        throw new Error("verifySignature: unsupported ECDSA curve " + verifyAlg.namedCurve);
+      }
+      uSignature = derToRaw(uSignature, componentLength);
     }
-    const result = await webcrypto2.subtle.verify(verifyAlg, key, uSignature, new Uint8Array(data));
-    if (!result && hashName === "SHA-1" && not_used_by_deno_exports && void 0) {
+    const result = await webcrypto.subtle.verify(verifyAlg, key, uSignature, new Uint8Array(data));
+    const platformCrypto = !result && hashName === "SHA-1" ? getPlatformCrypto() : void 0;
+    if (platformCrypto && platformCrypto.createVerify) {
       try {
         const pem = await publicKeyInst.toPem();
-        const verify2 = (void 0)("RSA-SHA1");
+        const verify2 = platformCrypto.createVerify("RSA-SHA1");
         verify2.update(Buffer.from(data));
         verify2.end();
         return verify2.verify(pem, Buffer.from(expectedSignature));
@@ -43921,12 +43976,12 @@ async function hashDigest(o2, alg) {
   if (typeof o2 === "string") {
     o2 = new TextEncoder().encode(o2);
   }
-  const result = await webcrypto2.subtle.digest(alg || "SHA-256", o2);
+  const result = await webcrypto.subtle.digest(alg || "SHA-256", o2);
   return result;
 }
 function randomValues(n2) {
   const byteArray = new Uint8Array(n2);
-  webcrypto2.getRandomValues(byteArray);
+  webcrypto.getRandomValues(byteArray);
   return byteArray;
 }
 function getHostname(urlIn) {
@@ -44116,17 +44171,13 @@ async function validateExpectations() {
     throw new Error("expectations should be of type Map");
   }
   if (Array.isArray(req)) {
-    req = /* @__PURE__ */ new Set([
-      req
-    ]);
+    req = new Set(req);
   }
   if (!(req instanceof Set)) {
     throw new Error("requiredExpectaions should be of type Set");
   }
   if (Array.isArray(opt)) {
-    opt = /* @__PURE__ */ new Set([
-      opt
-    ]);
+    opt = new Set(opt);
   }
   if (!(opt instanceof Set)) {
     throw new Error("optionalExpectations should be of type Set");
@@ -44147,7 +44198,17 @@ async function validateExpectations() {
   }
   if (req.has("origin")) {
     let expectedOrigin = exp.get("origin");
-    toolbox_exports.checkOrigin(expectedOrigin);
+    if (Array.isArray(expectedOrigin)) {
+      if (expectedOrigin.length === 0) {
+        throw new Error("expected origin to be a non-empty array");
+      }
+      if (!exp.has("rpId")) {
+        throw new Error("expected rpId when origin is an array");
+      }
+      expectedOrigin.forEach((origin) => toolbox_exports.checkOrigin(origin));
+    } else {
+      toolbox_exports.checkOrigin(expectedOrigin);
+    }
   }
   if (exp.has("rpId")) {
     let expectedRpId = exp.get("rpId");
@@ -44213,14 +44274,8 @@ async function validateExpectations() {
           }
           if (allowCredential.transports != null && !Array.isArray(allowCredential.transports)) {
             throw new Error("expected transports of allowCredentials[" + index + "] to be array or null");
-          } else if (allowCredential.transports != null && !allowCredential.transports.every((el) => [
-            "usb",
-            "nfc",
-            "ble",
-            "cable",
-            "internal"
-          ].includes(el))) {
-            throw new Error("expected transports of allowCredentials[" + index + "] to be string with value 'usb', 'nfc', 'ble', 'cable', 'internal' or null");
+          } else if (allowCredential.transports != null && !allowCredential.transports.every((el) => typeof el === "string")) {
+            throw new Error("expected transports of allowCredentials[" + index + "] to be an array of strings or null");
           }
         });
       }
@@ -44288,11 +44343,11 @@ async function validateTransports() {
   if (transports != null && !Array.isArray(transports)) {
     throw new Error("expected transports to be 'null' or 'array<string>'");
   }
-  for (const index in transports) {
-    if (typeof transports[index] !== "string") {
+  (transports || []).forEach((transport, index) => {
+    if (typeof transport !== "string") {
       throw new Error("expected transports[" + index + "] to be 'string'");
     }
-  }
+  });
   this.audit.journal.add("transports");
   return true;
 }
@@ -44321,7 +44376,10 @@ async function validateOrigin() {
   let expectedOrigin = this.expectations.get("origin");
   let clientDataOrigin = this.clientData.get("origin");
   let origin = toolbox_exports.checkOrigin(clientDataOrigin);
-  if (origin !== expectedOrigin) {
+  const expectedOrigins = Array.isArray(expectedOrigin) ? expectedOrigin : [
+    expectedOrigin
+  ];
+  if (!expectedOrigins.includes(origin)) {
     throw new Error("clientData origin did not match expected origin");
   }
   this.audit.journal.add("origin");
@@ -44392,7 +44450,12 @@ async function validateAssertionSignature() {
   let rawClientData = this.clientData.get("rawClientDataJson");
   let clientDataHashBuf = await toolbox_exports.hashDigest(rawClientData);
   let clientDataHash = new Uint8Array(clientDataHashBuf).buffer;
-  let res = await toolbox_exports.verifySignature(publicKey, expectedSignature, appendBuffer(rawAuthnrData, clientDataHash), "SHA-256");
+  const key = await new PublicKey().fromPem(publicKey);
+  const curveHashes = {
+    "P-384": "SHA-384",
+    "P-521": "SHA-512"
+  };
+  let res = await toolbox_exports.verifySignature(key, expectedSignature, appendBuffer(rawAuthnrData, clientDataHash), curveHashes[key.getAlgorithm().namedCurve] || "SHA-256");
   if (!res) {
     throw new Error("signature validation failed");
   }
@@ -44492,6 +44555,21 @@ async function validateCredId() {
   this.audit.journal.add("credIdLen");
   return true;
 }
+async function validateCredentialAlgorithm() {
+  const cryptoParams = this.expectations.get("cryptoParams");
+  if (cryptoParams === void 0) {
+    return true;
+  }
+  let alg;
+  toolbox_exports.cbor.decodeMultiple(new Uint8Array(this.authnrData.get("credentialPublicKeyCose")), (cose) => {
+    alg = cose instanceof Map ? cose.get(3) : cose[3];
+    return false;
+  });
+  if (!cryptoParams.includes(alg)) {
+    throw new Error("credential public key algorithm " + alg + " is not one of the allowed cryptoParams");
+  }
+  return true;
+}
 async function validatePublicKey() {
   let cbor = this.authnrData.get("credentialPublicKeyCose");
   let jwk = this.authnrData.get("credentialPublicKeyJwk");
@@ -44513,6 +44591,11 @@ async function validatePublicKey() {
     case "EC":
       if (typeof jwk.crv !== "string") {
         throw new Error("authnrData credentialPublicKeyJwk.crv isn't of type String");
+      }
+      break;
+    case "OKP":
+      if (jwk.crv !== "Ed25519" || typeof jwk.x !== "string") {
+        throw new Error("authnrData credentialPublicKeyJwk isn't an Ed25519 key");
       }
       break;
     case "RSA":
@@ -44625,6 +44708,7 @@ function attach(o2) {
     validateRpIdHash,
     validateAaguid,
     validateCredId,
+    validateCredentialAlgorithm,
     validatePublicKey,
     validateExtensions,
     validateFlags,
@@ -44655,11 +44739,20 @@ function parseExpectations(exp) {
   }
   const ret = /* @__PURE__ */ new Map();
   if (exp.origin) {
-    if (typeof exp.origin !== "string") {
+    if (Array.isArray(exp.origin)) {
+      if (exp.origin.length === 0 || !exp.origin.every((origin) => typeof origin === "string")) {
+        throw new TypeError("expected 'origin' should be a non-empty array of strings");
+      }
+      if (!exp.rpId) {
+        throw new TypeError("expected 'rpId' is required when 'origin' is an array");
+      }
+      ret.set("origin", exp.origin.map((origin) => toolbox_exports.checkOrigin(origin)));
+    } else if (typeof exp.origin !== "string") {
       throw new TypeError("expected 'origin' should be string, got " + typeof exp.origin);
+    } else {
+      const origin = toolbox_exports.checkOrigin(exp.origin);
+      ret.set("origin", origin);
     }
-    const origin = toolbox_exports.checkOrigin(exp.origin);
-    ret.set("origin", origin);
   }
   if (exp.rpId) {
     if (typeof exp.rpId !== "string") {
@@ -44688,6 +44781,14 @@ function parseExpectations(exp) {
       throw new TypeError("expected 'prevCounter' should be Number, got " + typeof exp.prevCounter);
     }
     ret.set("prevCounter", exp.prevCounter);
+  }
+  if (exp.cryptoParams !== void 0) {
+    if (!Array.isArray(exp.cryptoParams) || exp.cryptoParams.length === 0 || !exp.cryptoParams.every((alg) => Number.isInteger(alg))) {
+      throw new TypeError("expected 'cryptoParams' should be a non-empty array of COSE algorithm numbers");
+    }
+    ret.set("cryptoParams", [
+      ...exp.cryptoParams
+    ]);
   }
   if (exp.publicKey) {
     if (typeof exp.publicKey !== "string") {
@@ -44979,7 +45080,8 @@ var Fido2AttestationResult = class _Fido2AttestationResult extends Fido2Result {
       "flags"
     ]);
     this.optionalExpectations = /* @__PURE__ */ new Set([
-      "rpId"
+      "rpId",
+      "cryptoParams"
     ]);
   }
   async parse() {
@@ -44991,6 +45093,7 @@ var Fido2AttestationResult = class _Fido2AttestationResult extends Fido2Result {
     await this.validateCreateType();
     await this.validateAaguid();
     await this.validatePublicKey();
+    await this.validateCredentialAlgorithm();
     await super.validate();
     await this.validateAttestation();
     await this.validateInitialCounter();
@@ -45066,7 +45169,7 @@ var MdsEntry = class {
       if (hint & 32) ret.push("bluetooth");
       if (hint & 64) ret.push("network");
       if (hint & 128) ret.push("ready");
-      if (hint & 65280) throw new Error("unknown attachment hint flags: " + hint & 65280);
+      if (hint & 65280) throw new Error("unknown attachment hint flags: " + (hint & 65280));
       return ret;
     }
     if (!Array.isArray(this.attestationTypes)) throw new Error("expected attestationTypes to be Array, got: " + this.attestationTypes);
@@ -45124,7 +45227,7 @@ var MdsEntry = class {
       if (kp & 4) ret.push("tee");
       if (kp & 8) ret.push("secure-element");
       if (kp & 16) ret.push("remote-handle");
-      if (kp & 65504) throw new Error("unknown key protection flags: " + kp & 65504);
+      if (kp & 65504) throw new Error("unknown key protection flags: " + (kp & 65504));
       return ret;
     }
     this.matcherProtection = this.matcherProtection instanceof Array ? this.matcherProtection : matcherProtToArr(this.matcherProtection);
@@ -45133,7 +45236,7 @@ var MdsEntry = class {
       if (mp & 1) ret.push("software");
       if (mp & 2) ret.push("hardware");
       if (mp & 4) ret.push("tee");
-      if (mp & 65528) throw new Error("unknown key protection flags: " + mp & 65528);
+      if (mp & 65528) throw new Error("unknown matcher protection flags: " + (mp & 65528));
       return ret;
     }
     if (this.publicKeyAlgAndEncodings) this.publicKeyAlgAndEncoding = `ALG_KEY_${this.publicKeyAlgAndEncodings[0].toUpperCase()}`;
@@ -45162,7 +45265,7 @@ var MdsEntry = class {
       if (tcd & 4) ret.push("tee");
       if (tcd & 8) ret.push("hardware");
       if (tcd & 16) ret.push("remote");
-      if (tcd & 65504) throw new Error("unknown transaction confirmation display flags: " + tcd & 65504);
+      if (tcd & 65504) throw new Error("unknown transaction confirmation display flags: " + (tcd & 65504));
       return ret;
     }
     this.userVerificationDetails = uvDetailsToSet(this.userVerificationDetails);
@@ -45186,11 +45289,10 @@ var MdsEntry = class {
             newDesc.type = "pattern";
             descKey = "paDesc";
           }
-          newDesc.userVerification = uvToArr(desc.userVerification);
-          if (desc.userVerificationMethod) newDesc.userVerification = (desc.userVerificationMethod.match(/(\w+)_internal/) || [
+          newDesc.userVerification = desc.userVerificationMethod ? (desc.userVerificationMethod.match(/(\w+)_internal/) || [
             "none",
             "none"
-          ])[1];
+          ])[1] : uvToArr(desc.userVerification);
           if (descKey) for (const key of Object.keys(desc[descKey])) {
             newDesc[key] = desc[descKey][key];
           }
@@ -45274,7 +45376,7 @@ var MdsCollection = class {
       throw e2;
     }
     if (rootCert === void 0) {
-      if (parsedJws.kid === "Metadata TOC Signer 3" || parsedJws.key && parsedJws.key.kid === "Metadata TOC Signer 3") {
+      if (parsedJws.key && parsedJws.key.kid === "Metadata TOC Signer 3") {
         rootCert = "-----BEGIN CERTIFICATE-----\nMIICQzCCAcigAwIBAgIORqmxkzowRM99NQZJurcwCgYIKoZIzj0EAwMwUzELMAkG\nA1UEBhMCVVMxFjAUBgNVBAoTDUZJRE8gQWxsaWFuY2UxHTAbBgNVBAsTFE1ldGFk\nYXRhIFRPQyBTaWduaW5nMQ0wCwYDVQQDEwRSb290MB4XDTE1MDYxNzAwMDAwMFoX\nDTQ1MDYxNzAwMDAwMFowUzELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUZJRE8gQWxs\naWFuY2UxHTAbBgNVBAsTFE1ldGFkYXRhIFRPQyBTaWduaW5nMQ0wCwYDVQQDEwRS\nb290MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEFEoo+6jdxg6oUuOloqPjK/nVGyY+\nAXCFz1i5JR4OPeFJs+my143ai0p34EX4R1Xxm9xGi9n8F+RxLjLNPHtlkB3X4ims\nrfIx7QcEImx1cMTgu5zUiwxLX1ookVhIRSoso2MwYTAOBgNVHQ8BAf8EBAMCAQYw\nDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0qUfC6f2YshA1Ni9udeO0VS7vEYw\nHwYDVR0jBBgwFoAU0qUfC6f2YshA1Ni9udeO0VS7vEYwCgYIKoZIzj0EAwMDaQAw\nZgIxAKulGbSFkDSZusGjbNkAhAkqTkLWo3GrN5nRBNNk2Q4BlG+AvM5q9wa5WciW\nDcMdeQIxAMOEzOFsxX9Bo0h4LOFE5y5H8bdPFYW+l5gy1tQiJv+5NUyM2IBB55XU\nYjdBz56jSA==\n-----END CERTIFICATE-----\n";
       } else {
         rootCert = fidoMdsRootCert;
@@ -45285,7 +45387,7 @@ var MdsCollection = class {
     else rootCerts = [
       rootCert
     ];
-    const certHeader = parsedJws.header ? parsedJws.header : parsedJws.protectedHeader;
+    const certHeader = parsedJws.header;
     await CertManager.verifyCertChain(certHeader.x5c, rootCerts, crls, checkDate);
     this.toc.raw = tocStr;
     if (this.toc.entries.some((entry) => !entry.metadataStatement)) console.warn("[DEPRECATION WARNING] FIDO MDS v2 will be removed in October 2022. Please update to MDS v3!");
@@ -45405,10 +45507,10 @@ function getMdsEntryId(obj) {
 }
 function idEquals(id1, id2) {
   if (id1 instanceof ArrayBuffer) {
-    id1 = coerceToBase64Url(id1);
+    id1 = coerceToBase64Url(id1, "id1");
   }
   if (id2 instanceof ArrayBuffer) {
-    id2 = coerceToBase64Url(id2);
+    id2 = coerceToBase64Url(id2, "id2");
   }
   if (typeof id1 === "string" && typeof id2 === "string") {
     return id1 === id2;
@@ -45459,10 +45561,13 @@ var algMap = /* @__PURE__ */ new Map([
       hashAlg: "SHA-256"
     }
   ],
-  // [-8, {
-  //     name: "EdDSA",
-  //     hash: undefined
-  // }],
+  [
+    -8,
+    {
+      algName: "EdDSA",
+      hashAlg: void 0
+    }
+  ],
   [
     -35,
     {
@@ -45573,9 +45678,6 @@ async function validateCerts(parsedAttCert, aaguid, _x5c, audit) {
   attCert.info.forEach((v, k) => audit.info.set(k, v));
   attCert.warning.forEach((v, k) => audit.warning.set(k, v));
   audit.journal.add("attCert");
-  if (attCert.getVersion() !== 3) {
-    throw new Error("expected packed attestation certificate to be x.509v3");
-  }
   const subject = attCert.getSubject();
   if (typeof subject.get("country-name") !== "string") {
     throw new Error("packed attestation: attestation certificate missing 'country name'");
@@ -45599,7 +45701,7 @@ async function validateCerts(parsedAttCert, aaguid, _x5c, audit) {
   }
 }
 async function validateSelfSignature(rawClientData, authenticatorData, sig, hashAlg, publicKeyPem) {
-  const clientDataHash = await toolbox_exports.hashDigest(rawClientData, hashAlg);
+  const clientDataHash = await toolbox_exports.hashDigest(rawClientData);
   const verify2 = await toolbox_exports.verifySignature(publicKeyPem, sig, appendBuffer(authenticatorData, clientDataHash), hashAlg);
   return verify2;
 }
@@ -45732,7 +45834,13 @@ function androidSafetyNetParseFn(attStmt) {
 async function androidSafetyNetValidateFn() {
   const response = this.authnrData.get("response");
   const protectedHeader = await toolbox_exports.decodeProtectedHeader(response);
-  const publicKey = await toolbox_exports.getEmbeddedJwk(protectedHeader);
+  if (!Array.isArray(protectedHeader.x5c) || protectedHeader.x5c.length < 1) {
+    throw new Error("android-safetynet attestation: x5c missing from JWS header");
+  }
+  const publicKey = await toolbox_exports.getEmbeddedJwk({
+    x5c: protectedHeader.x5c,
+    alg: protectedHeader.alg
+  });
   const parsedJws = await toolbox_exports.jwtVerify(response, await toolbox_exports.importJWK(publicKey));
   parsedJws.header = protectedHeader;
   this.authnrData.set("payload", parsedJws.payload);
@@ -45756,13 +45864,15 @@ async function androidSafetyNetValidateFn() {
   this.audit.journal.add("payload");
   this.audit.journal.add("ver");
   this.audit.journal.add("response");
-  this.authnrData.set("attCert", parsedJws.header.x5c.shift());
+  const parsedAttCert = parsedJws.header.x5c.shift();
+  this.authnrData.set("attCert", parsedAttCert);
   this.authnrData.set("x5c", parsedJws.header.x5c);
   this.audit.journal.add("attCert");
   this.audit.journal.add("x5c");
-  const attCert = new Certificate2(coerceToBase64(parsedJws.header.x5c.shift(), "parsedAttCert"));
+  const attCert = new Certificate2(coerceToBase64(parsedAttCert, "parsedAttCert"));
   this.audit.info.set("organization-name", attCert.getSubject().get("organization-name"));
-  this.audit.info.set("attestation-type", "basic");
+  this.audit.warning.set("attesation-not-validated", "android-safetynet is deprecated, its certificate chain is not validated");
+  this.audit.info.set("attestation-type", "none");
   this.audit.journal.add("fmt");
   return true;
 }
@@ -45876,27 +45986,70 @@ function parsePubArea(pubArea) {
   ret = getSizedElement(dv, offset);
   pa.set("authPolicy", ret.buf);
   offset = ret.offset;
-  if (type !== "TPM_ALG_RSA") {
-    throw new Error("tpm attestation: only TPM_ALG_RSA supported");
+  if (type === "TPM_ALG_ECC") {
+    offset = parseEccParameters(dv, offset, pa);
+  } else if (type === "TPM_ALG_RSA") {
+    pa.set("symmetric", algIdToStr(dv.getUint16(offset)));
+    offset += 2;
+    pa.set("scheme", algIdToStr(dv.getUint16(offset)));
+    offset += 2;
+    pa.set("keyBits", dv.getUint16(offset));
+    offset += 2;
+    let exponent = dv.getUint32(offset);
+    if (exponent === 0) exponent = 65537;
+    pa.set("exponent", exponent);
+    offset += 4;
+    ret = getSizedElement(dv, offset);
+    pa.set("unique", ret.buf);
+    offset = ret.offset;
+  } else {
+    throw new Error("tpm attestation: only TPM_ALG_RSA and TPM_ALG_ECC supported");
   }
-  pa.set("symmetric", algIdToStr(dv.getUint16(offset)));
-  offset += 2;
-  pa.set("scheme", algIdToStr(dv.getUint16(offset)));
-  offset += 2;
-  pa.set("keyBits", dv.getUint16(offset));
-  offset += 2;
-  let exponent = dv.getUint32(offset);
-  if (exponent === 0) exponent = 65537;
-  pa.set("exponent", exponent);
-  offset += 4;
-  ret = getSizedElement(dv, offset);
-  pa.set("unique", ret.buf);
-  offset = ret.offset;
   if (offset !== pubArea.byteLength) {
     throw new Error("tpm attestation: left over bytes when parsing public area");
   }
   return pa;
 }
+function parseEccParameters(dv, offset, pa) {
+  const symmetric = algIdToStr(dv.getUint16(offset));
+  if (symmetric !== "TPM_ALG_NULL") {
+    throw new Error("tpm attestation: expected ECC symmetric to be TPM_ALG_NULL, got " + symmetric);
+  }
+  pa.set("symmetric", symmetric);
+  offset += 2;
+  const scheme = algIdToStr(dv.getUint16(offset));
+  pa.set("scheme", scheme);
+  offset += 2;
+  if (scheme !== "TPM_ALG_NULL") {
+    pa.set("schemeHashAlg", algIdToStr(dv.getUint16(offset)));
+    offset += 2;
+  }
+  const curveId = dv.getUint16(offset);
+  const curve = tpmEccCurves[curveId];
+  if (curve === void 0) {
+    throw new Error("tpm attestation: unsupported ECC curve: " + curveId.toString(16));
+  }
+  pa.set("curve", curve);
+  offset += 2;
+  const kdf2 = algIdToStr(dv.getUint16(offset));
+  pa.set("kdf", kdf2);
+  offset += 2;
+  if (kdf2 !== "TPM_ALG_NULL") {
+    pa.set("kdfHashAlg", algIdToStr(dv.getUint16(offset)));
+    offset += 2;
+  }
+  let ret = getSizedElement(dv, offset);
+  pa.set("x", ret.buf);
+  offset = ret.offset;
+  ret = getSizedElement(dv, offset);
+  pa.set("y", ret.buf);
+  return ret.offset;
+}
+var tpmEccCurves = {
+  3: "P-256",
+  4: "P-384",
+  5: "P-521"
+};
 function decodeStructureTag(t2) {
   switch (t2) {
     case 196:
@@ -46002,6 +46155,13 @@ function getSizedElement(dv, offset) {
 }
 function getTpm2bName(dvIn, oIn) {
   const { offset, dv } = getSizedElement(dvIn, oIn);
+  if (dv.byteLength < 2) {
+    return {
+      hashType: void 0,
+      nameHash: dv.buffer,
+      offset
+    };
+  }
   const hashType = algIdToStr(dv.getUint16(0));
   const nameHash = dv.buffer.slice(2);
   return {
@@ -46010,35 +46170,38 @@ function getTpm2bName(dvIn, oIn) {
     offset
   };
 }
-function algIdToStr(hashType) {
-  const hashList = [
-    "TPM_ALG_ERROR",
-    "TPM_ALG_RSA",
-    null,
-    null,
-    "TPM_ALG_SHA1",
-    "TPM_ALG_HMAC",
-    "TPM_ALG_AES",
-    "TPM_ALG_MGF1",
-    null,
-    "TPM_ALG_KEYEDHASH",
-    "TPM_ALG_XOR",
-    "TPM_ALG_SHA256",
-    "TPM_ALG_SHA384",
-    "TPM_ALG_SHA512",
-    null,
-    null,
-    "TPM_ALG_NULL",
-    null,
-    "TPM_ALG_SM3_256",
-    "TPM_ALG_SM4",
-    "TPM_ALG_RSASSA",
-    "TPM_ALG_RSAES",
-    "TPM_ALG_RSAPSS",
-    "TPM_ALG_OAEP",
-    "TPM_ALG_ECDSA"
-  ];
-  return hashList[hashType];
+var tpmAlgIds = {
+  0: "TPM_ALG_ERROR",
+  1: "TPM_ALG_RSA",
+  4: "TPM_ALG_SHA1",
+  5: "TPM_ALG_HMAC",
+  6: "TPM_ALG_AES",
+  7: "TPM_ALG_MGF1",
+  8: "TPM_ALG_KEYEDHASH",
+  10: "TPM_ALG_XOR",
+  11: "TPM_ALG_SHA256",
+  12: "TPM_ALG_SHA384",
+  13: "TPM_ALG_SHA512",
+  16: "TPM_ALG_NULL",
+  18: "TPM_ALG_SM3_256",
+  19: "TPM_ALG_SM4",
+  20: "TPM_ALG_RSASSA",
+  21: "TPM_ALG_RSAES",
+  22: "TPM_ALG_RSAPSS",
+  23: "TPM_ALG_OAEP",
+  24: "TPM_ALG_ECDSA",
+  25: "TPM_ALG_ECDH",
+  26: "TPM_ALG_ECDAA",
+  27: "TPM_ALG_SM2",
+  28: "TPM_ALG_ECSCHNORR",
+  29: "TPM_ALG_ECMQV",
+  32: "TPM_ALG_KDF1_SP800_56A",
+  33: "TPM_ALG_KDF2",
+  34: "TPM_ALG_KDF1_SP800_108",
+  35: "TPM_ALG_ECC"
+};
+function algIdToStr(algId) {
+  return tpmAlgIds[algId];
 }
 async function tpmValidateFn() {
   const parsedAttCert = this.authnrData.get("attCert");
@@ -46049,20 +46212,28 @@ async function tpmValidateFn() {
     throw new Error("tpm attestation: expected TPM version 2.0");
   }
   this.audit.journal.add("ver");
-  const pubAreaPkN = pubArea.get("unique");
-  const pubAreaPkExp = pubArea.get("exponent");
   const credentialPublicKeyJwk = this.authnrData.get("credentialPublicKeyJwk");
-  const credentialPublicKeyJwkN = coerceToArrayBuffer(credentialPublicKeyJwk.n, "credentialPublicKeyJwk.n");
-  const credentialPublicKeyJwkExpBuf = coerceToArrayBuffer(credentialPublicKeyJwk.e, "credentialPublicKeyJwk.e");
-  const credentialPublicKeyJwkExp = abToInt(credentialPublicKeyJwkExpBuf);
-  if (credentialPublicKeyJwk.kty !== "RSA" || pubArea.get("type") !== "TPM_ALG_RSA") {
-    throw new Error("tpm attestation: only RSA keys are currently supported");
-  }
-  if (pubAreaPkExp !== credentialPublicKeyJwkExp) {
-    throw new Error("tpm attestation: RSA exponents of WebAuthn credentialPublicKey and TPM publicArea did not match");
-  }
-  if (!arrayBufferEquals(credentialPublicKeyJwkN, pubAreaPkN)) {
-    throw new Error("tpm attestation: RSA 'n' of WebAuthn credentialPublicKey and TPM publicArea did not match");
+  if (pubArea.get("type") === "TPM_ALG_RSA") {
+    if (credentialPublicKeyJwk.kty !== "RSA") {
+      throw new Error("tpm attestation: TPM publicArea is an RSA key, WebAuthn credentialPublicKey is not");
+    }
+    const credentialPublicKeyJwkN = coerceToArrayBuffer(credentialPublicKeyJwk.n, "credentialPublicKeyJwk.n");
+    const credentialPublicKeyJwkExp = abToInt(coerceToArrayBuffer(credentialPublicKeyJwk.e, "credentialPublicKeyJwk.e"));
+    if (pubArea.get("exponent") !== credentialPublicKeyJwkExp) {
+      throw new Error("tpm attestation: RSA exponents of WebAuthn credentialPublicKey and TPM publicArea did not match");
+    }
+    if (!arrayBufferEquals(credentialPublicKeyJwkN, pubArea.get("unique"))) {
+      throw new Error("tpm attestation: RSA 'n' of WebAuthn credentialPublicKey and TPM publicArea did not match");
+    }
+  } else if (pubArea.get("type") === "TPM_ALG_ECC") {
+    if (credentialPublicKeyJwk.kty !== "EC" || credentialPublicKeyJwk.crv !== pubArea.get("curve")) {
+      throw new Error("tpm attestation: ECC curve of WebAuthn credentialPublicKey and TPM publicArea did not match");
+    }
+    if (!arrayBufferEquals(coerceToArrayBuffer(credentialPublicKeyJwk.x, "credentialPublicKeyJwk.x"), pubArea.get("x")) || !arrayBufferEquals(coerceToArrayBuffer(credentialPublicKeyJwk.y, "credentialPublicKeyJwk.y"), pubArea.get("y"))) {
+      throw new Error("tpm attestation: ECC point of WebAuthn credentialPublicKey and TPM publicArea did not match");
+    }
+  } else {
+    throw new Error("tpm attestation: only RSA and ECC keys are supported");
   }
   const magic = certInfo.get("magic");
   if (magic !== 4283712327) {
@@ -46266,6 +46437,11 @@ var {
 var globalAttestationMap = /* @__PURE__ */ new Map();
 var globalExtensionMap = /* @__PURE__ */ new Map();
 var globalMdsCollection = /* @__PURE__ */ new Map();
+var validUserVerifications = /* @__PURE__ */ new Set([
+  "required",
+  "preferred",
+  "discouraged"
+]);
 var Fido2Lib = class {
   /**
    * Creates a FIDO2 server class
@@ -46282,8 +46458,9 @@ var Fido2Lib = class {
    * @param {String} [opts.authenticatorUserVerification] Indicates whether user verification should be performed. Options are "required", "preferred", or "discouraged".
    * @param {String} [opts.attestation="direct"] The preferred attestation type to be used.
    * See [AttestationConveyancePreference]{https://w3.org/TR/webauthn/#enumdef-attestationconveyancepreference} in the WebAuthn spec
-   * @param {Array<Number>} [opts.cryptoParams] A list of COSE algorithm identifiers (e.g. -7)
+   * @param {Array<Number>} [opts.cryptoParams=[-7, -257]] A list of COSE algorithm identifiers (e.g. -7)
    * ordered by the preference in which the authenticator should use them.
+   * [attestationResult]{@link Fido2Lib#attestationResult} rejects credentials whose public key algorithm isn't in this list.
    */
   constructor(opts) {
     opts = opts || {};
@@ -46627,44 +46804,62 @@ var Fido2Lib = class {
    * Parses and validates an attestation response from the client
    * @param {Object} res The assertion result that was generated by the client.
    * See {@link https://w3.org/TR/webauthn/#authenticatorattestationresponse AuthenticatorAttestationResponse} in the WebAuthn spec.
-   * @param {String} [res.id] The base64url encoded id returned by the client
-   * @param {String} [res.rawId] The base64url encoded rawId returned by the client. If `res.rawId` is missing, `res.id` will be used instead. If both are missing an error will be thrown.
-   * @param {String} res.response.clientDataJSON The base64url encoded clientDataJSON returned by the client
-   * @param {String} res.response.authenticatorData The base64url encoded authenticatorData returned by the client
-   * @param {Object} expected The expected parameters for the assertion response.
+   * Binary response values can be passed as a base64url or base64 string, or as an ArrayBuffer.
+   * @param {String|ArrayBuffer} [res.id] The id returned by the client
+   * @param {ArrayBuffer} [res.rawId] The rawId returned by the client. If `res.rawId` is missing, `res.id` will be used instead. One of them has to be an ArrayBuffer.
+   * @param {String|ArrayBuffer} res.response.clientDataJSON The clientDataJSON returned by the client
+   * @param {String|ArrayBuffer} res.response.attestationObject The attestationObject returned by the client
+   * @param {Object} expected The expected parameters for the attestation response.
    * If these parameters don't match the recieved values, validation will fail and an error will be thrown.
-   * @param {String} expected.challenge The base64url encoded challenge that was sent to the client, as generated by [assertionOptions]{@link Fido2Lib#assertionOptions}
-   * @param {String} expected.origin The expected origin that the authenticator has signed over. For example, "https://localhost:8443" or "https://webauthn.org"
+   * @param {String} expected.challenge The base64url encoded challenge that was sent to the client, as generated by [attestationOptions]{@link Fido2Lib#attestationOptions}
+   * @param {String|Array<String>} expected.origin The expected origin that the authenticator has signed over. For example, "https://localhost:8443" or "https://webauthn.org".
+   * An array accepts any of its origins, e.g. a website and its Android app ("android:apk-key-hash:..."), and requires `expected.rpId`.
    * @param {String} expected.factor Which factor is expected for the assertion. Valid values are "first", "second", or "either".
    * If "first", this requires that the authenticator performed user verification (e.g. - biometric authentication, PIN authentication, etc.).
    * If "second", this requires that the authenticator performed user presence (e.g. - user pressed a button).
    * If "either", then either "first" or "second" is acceptable
+   * @param {String} [expected.userVerification] The user verification requirement that was sent to the client in [attestationOptions]{@link Fido2Lib#attestationOptions}. Valid values are "required", "preferred", or "discouraged".
+   * If "required", this requires that the authenticator performed user verification.
+   * If "preferred" or "discouraged", user verification is optional, which conflicts with the "first" factor and throws a TypeError.
+   * If omitted, `factor` alone decides whether user verification is required.
    * @return {Promise<Fido2AttestationResult>} Returns a Promise that resolves to a {@link Fido2AttestationResult}
    * @throws {Error} If parsing or validation fails
    */
   async attestationResult(res, expected) {
-    expected.flags = factorToFlags(expected.factor, ["AT"]);
+    expected.flags = factorToFlags(
+      expected.factor,
+      ["AT"],
+      ownUserVerification(expected)
+    );
     delete expected.factor;
+    delete expected.userVerification;
+    expected.cryptoParams = this.config.cryptoParams;
     return await Fido2AttestationResult.create(res, expected);
   }
   /**
    * Parses and validates an assertion response from the client
    * @param {Object} res The assertion result that was generated by the client.
    * See {@link https://w3.org/TR/webauthn/#authenticatorassertionresponse AuthenticatorAssertionResponse} in the WebAuthn spec.
-   * @param {String} [res.id] The base64url encoded id returned by the client
-   * @param {String} [res.rawId] The base64url encoded rawId returned by the client. If `res.rawId` is missing, `res.id` will be used instead. If both are missing an error will be thrown.
-   * @param {String} res.response.clientDataJSON The base64url encoded clientDataJSON returned by the client
-   * @param {String} res.response.attestationObject The base64url encoded authenticatorData returned by the client
-   * @param {String} res.response.signature The base64url encoded signature returned by the client
-   * @param {String|null} [res.response.userHandle] The base64url encoded userHandle returned by the client. May be null or an empty string.
+   * Binary response values can be passed as a base64url or base64 string, or as an ArrayBuffer.
+   * @param {String|ArrayBuffer} [res.id] The id returned by the client
+   * @param {ArrayBuffer} [res.rawId] The rawId returned by the client. If `res.rawId` is missing, `res.id` will be used instead. One of them has to be an ArrayBuffer.
+   * @param {String|ArrayBuffer} res.response.clientDataJSON The clientDataJSON returned by the client
+   * @param {String|ArrayBuffer} res.response.authenticatorData The authenticatorData returned by the client
+   * @param {String|ArrayBuffer} res.response.signature The signature returned by the client
+   * @param {String|ArrayBuffer|null} [res.response.userHandle] The userHandle returned by the client. May be null or an empty string.
    * @param {Object} expected The expected parameters for the assertion response.
    * If these parameters don't match the recieved values, validation will fail and an error will be thrown.
    * @param {String} expected.challenge The base64url encoded challenge that was sent to the client, as generated by [assertionOptions]{@link Fido2Lib#assertionOptions}
-   * @param {String} expected.origin The expected origin that the authenticator has signed over. For example, "https://localhost:8443" or "https://webauthn.org"
+   * @param {String|Array<String>} expected.origin The expected origin that the authenticator has signed over. For example, "https://localhost:8443" or "https://webauthn.org".
+   * An array accepts any of its origins, e.g. a website and its Android app ("android:apk-key-hash:..."), and requires `expected.rpId`.
    * @param {String} expected.factor Which factor is expected for the assertion. Valid values are "first", "second", or "either".
    * If "first", this requires that the authenticator performed user verification (e.g. - biometric authentication, PIN authentication, etc.).
    * If "second", this requires that the authenticator performed user presence (e.g. - user pressed a button).
    * If "either", then either "first" or "second" is acceptable
+   * @param {String} [expected.userVerification] The user verification requirement that was sent to the client in [assertionOptions]{@link Fido2Lib#assertionOptions}. Valid values are "required", "preferred", or "discouraged".
+   * If "required", this requires that the authenticator performed user verification.
+   * If "preferred" or "discouraged", user verification is optional, which conflicts with the "first" factor and throws a TypeError.
+   * If omitted, `factor` alone decides whether user verification is required.
    * @param {String} expected.publicKey A PEM encoded public key that will be used to validate the assertion response signature.
    * This is the public key that was returned for this user during [attestationResult]{@link Fido2Lib#attestationResult}
    * @param {Number} expected.prevCounter The previous value of the signature counter for this authenticator.
@@ -46674,8 +46869,13 @@ var Fido2Lib = class {
    */
   // deno-lint-ignore require-await
   async assertionResult(res, expected) {
-    expected.flags = factorToFlags(expected.factor, []);
+    expected.flags = factorToFlags(
+      expected.factor,
+      [],
+      ownUserVerification(expected)
+    );
     delete expected.factor;
+    delete expected.userVerification;
     return Fido2AssertionResult.create(res, expected);
   }
   /**
@@ -46690,6 +46890,8 @@ var Fido2Lib = class {
    * if an extension was disabled with {@link disableExtension} but it is included in this object, it will be sent to the client.
    * @param {String} [extraData] Extra data to be signed by the authenticator during attestation. The challenge will be a hash:
    * SHA256(rawChallenge + extraData) and the `rawChallenge` will be returned as part of PublicKeyCredentialCreationOptions.
+   * @param {Array} [opts.excludeCredentials] Credentials the user already registered, so the authenticator doesn't create a second credential for them.
+   * Each entry is `{ type: "public-key", id, transports }`, where `id` is the credential id as a base64url string or ArrayBuffer.
    * @returns {Promise<PublicKeyCredentialCreationOptions>} The options for creating calling `navigator.credentials.create()`
    */
   async attestationOptions(opts) {
@@ -46747,6 +46949,28 @@ var Fido2Lib = class {
       );
     }
     setOpt(options, "rawChallenge", rawChallenge);
+    if (opts.excludeCredentials !== void 0) {
+      if (!Array.isArray(opts.excludeCredentials)) {
+        throw new TypeError("expected excludeCredentials to be an array");
+      }
+      options.excludeCredentials = opts.excludeCredentials.map((credential, index) => {
+        if (credential === null || typeof credential !== "object" || credential.type !== "public-key") {
+          throw new TypeError("expected type of excludeCredentials[" + index + "] to be 'public-key'");
+        }
+        if (credential.transports !== void 0 && !(Array.isArray(credential.transports) && credential.transports.every((transport) => typeof transport === "string"))) {
+          throw new TypeError("expected transports of excludeCredentials[" + index + "] to be an array of strings");
+        }
+        const descriptor = {
+          type: "public-key",
+          id: coerceToArrayBuffer2(credential.id, "excludeCredentials[" + index + "].id")
+        };
+        if (descriptor.id.byteLength === 0) {
+          throw new TypeError("expected id of excludeCredentials[" + index + "] to be non-empty");
+        }
+        setOpt(descriptor, "transports", credential.transports);
+        return descriptor;
+      });
+    }
     if (Object.keys(extensions2).length > 0) {
       options.extensions = extensions2;
     }
@@ -46823,18 +47047,35 @@ function setOpt(obj, prop, val) {
     obj[prop] = val;
   }
 }
-function factorToFlags(expectedFactor, flags) {
+function ownUserVerification(expected) {
+  return Object.hasOwn(expected, "userVerification") ? expected.userVerification : void 0;
+}
+function factorToFlags(expectedFactor, flags, userVerification) {
   flags = flags || [];
+  if (userVerification !== void 0 && !validUserVerifications.has(userVerification)) {
+    throw new TypeError(
+      "userVerification should be 'required', 'preferred' or 'discouraged'"
+    );
+  }
+  const uvRequired = userVerification === "required";
   switch (expectedFactor) {
     case "first":
+      if (userVerification !== void 0 && !uvRequired) {
+        throw new TypeError(
+          "factor 'first' requires userVerification 'required', use factor 'either' to accept responses without user verification"
+        );
+      }
       flags.push("UP");
       flags.push("UV");
       break;
     case "second":
       flags.push("UP");
+      if (uvRequired) {
+        flags.push("UV");
+      }
       break;
     case "either":
-      flags.push("UP-or-UV");
+      flags.push(uvRequired ? "UV" : "UP-or-UV");
       break;
     default:
       throw new TypeError(
