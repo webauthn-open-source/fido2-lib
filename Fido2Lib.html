@@ -80,7 +80,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line60">line 60</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -619,11 +619,14 @@ See [AttestationConveyancePreference]{https://w3.org/TR/webauthn/#enumdef-attest
             
                 <td class="default">
                 
+                    <code>[-7, -257]</code>
+                
                 </td>
             
 
             <td class="description last"><p>A list of COSE algorithm identifiers (e.g. -7)
-ordered by the preference in which the authenticator should use them.</p></td>
+ordered by the preference in which the authenticator should use them.
+<a href="Fido2Lib.html#attestationResult">attestationResult</a> rejects credentials whose public key algorithm isn't in this list.</p></td>
         </tr>
 
     
@@ -698,7 +701,7 @@ The <code>challenge</code> property is an <code>ArrayBuffer</code> and will need
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line770">line 770</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line772">line 772</a>
     </li></ul></dd>
     
 
@@ -970,7 +973,7 @@ SHA256(rawChallenge + extraData) and the <code>rawChallenge</code> will be retur
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line599">line 599</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line601">line 601</a>
     </li></ul></dd>
     
 
@@ -1698,7 +1701,7 @@ The <code>challenge</code> property is an <code>ArrayBuffer</code> and will need
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line626">line 626</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line628">line 628</a>
     </li></ul></dd>
     
 
@@ -2005,7 +2008,7 @@ Each entry is <code>{ type: &quot;public-key&quot;, id, transports }</code>, whe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line556">line 556</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line557">line 557</a>
     </li></ul></dd>
     
 
@@ -2557,7 +2560,7 @@ If omitted, <code>factor</code> alone decides whether user verification is requi
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line361">line 361</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line362">line 362</a>
     </li></ul></dd>
     
 
@@ -2692,7 +2695,7 @@ If omitted, <code>factor</code> alone decides whether user verification is requi
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line345">line 345</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line346">line 346</a>
     </li></ul></dd>
     
 
@@ -2827,7 +2830,7 @@ If omitted, <code>factor</code> alone decides whether user verification is requi
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line378">line 378</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line379">line 379</a>
     </li></ul></dd>
     
 
@@ -2987,7 +2990,7 @@ for any future Fido2CreateRequest messages</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line440">line 440</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line441">line 441</a>
     </li></ul></dd>
     
 
@@ -3179,7 +3182,7 @@ enableExtension for each instantiation of a Fido2Lib.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line227">line 227</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line228">line 228</a>
     </li></ul></dd>
     
 
@@ -3386,7 +3389,7 @@ enableExtension for each instantiation of a Fido2Lib.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line174">line 174</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line175">line 175</a>
     </li></ul></dd>
     
 
@@ -3528,7 +3531,7 @@ enableExtension for each instantiation of a Fido2Lib.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line188">line 188</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line189">line 189</a>
     </li></ul></dd>
     
 
@@ -3613,7 +3616,7 @@ enableExtension for each instantiation of a Fido2Lib.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line165">line 165</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line166">line 166</a>
     </li></ul></dd>
     
 
@@ -3780,7 +3783,7 @@ finds multiple matching entries from different sources (e.g. FIDO MDS 1 &amp; FI
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line476">line 476</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line477">line 477</a>
     </li></ul></dd>
     
 
@@ -3865,7 +3868,7 @@ finds multiple matching entries from different sources (e.g. FIDO MDS 1 &amp; FI
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line274">line 274</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line275">line 275</a>
     </li></ul></dd>
     
 
@@ -3953,7 +3956,7 @@ setMdsCollection, an <code>Error</code> will be thrown.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line202">line 202</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line203">line 203</a>
     </li></ul></dd>
     
 
@@ -4121,7 +4124,7 @@ If no entry was found, the Array will be empty.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Oct 03 2026 12:14:10 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Oct 03 2026 12:16:51 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
