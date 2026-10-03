@@ -62,6 +62,7 @@ declare module "fido2-lib" {
   interface AttestationOptions {
     extensionOptions?: any;
     extraData?: string;
+    excludeCredentials?: CredentialDescriptorInput[];
   }
 
   interface AssertionOptions {
@@ -78,33 +79,39 @@ declare module "fido2-lib" {
     attestation?: Attestation;
     authenticatorSelection?: AuthenticatorSelectionCriteria;
     rawChallenge?: ArrayBuffer;
+    excludeCredentials?: PublicKeyCredentialDescriptor[];
     extensions?: any;
   }
 
+  type BinaryInput = string | ArrayBuffer;
   type Attestation = "direct" | "indirect" | "none";
   type Attachment = "platform" | "cross-platform";
   type UserVerification = "required" | "preferred" | "discouraged";
   type Factor = "first" | "second" | "either";
 
   interface AttestationResult {
-    id?: ArrayBuffer;
+    id?: BinaryInput;
     rawId?: ArrayBuffer;
     transports?: string[];
-    response: { clientDataJSON: string; attestationObject: string };
+    response: { clientDataJSON: BinaryInput; attestationObject: BinaryInput };
   }
 
-  interface ExpectedAttestationResult {
-    rpId?: string;
-    origin: string;
+  type ExpectedOrigin =
+    | { origin: string; rpId?: string }
+    | { origin: string[]; rpId: string };
+
+  interface ExpectedAttestationResultFields {
     challenge: string;
     factor: Factor;
     userVerification?: UserVerification;
   }
 
+  type ExpectedAttestationResult = ExpectedAttestationResultFields & ExpectedOrigin;
+
   interface Fido2AttestationResult {
     authnrData: Map<string, any>;
     clientData: Map<string, any>;
-    expectations: Map<string, string>;
+    expectations: Map<string, any>;
     request: AttestationResult;
     audit: Audit;
   }
@@ -135,34 +142,40 @@ declare module "fido2-lib" {
     transports?: string[];
   }
 
+  interface CredentialDescriptorInput {
+    type: "public-key";
+    id: BinaryInput;
+    transports?: string[];
+  }
+
   interface AssertionResult {
-    id?: ArrayBuffer;
+    id?: BinaryInput;
     rawId?: ArrayBuffer;
     response: {
-      clientDataJSON: string;
-      authenticatorData: ArrayBuffer;
-      signature: string;
-      userHandle?: string;
+      clientDataJSON: BinaryInput;
+      authenticatorData: BinaryInput;
+      signature: BinaryInput;
+      userHandle?: BinaryInput | null;
     };
   }
 
-  interface ExpectedAssertionResult {
-    rpId?: string;
+  interface ExpectedAssertionResultFields {
     challenge: string;
-    origin: string;
     factor: Factor;
     userVerification?: UserVerification;
     publicKey: string;
     prevCounter: number;
     userHandle: string | null;
-    allowCredentials?: PublicKeyCredentialDescriptor[];
+    allowCredentials?: CredentialDescriptorInput[];
   }
+
+  type ExpectedAssertionResult = ExpectedAssertionResultFields & ExpectedOrigin;
 
   interface Fido2AssertionResult {
     authnrData: Map<string, any>;
     clientData: Map<string, any>;
-    expectations: Map<string, string>;
-    request: AttestationResult;
+    expectations: Map<string, any>;
+    request: AssertionResult;
     audit: Audit;
   }
 

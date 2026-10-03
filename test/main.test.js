@@ -379,6 +379,40 @@ describe("Fido2Lib", function() {
 			serv = new Fido2Lib();
 		});
 
+		it("returns excludeCredentials with ArrayBuffer ids", async function() {
+			const id = new Uint8Array([1, 2, 3]).buffer;
+			const opts = await serv.attestationOptions({
+				excludeCredentials: [
+					{ type: "public-key", id: "dGVzdA", transports: ["hybrid", "internal"] },
+					{ type: "public-key", id },
+				],
+			});
+			assert.strictEqual(opts.excludeCredentials.length, 2);
+			assert.isTrue(arrayBufferEquals(opts.excludeCredentials[0].id, new Uint8Array([0x74, 0x65, 0x73, 0x74]).buffer));
+			assert.deepEqual(opts.excludeCredentials[0].transports, ["hybrid", "internal"]);
+			assert.isTrue(arrayBufferEquals(opts.excludeCredentials[1].id, id));
+			assert.isFalse("transports" in opts.excludeCredentials[1]);
+		});
+
+		it("omits excludeCredentials when not given", async function() {
+			const opts = await serv.attestationOptions();
+			assert.isFalse("excludeCredentials" in opts);
+		});
+
+		const invalidExcludeCredentials = {
+			"a non-array": [{ type: "public-key", id: "dGVzdA" }][0],
+			"a wrong type": [{ type: "password", id: "dGVzdA" }],
+			"a missing id": [{ type: "public-key" }],
+			"an empty id": [{ type: "public-key", id: "" }],
+			"non-string transports": [{ type: "public-key", id: "dGVzdA", transports: [1] }],
+			"a null entry": [null],
+		};
+		Object.entries(invalidExcludeCredentials).forEach(([desc, excludeCredentials]) => {
+			it(`rejects excludeCredentials with ${desc}`, function() {
+				return assert.isRejected(serv.attestationOptions({ excludeCredentials }), TypeError);
+			});
+		});
+
 		it("returns options", function() {
 			return serv.attestationOptions().then((opts) => {
 				assert.isObject(opts);
@@ -485,6 +519,37 @@ describe("Fido2Lib", function() {
 
 			assert.instanceOf(res, Fido2AttestationResult);
 			return res;
+		});
+
+		it("validates a credential request against several expected origins", async function() {
+			const expectations = {
+				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+				origin: ["https://localhost:8443", "android:apk-key-hash:abc"],
+				rpId: "localhost",
+				factor: "either",
+			};
+
+			const res = await serv.attestationResult(
+				h.lib.makeCredentialAttestationNoneResponse,
+				expectations,
+			);
+
+			assert.instanceOf(res, Fido2AttestationResult);
+		});
+
+		it("rejects a credential request whose origin matches none of the expected origins", function() {
+			const expectations = {
+				challenge: "33EHav-jZ1v9qwH783aU-j0ARx6r5o-YHh-wd7C6jPbd7Wh6ytbIZosIIACehwf9-s6hXhySHO-HHUjEwZS29w",
+				origin: ["https://example.com", "android:apk-key-hash:abc"],
+				rpId: "localhost",
+				factor: "either",
+			};
+
+			return assert.isRejected(
+				serv.attestationResult(h.lib.makeCredentialAttestationNoneResponse, expectations),
+				Error,
+				"clientData origin did not match expected origin",
+			);
 		});
 
 		it("validates a credential request with 'u2f' attestation");
@@ -868,6 +933,83 @@ describe("Fido2Lib", function() {
 			};
 
 			const res = await serv.assertionResult(h.lib.assertionResponse, expectations);
+			assert.instanceOf(res, Fido2AssertionResult);
+		});
+
+		describe("with several expected origins", function() {
+			const expectations = (origin, rpId) => ({
+				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+				origin,
+				rpId,
+				factor: "either",
+				publicKey: h.lib.assnPublicKey,
+				prevCounter: 362,
+				userHandle: null,
+			});
+
+			it("accepts the origin that matches one of them", async function() {
+				const res = await serv.assertionResult(
+					h.lib.assertionResponse,
+					expectations(["android:apk-key-hash:abc", "https://localhost:8443"], "localhost"),
+				);
+				assert.instanceOf(res, Fido2AssertionResult);
+				assert.deepEqual(res.expectations.get("origin"), ["android:apk-key-hash:abc", "https://localhost:8443"]);
+			});
+
+			it("rejects an origin that matches none of them", function() {
+				return assert.isRejected(
+					serv.assertionResult(h.lib.assertionResponse, expectations(["https://example.com", "android:apk-key-hash:abc"], "localhost")),
+					Error,
+					"clientData origin did not match expected origin",
+				);
+			});
+
+			it("requires rpId", function() {
+				return assert.isRejected(
+					serv.assertionResult(h.lib.assertionResponse, expectations(["https://localhost:8443"])),
+					TypeError,
+					"expected 'rpId' is required when 'origin' is an array",
+				);
+			});
+
+			it("rejects an array with a non-string origin", function() {
+				return assert.isRejected(
+					serv.assertionResult(h.lib.assertionResponse, expectations(["https://localhost:8443", 5], "localhost")),
+					TypeError,
+					"expected 'origin' should be a non-empty array of strings",
+				);
+			});
+
+			it("rejects an array with a malformed origin", function() {
+				return assert.isRejected(
+					serv.assertionResult(h.lib.assertionResponse, expectations(["https://localhost:8443", "http://example.com"], "localhost")),
+					Error,
+					"origin should be https",
+				);
+			});
+		});
+
+		it("valid assertion with base64url string response values", async function() {
+			const toString = (ab) => coerceToBase64Url(ab, "value");
+			const res = await serv.assertionResult(
+				{
+					rawId: h.lib.assertionResponse.rawId,
+					response: {
+						clientDataJSON: toString(h.lib.assertionResponse.response.clientDataJSON),
+						authenticatorData: toString(h.lib.assertionResponse.response.authenticatorData),
+						signature: toString(h.lib.assertionResponse.response.signature),
+						userHandle: null,
+					},
+				},
+				{
+					challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+					origin: "https://localhost:8443",
+					factor: "either",
+					publicKey: h.lib.assnPublicKey,
+					prevCounter: 362,
+					userHandle: null,
+				},
+			);
 			assert.instanceOf(res, Fido2AssertionResult);
 		});
 
