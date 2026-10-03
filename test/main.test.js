@@ -499,7 +499,12 @@ describe("Fido2Lib", function() {
 							clientDataJSON: coerceToArrayBuffer(fixture.clientDataJSON, "clientDataJSON"),
 						},
 					},
-					{ challenge: fixture.challenge, origin: "https://localhost:8443", factor: "either" },
+					{
+						challenge: fixture.challenge,
+						origin: fixture.origin || "https://localhost:8443",
+						rpId: fixture.rpId,
+						factor: "either",
+					},
 				);
 			}
 
@@ -520,6 +525,23 @@ describe("Fido2Lib", function() {
 
 			it("rejects an unsupported TPM ECC curve", function() {
 				return assert.isRejected(tpmEccResult("unsupportedCurve"), Error, "tpm attestation: unsupported ECC curve");
+			});
+
+			it("validates a Windows Hello credential request", async function() {
+				const res = await tpmEccResult("windowsHello");
+				assert.instanceOf(res, Fido2AttestationResult);
+				assert.strictEqual(res.authnrData.get("pubArea").get("curve"), "P-256");
+				assert.strictEqual(res.authnrData.get("alg").algName, "RSASSA-PKCS1-v1_5_w_SHA1");
+			});
+
+			it("validates a credential request whose certificate AAGUID matches", async function() {
+				const res = await tpmEccResult("conformanceAaguidMatch");
+				assert.instanceOf(res, Fido2AttestationResult);
+				assert.isUndefined(res.authnrData.get("certInfo").get("qualifiedSignerHashType"));
+			});
+
+			it("rejects a credential request whose certificate AAGUID doesn't match", function() {
+				return assert.isRejected(tpmEccResult("conformanceAaguidMismatch"), Error, "tpm attestation: authnrData AAGUID did not match AAGUID in attestation certificate");
 			});
 		});
 
