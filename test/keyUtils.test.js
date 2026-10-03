@@ -174,6 +174,34 @@ describe("key utils", function() {
 				});
 			});
 
+			describe("eddsa spki Ed25519", function() {
+				const pem = "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAWbUtIZop+zwcFulqWeTZNZMJev1uuC/DnHzorKtYIok=\n-----END PUBLIC KEY-----\n";
+				const k = new PublicKey();
+				it("can import", async () => {
+					await k.fromPem(pem);
+				});
+				it("correctly identifies algorithm as Ed25519", () => {
+					assert.strictEqual(k.getAlgorithm().name, "Ed25519");
+				});
+				it("can re-export to spki PEM", async () => {
+					assert.strictEqual(await k.toPem(true), pem);
+				});
+			});
+
+			describe("cose keys claiming EdDSA on another curve", function() {
+				const hex = (s) => Uint8Array.from(s.match(/../g), (b) => parseInt(b, 16)).buffer;
+				const keys = {
+					"Ed448": "a4010103272007215839" + "00".repeat(57),
+					"X25519": "a4010103272004215820" + "33".repeat(32),
+					"EC2 P-256": "a5010203272001215820" + "11".repeat(32) + "225820" + "22".repeat(32),
+				};
+				Object.entries(keys).forEach(([name, cose]) => {
+					it(`rejects ${name}`, () => {
+						return assert.isRejected(new PublicKey().fromCose(hex(cose)), Error, "Unsupported EdDSA curve");
+					});
+				});
+			});
+
 			describe("can import ecdsa spki", function() {
 				const k = new PublicKey();
 				it("can import", async () => {
@@ -259,6 +287,9 @@ describe("key utils", function() {
 	describe("coseAlgToStr", () => {
 		it("Returns SHA1 for -65535", () => {
 			assert.equal("RSASSA-PKCS1-v1_5_w_SHA1", coseAlgToStr(-65535));
+		});
+		it("Returns EdDSA for -8", () => {
+			assert.equal("EdDSA", coseAlgToStr(-8));
 		});
 		it("Throws on string representation", () => {
 			assert.throws(() => {

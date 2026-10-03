@@ -15,6 +15,7 @@ const externals = [
 	"@peculiar/webcrypto",
 ];
 const tests = [
+	"test/algorithms.test.js",
 	"test/asn1.test.js",
 	"test/certUtils.test.js",
 	"test/extAppId.test.js",
