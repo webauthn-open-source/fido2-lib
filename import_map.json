@@ -11,9 +11,6 @@
 
         "test_suite": "https://deno.land/x/test_suite@0.16.1/mod.ts",
         "chai": "./test/helpers/chai-deno-shim.js",
-        "chai-as-promised": "./test/helpers/chai-deno-shim.js",
-    
-        "@peculiar/webcrypto": "./test/helpers/not-used-by-deno.js",
-        "crypto": "./test/helpers/not-used-by-deno.js"
+        "chai-as-promised": "./test/helpers/chai-deno-shim.js"
     }
 }

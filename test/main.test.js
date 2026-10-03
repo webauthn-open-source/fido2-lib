@@ -599,6 +599,18 @@ describe("Fido2Lib", function() {
 				assert.strictEqual(res.authnrData.get("alg").algName, "RSASSA-PKCS1-v1_5_w_SHA1");
 			});
 
+			it("validates a Windows Hello credential request when WebCrypto refuses SHA-1", async function() {
+				const subtle = tools.webcrypto.subtle;
+				const verify = subtle.verify;
+				subtle.verify = (alg, ...args) => alg.hash && alg.hash.name === "SHA-1" ? Promise.resolve(false) : verify.call(subtle, alg, ...args);
+				try {
+					const res = await tpmEccResult("windowsHello");
+					assert.instanceOf(res, Fido2AttestationResult);
+				} finally {
+					subtle.verify = verify;
+				}
+			});
+
 			it("validates a credential request whose certificate AAGUID matches", async function() {
 				const res = await tpmEccResult("conformanceAaguidMatch");
 				assert.instanceOf(res, Fido2AttestationResult);
