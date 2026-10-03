@@ -852,6 +852,25 @@ describe("Fido2Lib", function() {
 				);
 		});
 
+		it("valid assertion with hybrid and internal transports in allowCredentials", async function() {
+			const expectations = {
+				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",
+				origin: "https://localhost:8443",
+				factor: "either",
+				publicKey: h.lib.assnPublicKey,
+				prevCounter: 362,
+				userHandle: null,
+				allowCredentials: [{
+					id: h.lib.assertionResponse.rawId,
+					type: "public-key",
+					transports: ["hybrid", "internal"],
+				}],
+			};
+
+			const res = await serv.assertionResult(h.lib.assertionResponse, expectations);
+			assert.instanceOf(res, Fido2AssertionResult);
+		});
+
 		it("valid assertion without userHandle", function() {
 			const expectations = {
 				challenge: "eaTyUNnyPDDdK8SNEgTEUvz1Q8dylkjjTimYd5X7QAo-F8_Z1lsJi3BilUpFZHkICNDWY8r9ivnTgW7-XZC3qQ",

@@ -252,11 +252,11 @@ describe("attestation validation", function() {
 
 				it("throws on wrong transports value in allowCredentials element", function() {
 					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["none", "nfc"] }]);
-					return assert.isRejected(attResp.validateExpectations(), Error, "expected transports of allowCredentials[0] to be string with value 'usb', 'nfc', 'ble', 'cable', 'internal' or null");
+					return assert.isRejected(attResp.validateExpectations(), Error, "expected transports of allowCredentials[0] to be string with value 'usb', 'nfc', 'ble', 'smart-card', 'hybrid', 'cable', 'internal' or null");
 				});
 
 				it("works with all allowed transports in allowCredentials element", async function() {
-					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["nfc","ble","cable","internal","usb"] }]);
+					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["nfc","ble","smart-card","hybrid","cable","internal","usb"] }]);
 					let ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validExpectations);
@@ -448,6 +448,16 @@ describe("attestation validation", function() {
 				it("throws on non-Array<string>", function() {
 					attResp.authnrData.set("transports", [1]);
 					return assert.isRejected(attResp.validateTransports(), Error, "expected transports[0] to be 'string'");
+				});
+
+				it("ignores enumerable properties added to Array.prototype", async function() {
+					attResp.authnrData.set("transports", ["usb", "hybrid"]);
+					Array.prototype.fido2LibTestMethod = function() {};
+					try {
+						assert.isTrue(await attResp.validateTransports());
+					} finally {
+						delete Array.prototype.fido2LibTestMethod;
+					}
 				});
 			});
 
