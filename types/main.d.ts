@@ -96,13 +96,17 @@ declare module "fido2-lib" {
     response: { clientDataJSON: BinaryInput; attestationObject: BinaryInput };
   }
 
-  interface ExpectedAttestationResult {
-    rpId?: string;
-    origin: string | string[];
+  type ExpectedOrigin =
+    | { origin: string; rpId?: string }
+    | { origin: string[]; rpId: string };
+
+  interface ExpectedAttestationResultFields {
     challenge: string;
     factor: Factor;
     userVerification?: UserVerification;
   }
+
+  type ExpectedAttestationResult = ExpectedAttestationResultFields & ExpectedOrigin;
 
   interface Fido2AttestationResult {
     authnrData: Map<string, any>;
@@ -155,10 +159,8 @@ declare module "fido2-lib" {
     };
   }
 
-  interface ExpectedAssertionResult {
-    rpId?: string;
+  interface ExpectedAssertionResultFields {
     challenge: string;
-    origin: string | string[];
     factor: Factor;
     userVerification?: UserVerification;
     publicKey: string;
@@ -166,6 +168,8 @@ declare module "fido2-lib" {
     userHandle: string | null;
     allowCredentials?: CredentialDescriptorInput[];
   }
+
+  type ExpectedAssertionResult = ExpectedAssertionResultFields & ExpectedOrigin;
 
   interface Fido2AssertionResult {
     authnrData: Map<string, any>;
