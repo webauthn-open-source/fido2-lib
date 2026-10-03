@@ -397,6 +397,17 @@ describe("parseExpectations", function() {
 		assert.strictEqual(userHandle, "");
 	});
 
+	it("adds cryptoParams to map when it exists", function() {
+		const ret = parseExpectations({ cryptoParams: [-7, -257] });
+		assert.deepEqual(ret.get("cryptoParams"), [-7, -257]);
+	});
+
+	[[], ["-7"], [-7.5], "-7"].forEach((cryptoParams) => {
+		it(`throws on cryptoParams ${JSON.stringify(cryptoParams)}`, function() {
+			assert.throws(() => parseExpectations({ cryptoParams }), TypeError, "expected 'cryptoParams' should be a non-empty array of COSE algorithm numbers");
+		});
+	});
+
 	it("adds allowCredentials to map when it exists", function() {
 		const exp = {
 			origin: "https://webauthn.bin.coffee",

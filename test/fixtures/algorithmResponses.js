@@ -171,6 +171,14 @@ const algorithmResponses = {
 			signature: "uIdW00zgxSPWAmKZvfoL8mFmEiXBLqLbPoVHpfCcrNY5ktow_XXcjuapRcgsg1ZRypFfSSRkJAW1Ev9lEC27Ag",
 		},
 	},
+	"RS1 none": {
+		registration: {
+			challenge: "IXhjht5cYgs0F-nVKqJEe8R5S_GcQM4EbFx8WQwqk7c",
+			rawId: "jE8ALYomx_l5Yflh05i0KA",
+			attestationObject: "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVkBV0mWDeWIDoxodDQXD2R2YFuP5K65ooYyx5lc87qDHZdjRQAAAAAAAAAAAAAAAAAAAAAAAAAAABCMTwAtiibH-Xlh-WHTmLQopAEDAzn__iBZAQC60q-oiC3Lp5B8EycqW8LFEnHDESvwCcOM1rsMnKJgSKgk2Xzd9GT2eVJcpv-j9Afmnb_ALEnjygLatLgstYZXWfCmkxRN8y103pfPh8gqs8rwTaJ7h6bWvcs61vSHHxQuBV4qpUW3R2iWf4zPttLZ-jR-yr8uhvLKKKbdqWcMsuYlUlGOLy6CtKUxGy0hLjzQlWxj-wFtdt_15wlEnf6_XGFQUOHo0PHIwR90xazTFmwGyoDHZZlSj1-7cXs02CB6Y4aQ0fy0XiJ35UMqG1Gzy-QY6YzIeaQDpOUy-87Fv11HPxvKpf9PtGKQ355K5txQ5CaNe1Z2U6Hn8kdNV5q7IUMBAAE",
+			clientDataJSON: "eyJ0eXBlIjoid2ViYXV0aG4uY3JlYXRlIiwiY2hhbGxlbmdlIjoiSVhoamh0NWNZZ3MwRi1uVktxSkVlOFI1U19HY1FNNEViRng4V1F3cWs3YyIsIm9yaWdpbiI6Imh0dHBzOi8vbG9jYWxob3N0Ojg0NDMifQ",
+		},
+	},
 };
 
 export { algorithmResponses };

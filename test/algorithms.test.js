@@ -27,9 +27,11 @@ function ensureAttestationFormat(format) {
 	}
 }
 
-function register(name) {
+const allAlgorithms = [-7, -8, -35, -36, -257];
+
+function register(name, cryptoParams = allAlgorithms) {
 	const { registration } = algorithmResponses[name];
-	return new Fido2Lib().attestationResult(
+	return new Fido2Lib(cryptoParams === "default" ? undefined : { cryptoParams }).attestationResult(
 		{
 			rawId: coerceToArrayBuffer(registration.rawId, "rawId"),
 			response: {
@@ -130,5 +132,36 @@ describe("signature algorithms", function() {
 		assert.strictEqual(jwk.kty, "OKP");
 		assert.strictEqual(jwk.crv, "Ed25519");
 		assert.strictEqual(jwk.alg, "EdDSA");
+	});
+
+	describe("cryptoParams", function() {
+		const rejected = {
+			"Ed25519 none": "default",
+			"ES384 none": "default",
+			"ES512 packed-self": "default",
+			"ES256 none": [-8, -35],
+			"Ed25519 packed-basic:ES256-cert": [-7],
+		};
+		Object.entries(rejected).forEach(([name, cryptoParams]) => {
+			it(`rejects ${name} with cryptoParams ${JSON.stringify(cryptoParams)}`, function() {
+				return assert.isRejected(register(name, cryptoParams), Error, "is not one of the allowed cryptoParams");
+			});
+		});
+
+		const accepted = {
+			"ES256 none": "default",
+			"Ed25519 none": [-8],
+			"ES384 packed-self": [-35],
+			"ES256 packed-basic:Ed25519-key-ECDSA-CA-cert": [-7],
+		};
+		Object.entries(accepted).forEach(([name, cryptoParams]) => {
+			it(`accepts ${name} with cryptoParams ${JSON.stringify(cryptoParams)}`, async function() {
+				assert.instanceOf(await register(name, cryptoParams), Fido2AttestationResult);
+			});
+		});
+
+		it("rejects an RS1 credential even when -65535 is allowed", function() {
+			return assert.isRejected(register("RS1 none", [-65535]), Error, "RS1 (RSA with SHA-1) credential keys are not supported");
+		});
 	});
 });
