@@ -80,7 +80,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line54">line 54</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line60">line 60</a>
     </li></ul></dd>
     
 
@@ -698,7 +698,7 @@ The <code>challenge</code> property is an <code>ArrayBuffer</code> and will need
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line716">line 716</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line740">line 740</a>
     </li></ul></dd>
     
 
@@ -970,7 +970,7 @@ SHA256(rawChallenge + extraData) and the <code>rawChallenge</code> will be retur
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line576">line 576</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line595">line 595</a>
     </li></ul></dd>
     
 
@@ -1328,6 +1328,8 @@ If these parameters don't match the recieved values, validation will fail and an
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1354,6 +1356,14 @@ If these parameters don't match the recieved values, validation will fail and an
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1377,6 +1387,14 @@ If these parameters don't match the recieved values, validation will fail and an
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1402,6 +1420,14 @@ If these parameters don't match the recieved values, validation will fail and an
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1409,6 +1435,43 @@ If these parameters don't match the recieved values, validation will fail and an
 If &quot;first&quot;, this requires that the authenticator performed user verification (e.g. - biometric authentication, PIN authentication, etc.).
 If &quot;second&quot;, this requires that the authenticator performed user presence (e.g. - user pressed a button).
 If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is acceptable</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userVerification</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The user verification requirement that was sent to the client in <a href="Fido2Lib.html#assertionOptions">assertionOptions</a>. Valid values are &quot;required&quot;, &quot;preferred&quot;, or &quot;discouraged&quot;.
+If &quot;required&quot;, this requires that the authenticator performed user verification.
+If &quot;preferred&quot; or &quot;discouraged&quot;, user verification is optional, which conflicts with the &quot;first&quot; factor and throws a TypeError.
+If omitted, <code>factor</code> alone decides whether user verification is required.</p></td>
         </tr>
 
     
@@ -1428,6 +1491,14 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1453,6 +1524,14 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1480,6 +1559,14 @@ This is the public key that was returned for this user during <a href="Fido2Lib.
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1591,7 +1678,7 @@ The <code>challenge</code> property is an <code>ArrayBuffer</code> and will need
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line596">line 596</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line620">line 620</a>
     </li></ul></dd>
     
 
@@ -1863,7 +1950,7 @@ SHA256(rawChallenge + extraData) and the <code>rawChallenge</code> will be retur
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line544">line 544</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line554">line 554</a>
     </li></ul></dd>
     
 
@@ -2152,6 +2239,8 @@ If these parameters don't match the recieved values, validation will fail and an
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -2178,6 +2267,14 @@ If these parameters don't match the recieved values, validation will fail and an
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -2201,6 +2298,14 @@ If these parameters don't match the recieved values, validation will fail and an
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -2226,6 +2331,14 @@ If these parameters don't match the recieved values, validation will fail and an
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -2233,6 +2346,43 @@ If these parameters don't match the recieved values, validation will fail and an
 If &quot;first&quot;, this requires that the authenticator performed user verification (e.g. - biometric authentication, PIN authentication, etc.).
 If &quot;second&quot;, this requires that the authenticator performed user presence (e.g. - user pressed a button).
 If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is acceptable</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userVerification</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>The user verification requirement that was sent to the client in <a href="Fido2Lib.html#attestationOptions">attestationOptions</a>. Valid values are &quot;required&quot;, &quot;preferred&quot;, or &quot;discouraged&quot;.
+If &quot;required&quot;, this requires that the authenticator performed user verification.
+If &quot;preferred&quot; or &quot;discouraged&quot;, user verification is optional, which conflicts with the &quot;first&quot; factor and throws a TypeError.
+If omitted, <code>factor</code> alone decides whether user verification is required.</p></td>
         </tr>
 
     
@@ -2338,7 +2488,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line355">line 355</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line361">line 361</a>
     </li></ul></dd>
     
 
@@ -2473,7 +2623,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line339">line 339</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line345">line 345</a>
     </li></ul></dd>
     
 
@@ -2608,7 +2758,7 @@ If &quot;either&quot;, then either &quot;first&quot; or &quot;second&quot; is ac
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line372">line 372</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line378">line 378</a>
     </li></ul></dd>
     
 
@@ -2768,7 +2918,7 @@ for any future Fido2CreateRequest messages</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line434">line 434</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line440">line 440</a>
     </li></ul></dd>
     
 
@@ -2960,7 +3110,7 @@ enableExtension for each instantiation of a Fido2Lib.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line221">line 221</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line227">line 227</a>
     </li></ul></dd>
     
 
@@ -3167,7 +3317,7 @@ enableExtension for each instantiation of a Fido2Lib.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line168">line 168</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line174">line 174</a>
     </li></ul></dd>
     
 
@@ -3309,7 +3459,7 @@ enableExtension for each instantiation of a Fido2Lib.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line182">line 182</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line188">line 188</a>
     </li></ul></dd>
     
 
@@ -3394,7 +3544,7 @@ enableExtension for each instantiation of a Fido2Lib.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line159">line 159</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line165">line 165</a>
     </li></ul></dd>
     
 
@@ -3561,7 +3711,7 @@ finds multiple matching entries from different sources (e.g. FIDO MDS 1 &amp; FI
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line470">line 470</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line476">line 476</a>
     </li></ul></dd>
     
 
@@ -3646,7 +3796,7 @@ finds multiple matching entries from different sources (e.g. FIDO MDS 1 &amp; FI
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line268">line 268</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line274">line 274</a>
     </li></ul></dd>
     
 
@@ -3734,7 +3884,7 @@ setMdsCollection, an <code>Error</code> will be thrown.</p></li></ul></dd>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="main.js.html">main.js</a>, <a href="main.js.html#line196">line 196</a>
+        <a href="main.js.html">main.js</a>, <a href="main.js.html#line202">line 202</a>
     </li></ul></dd>
     
 
@@ -3902,7 +4052,7 @@ If no entry was found, the Array will be empty.</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Fri Oct 02 2026 20:25:45 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Oct 03 2026 08:04:01 GMT+0000 (Coordinated Universal Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
