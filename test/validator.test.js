@@ -250,13 +250,20 @@ describe("attestation validation", function() {
 					return assert.isRejected(attResp.validateExpectations(), Error, "expected transports of allowCredentials[0] to be array or null");
 				});
 
-				it("throws on wrong transports value in allowCredentials element", function() {
-					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["none", "nfc"] }]);
-					return assert.isRejected(attResp.validateExpectations(), Error, "expected transports of allowCredentials[0] to be string with value 'usb', 'nfc', 'ble', 'smart-card', 'hybrid', 'cable', 'internal' or null");
+				it("throws on non-string transports value in allowCredentials element", function() {
+					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: [1, "nfc"] }]);
+					return assert.isRejected(attResp.validateExpectations(), Error, "expected transports of allowCredentials[0] to be an array of strings or null");
 				});
 
-				it("works with all allowed transports in allowCredentials element", async function() {
+				it("works with all spec transports in allowCredentials element", async function() {
 					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["nfc","ble","smart-card","hybrid","cable","internal","usb"] }]);
+					let ret = await attResp.validateExpectations();
+					assert.isTrue(ret);
+					assert.isTrue(attResp.audit.validExpectations);
+				});
+
+				it("works with unknown transports in allowCredentials element", async function() {
+					attResp.expectations.set("allowCredentials", [{ id: h.lib.assertionResponse.rawId, type: "public-key", transports: ["future-transport", "usb"] }]);
 					let ret = await attResp.validateExpectations();
 					assert.isTrue(ret);
 					assert.isTrue(attResp.audit.validExpectations);
