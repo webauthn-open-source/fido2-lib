@@ -11,8 +11,6 @@ const externals = [
 	"pkijs",
 	"asn1js",
 	"cbor-x",
-	"crypto",
-	"@peculiar/webcrypto",
 ];
 const tests = [
 	"test/algorithms.test.js",

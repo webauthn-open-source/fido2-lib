@@ -47,7 +47,6 @@
   },
   "dependencies": {
     "@hexagon/base64": "^2.0.4",
-    "@peculiar/webcrypto": "~1.5.0",
     "asn1js": "~3.0.7",
     "cbor-x": "~1.6.3",
     "jose": "^6.2.1",

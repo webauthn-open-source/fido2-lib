@@ -126,7 +126,6 @@
     "packageJson": {
       "dependencies": [
         "npm:@hexagon/base64@^2.0.4",
-        "npm:@peculiar/webcrypto@1.5",
         "npm:asn1js@~3.0.7",
         "npm:c8@11",
         "npm:cbor-x@~1.6.3",
