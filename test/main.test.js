@@ -6,6 +6,7 @@ import * as chaiAsPromised from "chai-as-promised";
 import * as h from "./helpers/fido2-helpers.js";
 import { Stub } from "./helpers/stub.js";
 import { packedSelfAttestationResponse } from "./fixtures/packedSelfAttestationData.js";
+import { tpmEccAttestation } from "./fixtures/tpmEccAttestation.js";
 
 
 // Test subject
@@ -485,6 +486,41 @@ describe("Fido2Lib", function() {
 
 			assert.instanceOf(res, Fido2AttestationResult);
 			return res;
+		});
+
+		describe("'tpm' attestation with an ECC key", function() {
+			function tpmEccResult(name) {
+				const fixture = tpmEccAttestation[name];
+				return serv.attestationResult(
+					{
+						rawId: coerceToArrayBuffer(fixture.rawId, "rawId"),
+						response: {
+							attestationObject: coerceToArrayBuffer(fixture.attestationObject, "attestationObject"),
+							clientDataJSON: coerceToArrayBuffer(fixture.clientDataJSON, "clientDataJSON"),
+						},
+					},
+					{ challenge: fixture.challenge, origin: "https://localhost:8443", factor: "either" },
+				);
+			}
+
+			it("validates a credential request", async function() {
+				const res = await tpmEccResult("valid");
+				assert.instanceOf(res, Fido2AttestationResult);
+				assert.strictEqual(res.audit.info.get("attestation-type"), "AttCA");
+				assert.strictEqual(res.authnrData.get("pubArea").get("curve"), "P-256");
+			});
+
+			it("rejects a TPM key that doesn't match the credential key", function() {
+				return assert.isRejected(tpmEccResult("pointMismatch"), Error, "tpm attestation: ECC point of WebAuthn credentialPublicKey and TPM publicArea did not match");
+			});
+
+			it("rejects a TPM key on another curve than the credential key", function() {
+				return assert.isRejected(tpmEccResult("curveMismatch"), Error, "tpm attestation: ECC curve of WebAuthn credentialPublicKey and TPM publicArea did not match");
+			});
+
+			it("rejects an unsupported TPM ECC curve", function() {
+				return assert.isRejected(tpmEccResult("unsupportedCurve"), Error, "tpm attestation: unsupported ECC curve");
+			});
 		});
 
 		it("validates a credential request with 'u2f' attestation");

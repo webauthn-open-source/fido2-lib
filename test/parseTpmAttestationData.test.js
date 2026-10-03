@@ -4,8 +4,9 @@ import * as chaiAsPromised from "chai-as-promised";
 
 // Helpers
 import * as h from "./helpers/fido2-helpers.js";
+import { tpmEccAttestation } from "./fixtures/tpmEccAttestation.js";
 
-import { arrayBufferEquals, coerceToBase64 } from "../lib/main.js";
+import { arrayBufferEquals, coerceToArrayBuffer, coerceToBase64 } from "../lib/main.js";
 
 // Test subject
 import { parseAttestationObject, parseAuthnrAttestationResponse } from "../lib/main.js";
@@ -419,5 +420,30 @@ runs.forEach(function(run) {
 			assert.isString(credentialPublicKeyPem);
 			assert.strictEqual(credentialPublicKeyPem.length, 451);
 		});
+	});
+});
+
+describe("parseAttestationObject (tpm with an ECC key)", function() {
+	const parse = () => parseAttestationObject(
+		coerceToArrayBuffer(tpmEccAttestation.valid.attestationObject, "attestationObject"),
+	);
+
+	it("parses the ECC public area", async function() {
+		const pubArea = (await parse()).get("pubArea");
+		assert.strictEqual(pubArea.get("type"), "TPM_ALG_ECC");
+		assert.strictEqual(pubArea.get("nameAlg"), "TPM_ALG_SHA256");
+		assert.strictEqual(pubArea.get("symmetric"), "TPM_ALG_NULL");
+		assert.strictEqual(pubArea.get("scheme"), "TPM_ALG_NULL");
+		assert.strictEqual(pubArea.get("curve"), "P-256");
+		assert.strictEqual(pubArea.get("kdf"), "TPM_ALG_NULL");
+		assert.strictEqual(pubArea.get("x").byteLength, 32);
+		assert.strictEqual(pubArea.get("y").byteLength, 32);
+	});
+
+	it("parses an empty qualifiedSigner", async function() {
+		const certInfo = (await parse()).get("certInfo");
+		assert.isUndefined(certInfo.get("qualifiedSignerHashType"));
+		assert.strictEqual(certInfo.get("qualifiedSigner").byteLength, 0);
+		assert.strictEqual(certInfo.get("nameHashType"), "TPM_ALG_SHA256");
 	});
 });
