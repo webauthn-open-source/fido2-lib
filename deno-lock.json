@@ -2,7 +2,13 @@
   "version": "5",
   "specifiers": {
     "jsr:@std/assert@^1.0.19": "1.0.19",
-    "jsr:@std/internal@^1.0.12": "1.0.14"
+    "jsr:@std/internal@^1.0.12": "1.0.14",
+    "npm:@hexagon/base64@^2.0.4": "2.0.4",
+    "npm:asn1js@4.0": "4.0.0",
+    "npm:jose@^6.2.14": "6.2.14",
+    "npm:pkijs@~4.0.1": "4.0.1_asn1js@4.0.0",
+    "npm:punycode.js@^2.3.1": "2.3.1",
+    "npm:tldts@~7.4.19": "7.4.19"
   },
   "jsr": {
     "@std/assert@1.0.19": {
@@ -13,6 +19,51 @@
     },
     "@std/internal@1.0.14": {
       "integrity": "291516b3d4c35024d6ffbc0a9df5bf4c64116e05b50012cf846710152d2ffdf7"
+    }
+  },
+  "npm": {
+    "@hexagon/base64@2.0.4": {
+      "integrity": "sha512-H/ZY6rGyaEuk0mwQgZ3BVi9hMjFTYpBNFbmtOuec/pPibuGhCMXd8fGtwBaO0h44FkWMurysMsDrpkJsBRmoWQ=="
+    },
+    "@noble/hashes@2.4.0": {
+      "integrity": "sha512-X5XaVWZIBCT7HHZGm5I7ZQXDwLG+bGXuSrMQAW+7Zvl87h1kmc1ZB1VSRJcpUfoUrGQp4Fkoxm5kZ+Ms+aW+eA=="
+    },
+    "@peculiar/utils@4.1.0": {
+      "integrity": "sha512-y2oDqAwp+VPZMUYFGFFMYlXM8xinwb7ehb69+2EhbEL+n7KsykCQX5F0u3/B+BFHxCkwTyft3T1id0ugyzNHVQ=="
+    },
+    "asn1js@4.0.0": {
+      "integrity": "sha512-81NlooYbXCbBWL2+p1/ivGyT4AR2+bnfKYlPq/3rCoIPJSuLbdS8G70XYt561wOJnbaYfBS2HQDMENaX5hM2vA==",
+      "dependencies": [
+        "@peculiar/utils"
+      ]
+    },
+    "bytestreamjs@3.0.0": {
+      "integrity": "sha512-QJYdJHpGNj4dAfRrgQAu8V5OEFVgiALJ8YFR4c1BuNYzvoDU86yEg+9SXu/AbGyMaLAn17qdMmwsCc2Ry2nHPg=="
+    },
+    "jose@6.2.14": {
+      "integrity": "sha512-3JasLuki1NRLQvY4wCoC37KZk4qxoBx2k2aFqLxT84IezqW0bkJKnNtxnZj/Fu1xsQivoc/lytxaRHJoGLjJ1A=="
+    },
+    "pkijs@4.0.1_asn1js@4.0.0": {
+      "integrity": "sha512-hs6jHBg+Y9ZZ9r5w2CHnKXkGPOr3qWfkLfnZGlbNkP2hceGZ6EgjnTS7tqwbugHXx5mCqoSf4TUH2nu1diirnA==",
+      "dependencies": [
+        "@noble/hashes",
+        "@peculiar/utils",
+        "asn1js",
+        "bytestreamjs"
+      ]
+    },
+    "punycode.js@2.3.1": {
+      "integrity": "sha512-uxFIHU0YlHYhDQtV4R9J6a52SLx28BCjT+4ieh7IGbgwVJWO+km431c4yRlREUAsAmt/uMjQUyQHNEPf0M39CA=="
+    },
+    "tldts-core@7.4.20": {
+      "integrity": "sha512-C630TWXZCZmLq0F2bW4QqwnaaxCQ/svpAqvJwnC4JvgEM5ohhBnGsEzTLSOXcN+xjz+kEaHS5uoWIw2klnqd0A=="
+    },
+    "tldts@7.4.19": {
+      "integrity": "sha512-48dH6aSpQnpbzDUc4vIQZ1VjB8tkK+e8c1yx05/SZK+rkssgjEOlxDd/yU8/a4vGYQ9vRgJr9dwMq9TJ0b3X2Q==",
+      "dependencies": [
+        "tldts-core"
+      ],
+      "bin": true
     }
   },
   "remote": {
@@ -30,7 +81,7 @@
       "jsr:@std/assert@^1.0.19",
       "npm:@hexagon/base64@^2.0.4",
       "npm:asn1js@4.0",
-      "npm:jose@^6.2.15",
+      "npm:jose@^6.2.14",
       "npm:pkijs@~4.0.1",
       "npm:punycode.js@^2.3.1",
       "npm:tldts@~7.4.19"
@@ -46,7 +97,7 @@
         "npm:docdash@^2.0.2",
         "npm:eslint@^10.14.0",
         "npm:gh-pages@^6.3.0",
-        "npm:jose@^6.2.15",
+        "npm:jose@^6.2.14",
         "npm:jsdoc@^4.0.5",
         "npm:mocha@^12.0.3",
         "npm:pkijs@~4.0.1",
