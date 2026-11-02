@@ -2,7 +2,7 @@
     "imports": {
         "tldts": "npm:tldts@~7.4.19",
         "punycode.js": "npm:punycode.js@^2.3.1",
-        "jose": "npm:jose@^6.2.14",
+        "jose": "npm:jose@^6.2.15",
         "asn1js": "npm:asn1js@~4.0.0",
         "cbor-x": "https://unpkg.com/cbor-x@1.6.9/index.js",
         "@std/assert": "jsr:@std/assert@^1.0.19",

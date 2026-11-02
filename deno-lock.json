@@ -5,7 +5,7 @@
     "jsr:@std/internal@^1.0.12": "1.0.14",
     "npm:@hexagon/base64@^2.0.4": "2.0.4",
     "npm:asn1js@4.0": "4.0.0",
-    "npm:jose@^6.2.14": "6.2.14",
+    "npm:jose@^6.2.15": "6.2.15",
     "npm:pkijs@~4.0.1": "4.0.1_asn1js@4.0.0",
     "npm:punycode.js@^2.3.1": "2.3.1",
     "npm:tldts@~7.4.19": "7.4.19"
@@ -40,8 +40,8 @@
     "bytestreamjs@3.0.0": {
       "integrity": "sha512-QJYdJHpGNj4dAfRrgQAu8V5OEFVgiALJ8YFR4c1BuNYzvoDU86yEg+9SXu/AbGyMaLAn17qdMmwsCc2Ry2nHPg=="
     },
-    "jose@6.2.14": {
-      "integrity": "sha512-3JasLuki1NRLQvY4wCoC37KZk4qxoBx2k2aFqLxT84IezqW0bkJKnNtxnZj/Fu1xsQivoc/lytxaRHJoGLjJ1A=="
+    "jose@6.2.15": {
+      "integrity": "sha512-qdF6ewcZARtef63fJ9AKKZPgxw+t7USH6HLXYcD4CrdmSvDp79rpJSPFEKc90QBeGS63u1KQtN2MZQHC0yDIzA=="
     },
     "pkijs@4.0.1_asn1js@4.0.0": {
       "integrity": "sha512-hs6jHBg+Y9ZZ9r5w2CHnKXkGPOr3qWfkLfnZGlbNkP2hceGZ6EgjnTS7tqwbugHXx5mCqoSf4TUH2nu1diirnA==",
@@ -81,7 +81,7 @@
       "jsr:@std/assert@^1.0.19",
       "npm:@hexagon/base64@^2.0.4",
       "npm:asn1js@4.0",
-      "npm:jose@^6.2.14",
+      "npm:jose@^6.2.15",
       "npm:pkijs@~4.0.1",
       "npm:punycode.js@^2.3.1",
       "npm:tldts@~7.4.19"
@@ -97,7 +97,7 @@
         "npm:docdash@^2.0.2",
         "npm:eslint@^10.14.0",
         "npm:gh-pages@^6.3.0",
-        "npm:jose@^6.2.14",
+        "npm:jose@^6.2.15",
         "npm:jsdoc@^4.0.5",
         "npm:mocha@^12.0.3",
         "npm:pkijs@~4.0.1",
