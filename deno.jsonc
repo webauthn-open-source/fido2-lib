@@ -15,6 +15,11 @@
 
   "importMap": "import_map.json",
 
+  /* Resolve npm: imports from the Deno cache, not node_modules/ */
+  "nodeModulesDir": "none",
+
+  "minimumDependencyAge": { "age": "P1D", "exclude": ["npm:cbor-x", "npm:cbor-extract", "npm:@cbor-extract/*"] },
+
   "tasks": {
     /* Run deno tests with `deno task test`, using default import map */
     "test": "deno test --lock=deno-lock.json --ignore=test/dist --allow-import test",
