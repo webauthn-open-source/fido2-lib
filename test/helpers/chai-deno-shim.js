@@ -4,7 +4,7 @@ import {
 	assertRejects,
 	assertStrictEquals,
 	assertThrows
-} from "std/testing/asserts.ts";
+} from "@std/assert";
 
 // Inject mocha equivalents in global
 import { afterEach, beforeEach, describe, it } from "test_suite";
