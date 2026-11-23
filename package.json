@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@hexagon/base64": "^2.0.4",
-    "asn1js": "~4.0.0",
+    "asn1js": "~4.1.0",
     "cbor-x": "~1.6.9",
     "jose": "^6.2.15",
     "pkijs": "~4.0.1",
